@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}Analysis Results{% endblock %}
+
+{% block content %}
+    <div class="results-page">
+        <h2>Analysis Results</h2>
+        {% if results %}
+            <div class="results-container">
+                <p>Results for the analysis:</p>
+                <pre>{{ results|tojson|safe }}</pre>
+            </div>
+        {% else %}
+            <p>No results to display. Please submit your analysis.</p>
+        {% endif %}
+    </div>
+{% endblock %}
+

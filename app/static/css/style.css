@@ -1,0 +1,27 @@
+.results-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.results-container {
+    background: #fff; /* White background for results */
+    padding: 20px;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px; /* Max width for results container */
+    overflow-x: auto; /* If content is too wide, allow scroll */
+}
+
+pre {
+    background: #f4f4f4; /* Light grey background for <pre> to distinguish the text */
+    padding: 15px;
+    border-radius: 4px; /* Rounded corners for <pre> */
+    white-space: pre-wrap; /* Ensures pre-formatted text wraps */
+    word-break: break-word; /* Break the word to prevent overflow */
+}
+
