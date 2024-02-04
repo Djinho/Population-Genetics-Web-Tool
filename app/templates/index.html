@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Population Genomics Analysis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Add other head elements like Bootstrap if needed -->
+    <!-- Additional head elements like Bootstrap can be added here if needed -->
 </head>
 <body>
     <div class="main-container">
@@ -21,9 +21,19 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="population">Population:</label>
-                    <select id="population" name="population">
-                        <!-- Options will be populated here -->
+                    <label for="population1">Population 1:</label>
+                    <select id="population1" name="population1">
+                        <!-- Populate with options based on your data -->
+                        <option value="Population1">Population1</option>
+                        <!-- Additional population options -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="population2">Population 2:</label>
+                    <select id="population2" name="population2">
+                        <!-- Populate with options based on your data -->
+                        <option value="Population2">Population2</option>
+                        <!-- Additional population options -->
                     </select>
                 </div>
                 <button type="submit" class="submit-btn">Submit</button>

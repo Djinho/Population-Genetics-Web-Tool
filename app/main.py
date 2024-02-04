@@ -9,30 +9,30 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    # For now, we don't perform actual analysis and return a placeholder page
+    # Retrieve form data
     analysis_type = request.form.get('analysis_type')
-    population = request.form.get('population')
+    population1 = request.form.get('population1')
+    population2 = request.form.get('population2')
 
     # Placeholder results
     results = {
         'analysis_type': analysis_type,
-        'population': population,
-        'message': 'Analysis would be performed here once the database is set up.'
+        'population1': population1,
+        'population2': population2,
+        'message': 'Comparative analysis between two populations will be performed here once the database is set up.'
     }
 
-    # Instead of using actual results, pass the placeholder results to the template
+    # Pass the placeholder results to the template
     return render_template('analyze.html', results=results)
 
-# The following database functions are commented out until the database is set up
-# def perform_pca(population):
-#     # Placeholder function for PCA analysis
+# Uncomment and implement these functions once the database is set up
+# def perform_pca(population1, population2):
+#     # Function to perform PCA analysis on two populations
 #     pass
 
-# def perform_admixture(population):
-#     # Placeholder function for admixture analysis
+# def perform_admixture(population1, population2):
+#     # Function to perform admixture analysis on two populations
 #     pass
 
 if __name__ == '__main__':
-    # Run the app in debug mode so you can see any errors and live changes
     app.run(debug=True)
-
