@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Population Genomics Analysis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Additional head elements like Bootstrap can be added here if needed -->
 </head>
 <body>
     <div class="main-container">
@@ -17,29 +16,76 @@
                     <label for="analysisType">Analysis Type:</label>
                     <select id="analysisType" name="analysis_type">
                         <option value="PCA">PCA</option>
-                        <option value="Admixture">Admixture</option>
+                        <!-- Add other analysis types here -->
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="population1">Population 1:</label>
                     <select id="population1" name="population1">
-                        <!-- Populate with options based on your data -->
-                        <option value="Population1">Population1</option>
-                        <!-- Additional population options -->
+                        <option value="1">SIB</option>
+                        <option value="2">GBR</option>
+                        <option value="3">FIN</option>
+                        <option value="4">CHS</option>
+                        <option value="5">PUR</option>
+                        <option value="6">CDX</option>
+                        <option value="7">CLM</option>
+                        <option value="8">IBS</option>
+                        <option value="9">PEL</option>
+                        <option value="10">PJL</option>
+                        <option value="11">KHV</option>
+                        <option value="12">ACB</option>
+                        <option value="13">GWD</option>
+                        <option value="14">ESN</option>
+                        <option value="15">BEB</option>
+                        <option value="16">MSL</option>
+                        <option value="17">STU</option>
+                        <option value="18">ITU</option>
+                        <option value="19">CEU</option>
+                        <option value="20">YRI</option>
+                        <option value="21">CHB</option>
+                        <option value="22">JPT</option>
+                        <option value="23">LWK</option>
+                        <option value="24">ASW</option>
+                        <option value="25">MXL</option>
+                        <option value="26">TSI</option>
+                        <option value="27">GIH</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="population2">Population 2:</label>
                     <select id="population2" name="population2">
-                        <!-- Populate with options based on your data -->
-                        <option value="Population2">Population2</option>
-                        <!-- Additional population options -->
+                        <option value="1">SIB</option>
+                        <option value="2">GBR</option>
+                        <option value="3">FIN</option>
+                        <option value="4">CHS</option>
+                        <option value="5">PUR</option>
+                        <option value="6">CDX</option>
+                        <option value="7">CLM</option>
+                        <option value="8">IBS</option>
+                        <option value="9">PEL</option>
+                        <option value="10">PJL</option>
+                        <option value="11">KHV</option>
+                        <option value="12">ACB</option>
+                        <option value="13">GWD</option>
+                        <option value="14">ESN</option>
+                        <option value="15">BEB</option>
+                        <option value="16">MSL</option>
+                        <option value="17">STU</option>
+                        <option value="18">ITU</option>
+                        <option value="19">CEU</option>
+                        <option value="20">YRI</option>
+                        <option value="21">CHB</option>
+                        <option value="22">JPT</option>
+                        <option value="23">LWK</option>
+                        <option value="24">ASW</option>
+                        <option value="25">MXL</option>
+                        <option value="26">TSI</option>
+                        <option value="27">GIH</option>
                     </select>
                 </div>
                 <button type="submit" class="submit-btn">Submit</button>
             </form>
         </section>
     </div>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

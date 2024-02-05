@@ -3,16 +3,29 @@
 {% block title %}Analysis Results{% endblock %}
 
 {% block content %}
-    <div class="results-page">
-        <h2>Analysis Results</h2>
-        {% if results %}
-            <div class="results-container">
-                <p>Results for the analysis:</p>
-                <pre>{{ results|tojson|safe }}</pre>
-            </div>
-        {% else %}
-            <p>No results to display. Please submit your analysis.</p>
-        {% endif %}
-    </div>
+<div class="results-page">
+    <h2>Analysis Results</h2>
+    {% if results %}
+        <div class="results-container">
+            <p>Results for the analysis:</p>
+            <ul>
+                <li><strong>Population 1 Name:</strong> {{ results.population1_name }}</li>
+                <li><strong>Population 2 Name:</strong> {{ results.population2_name }}</li>
+                <p>PCA Results:</p>
+                <ul>
+                    {% for row in results.PCA_Result %}
+                        <li>
+                            <strong>Coordinate ID:</strong> {{ row['CoordinateID'] }}<br>
+                            <strong>PC1:</strong> {{ row['PC1'] }}<br>
+                            <strong>PC2:</strong> {{ row['PC2'] }}<br>
+                            <!-- Add more PCA columns as needed -->
+                        </li>
+                    {% endfor %}
+                </ul>
+            </ul>
+        </div>
+    {% else %}
+        <p>No results to display. Please submit your analysis.</p>
+    {% endif %}
+</div>
 {% endblock %}
-
