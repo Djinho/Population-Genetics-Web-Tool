@@ -1,8 +1,14 @@
 from flask import Flask, request, render_template, g
 import sqlite3
+import os
 
 app = Flask(__name__)
-DATABASE = 'C:/Users/Djinh/Documents/Population-Genetics-Web-Tool/PopulationGeneticsDB.sqlite'
+
+# Get the directory path of the parent directory (Population-Genetics-Web-Tool)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Updated DATABASE path to reference the parent directory and then the sql folder
+DATABASE = os.path.join(BASE_DIR, 'sql', 'PopulationGeneticsDB.sqlite')
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -57,3 +63,4 @@ def population_name_from_id(population_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
