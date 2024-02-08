@@ -2,19 +2,19 @@ from flask import Flask, request, render_template, g, redirect, url_for, session
 from flask_session import Session  # Make sure to install Flask-Session
 import sqlite3
 import os
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 
+# Configure the Flask app
 app = Flask(__name__)
-# Configure the Flask app to use filesystem-based sessions
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Get the parent directory of this file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# The database file should be in the 'sql' folder, one level up from the base directory
 DATABASE = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
-
-print("DATABASE path:", DATABASE)
 
 # Function to get a database connection
 def get_db():
@@ -94,7 +94,11 @@ def display_results():
     results = session.get('results', None)
     if results is None:
         return "Error: No results data provided."
-    return render_template('results.html', results=results)
+    
+    # Generate PCA plot
+    plot_url = plot_pca(results)
+
+    return render_template('results.html', results=results, plot_url=plot_url)
 
 # Function to perform PCA analysis
 def perform_pca(selected_populations):
@@ -111,6 +115,30 @@ def perform_pca(selected_populations):
     cursor = db.execute(query, selected_populations)
     pca_data = cursor.fetchall()
     return [{'population_name': row['PopulationName'], 'coordinate_id': row['CoordinateID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+
+# Function to generate PCA plot
+def plot_pca(pca_results):
+    x_coords = [result['pc1'] for result in pca_results]
+    y_coords = [result['pc2'] for result in pca_results]
+    labels = [result['population_name'] for result in pca_results]
+
+    plt.figure(figsize=(10, 8))
+    plt.scatter(x_coords, y_coords, alpha=0.5)
+
+    for label, x, y in zip(labels, x_coords, y_coords):
+        plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+
+    plt.title('PCA Plot')
+    plt.xlabel('PC1')
+    plt.ylabel('PC2')
+
+    img = BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    plt.close()
+    img.seek(0)
+
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url
 
 # Start the Flask application
 if __name__ == '__main__':
