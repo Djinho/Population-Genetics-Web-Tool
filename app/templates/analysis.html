@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Analysis Tools Selection{% endblock %}
+
+{% block content %}
+<div class="analysis-type-selection">
+    <h2>Select Analysis Type:</h2>
+    <div class="analysis-options">
+        <a href="{{ url_for('pca_form') }}" class="analysis-option">PCA Analysis</a>
+        <a href="{{ url_for('admixture_form') }}" class="analysis-option">Admixture Analysis</a>
+    </div>
+</div>
+{% endblock %}

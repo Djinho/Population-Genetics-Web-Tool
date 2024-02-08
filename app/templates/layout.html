@@ -2,24 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %} - Population Genomics Analysis</title>
-    <!-- Include your CSS and Bootstrap links here -->
+    <title>Population Genomics Analysis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Add any other CSS or Bootstrap links you need -->
+    <!-- You can add other meta tags and head elements as needed -->
 </head>
 <body>
     <header>
-        <!-- Navigation bar or other header content -->
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('analysis_tools') }}">Analysis Tools</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            </ul>
+        </nav>
     </header>
-
-    <main class="container">
-        {% block content %}{% endblock %}
+    
+    <main>
+        {% block content %}
+        <!-- The content of your child templates will be inserted here -->
+        {% endblock %}
     </main>
-
+    
     <footer>
-        <!-- Footer content -->
+        <!-- Footer content here -->
     </footer>
-
-    <!-- Include your JS scripts here -->
+    
+    <!-- JavaScript files are included at the end of the body to allow the content to load faster -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block additional_scripts %}
+    <!-- Child templates can add additional scripts here if necessary -->
+    {% endblock %}
 </body>
 </html>

@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h2>Select Analysis Type</h2>
+  <div>
+    <a href="{{ url_for('pca_form') }}">PCA Analysis</a>
+    <a href="{{ url_for('admixture_form') }}">Admixture Analysis</a>
+  </div>
+{% endblock %}

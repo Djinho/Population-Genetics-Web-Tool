@@ -1,91 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Population Genomics Analysis</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block content %}
     <div class="main-container">
         <header>
             <h1>Population Genomics Analysis</h1>
         </header>
-        <section class="form-section">
-            <form id="analysis-form" action="/analyze" method="post">
-                <div class="form-group">
-                    <label for="analysisType">Analysis Type:</label>
-                    <select id="analysisType" name="analysis_type">
-                        <option value="PCA">PCA</option>
-                        <!-- Add other analysis types here -->
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="population1">Population 1:</label>
-                    <select id="population1" name="population1">
-                        <option value="1">SIB</option>
-                        <option value="2">GBR</option>
-                        <option value="3">FIN</option>
-                        <option value="4">CHS</option>
-                        <option value="5">PUR</option>
-                        <option value="6">CDX</option>
-                        <option value="7">CLM</option>
-                        <option value="8">IBS</option>
-                        <option value="9">PEL</option>
-                        <option value="10">PJL</option>
-                        <option value="11">KHV</option>
-                        <option value="12">ACB</option>
-                        <option value="13">GWD</option>
-                        <option value="14">ESN</option>
-                        <option value="15">BEB</option>
-                        <option value="16">MSL</option>
-                        <option value="17">STU</option>
-                        <option value="18">ITU</option>
-                        <option value="19">CEU</option>
-                        <option value="20">YRI</option>
-                        <option value="21">CHB</option>
-                        <option value="22">JPT</option>
-                        <option value="23">LWK</option>
-                        <option value="24">ASW</option>
-                        <option value="25">MXL</option>
-                        <option value="26">TSI</option>
-                        <option value="27">GIH</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="population2">Population 2:</label>
-                    <select id="population2" name="population2">
-                        <option value="1">SIB</option>
-                        <option value="2">GBR</option>
-                        <option value="3">FIN</option>
-                        <option value="4">CHS</option>
-                        <option value="5">PUR</option>
-                        <option value="6">CDX</option>
-                        <option value="7">CLM</option>
-                        <option value="8">IBS</option>
-                        <option value="9">PEL</option>
-                        <option value="10">PJL</option>
-                        <option value="11">KHV</option>
-                        <option value="12">ACB</option>
-                        <option value="13">GWD</option>
-                        <option value="14">ESN</option>
-                        <option value="15">BEB</option>
-                        <option value="16">MSL</option>
-                        <option value="17">STU</option>
-                        <option value="18">ITU</option>
-                        <option value="19">CEU</option>
-                        <option value="20">YRI</option>
-                        <option value="21">CHB</option>
-                        <option value="22">JPT</option>
-                        <option value="23">LWK</option>
-                        <option value="24">ASW</option>
-                        <option value="25">MXL</option>
-                        <option value="26">TSI</option>
-                        <option value="27">GIH</option>
-                    </select>
-                </div>
-                <button type="submit" class="submit-btn">Submit</button>
-            </form>
-        </section>
+        <!-- The rest of your home page content -->
     </div>
-</body>
-</html>
+{% endblock %}

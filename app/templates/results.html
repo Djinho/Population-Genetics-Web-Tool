@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="results-container">
+    <h2>Results for Analysis</h2>
+    {% if results %}
+        <div>
+            <h3>Analysis Results:</h3>
+            <ul>
+                {% for result in results %}
+                    <li>Population Name: {{ result['population1_name'] }}</li>
+                    <li>Coordinate ID: {{ result['coordinate_id'] }}</li>
+                    <li>PC1: {{ result['pc1'] }}</li>
+                    <li>PC2: {{ result['pc2'] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Display the PCA plot -->
+        <div>
+            <h3>PCA Plot:</h3>
+            <!-- Updated part to display the Base64-encoded PCA plot image -->
+            <img src="data:image/png;base64,{{ plot_url }}" alt="PCA Plot" style="max-width: 100%; height: auto;">
+            <br>
+            <!-- Assuming you want to keep the download link, it might need to be adjusted if the image is now embedded -->
+            <a href="{{ url_for('static', filename=plot_path) }}" download="PCA_Plot.png">Download Plot</a>
+        </div>
+    {% else %}
+        <p>No results to display. Please go back and submit the form again.</p>
+    {% endif %}
+</div>
+{% endblock %}
