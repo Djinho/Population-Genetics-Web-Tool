@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="about-container">
+    <h2>About Population Genomics Analysis</h2>
+    <p>
+        The Population Genomics Analysis platform is dedicated to providing researchers and enthusiasts with powerful tools to analyze genomic data. Our suite of analysis tools allows users to perform complex computations and visualize data in a way that is both accessible and informative.
+    </p>
+    <p>
+        Our mission is to advance the field of genomics by offering a comprehensive set of tools for population genomics analysis. We strive to support the research community with high-quality data, insightful analytics, and a collaborative environment.
+    </p>
+    <h3>Our Tools</h3>
+    <p>
+        From PCA analysis to Admixture analysis, our tools are designed to offer a range of functionalities to suit various research needs. Our platform is continually evolving, with new features and tools being added regularly.
+    </p>
+    <h3>Contact Us</h3>
+    <p>
+        Have questions or suggestions? Our team would love to hear from you. Reach out to us through our contact page, and let's drive genomics research forward together.
+    </p>
+</div>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+    .about-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .about-container h2, .about-container h3 {
+        color: #005ea2;
+    }
+
+    .about-container p {
+        margin-bottom: 1em;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}

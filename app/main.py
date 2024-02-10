@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, g, redirect, url_for, session
-from flask_session import Session  # Make sure to install Flask-Session
+from flask_session import Session
 import sqlite3
 import os
 import matplotlib.pyplot as plt
@@ -63,6 +63,43 @@ def admixture_form():
     populations = cursor.fetchall()
     return render_template('admixture_form.html', populations=populations)
 
+# Define route for SNP analysis form (New Feature)
+@app.route('/analysis_tools/snp')
+def snp_analysis_form():
+    return render_template('snp_analysis_form.html')
+
+# Define route for SNP analysis results (New Feature)
+@app.route('/analyze_snp', methods=['POST'])
+def snp_analysis_results():
+    snp_id = request.form['snp_id']
+    gene_name = request.form['gene_name']
+    genomic_coordinates = request.form['genomic_coordinates']
+    population = request.form['population']
+    results = {
+        'snp_id': snp_id,
+        'gene_name': gene_name,
+        'genomic_coordinates': genomic_coordinates,
+        'population': population
+    }
+    return render_template('snp_results.html', results=results)
+
+# Define route for PCA description page
+@app.route('/analysis_tools/pca_description')
+def pca_description():
+    return render_template('pca_description.html')
+
+# Define route for SNP description page (Added as per your snippet)
+@app.route('/analysis_tools/snp_description')
+def snp_description():
+    # Logic to fetch SNP description data (if necessary)
+    # ...
+    return render_template('snp_description.html')
+
+# Define route for Admixture description page
+@app.route('/analysis_tools/admixture_description')
+def admixture_description():
+    return render_template('admixture_description.html')
+
 # Define route for tutorials
 @app.route('/tutorials')
 def tutorials():
@@ -83,21 +120,16 @@ def contact():
 def analyze():
     selected_populations = request.form.getlist('populations[]')
     results = perform_pca(selected_populations)
-    # Store the results in the session
-    session['results'] = results
+    session['results'] = results  # Store the results in the session
     return redirect(url_for('display_results'))
 
-# Define route for displaying results
+# Define route for displaying PCA results
 @app.route('/results')
 def display_results():
-    # Retrieve the results from the session
     results = session.get('results', None)
     if results is None:
         return "Error: No results data provided."
-    
-    # Generate PCA plot
     plot_url = plot_pca(results)
-
     return render_template('results.html', results=results, plot_url=plot_url)
 
 # Function to perform PCA analysis
@@ -124,21 +156,27 @@ def plot_pca(pca_results):
 
     plt.figure(figsize=(10, 8))
     plt.scatter(x_coords, y_coords, alpha=0.5)
-
     for label, x, y in zip(labels, x_coords, y_coords):
         plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
-
     plt.title('PCA Plot')
     plt.xlabel('PC1')
     plt.ylabel('PC2')
-
     img = BytesIO()
     plt.savefig(img, format='png', bbox_inches='tight')
     plt.close()
     img.seek(0)
-
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
     return plot_url
+
+# Add the new route for analyzing admixture, as requested
+@app.route('/analyze_admixture', methods=['POST'])
+def analyze_admixture():
+    # Implement admixture analysis logic here
+    selected_populations = request.form.getlist('populations[]')
+    # Placeholder for actual analysis. Replace with your logic.
+    results = "Admixture analysis results for: " + ", ".join(selected_populations)
+    # Assuming 'admixture_results.html' is your result template
+    return render_template('admixture_results.html', results=results)
 
 # Start the Flask application
 if __name__ == '__main__':

@@ -1,9 +1,26 @@
+<!-- analysis_selection.html -->
 {% extends "layout.html" %}
 
 {% block content %}
-  <h2>Select Analysis Type</h2>
-  <div>
-    <a href="{{ url_for('pca_form') }}">PCA Analysis</a>
-    <a href="{{ url_for('admixture_form') }}">Admixture Analysis</a>
+<div class="analysis-options">
+  <h2 class="center-text">Select Analysis Type</h2>
+  <div class="analysis-box">
+    <!-- Wrap the title in an anchor tag pointing to the pca_form route -->
+    <h3><a href="{{ url_for('pca_form') }}">PCA Analysis</a></h3>
+    <p>Principal Component Analysis for population stratification.</p>
+    <!-- Leave the Learn More link as is -->
+    <a href="{{ url_for('pca_description') }}" class="analysis-link">Learn More</a>
   </div>
+  <div class="analysis-box">
+    <!-- Wrap the title in an anchor tag pointing to the admixture_form route -->
+    <h3><a href="{{ url_for('admixture_form') }}">Admixture Analysis</a></h3>
+    <p>Analyze genetic admixture in populations.</p>
+    <a href="{{ url_for('admixture_description') }}" class="analysis-link">Learn More</a>
+  </div>
+  <div class="analysis-box">
+    <h3>SNP Analysis</h3>
+    <p>Single Nucleotide Polymorphism frequency analysis.</p>
+    <a href="{{ url_for('snp_description') }}" class="analysis-link">Learn More</a> <!-- Ensure you have an snp_description route -->
+  </div>
+</div>
 {% endblock %}

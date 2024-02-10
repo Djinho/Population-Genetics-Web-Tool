@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="snp-results-container">
+    <h2>SNP Analysis Results</h2>
+    <!-- Display the results here -->
+    <p>SNP ID: {{ results.snp_id }}</p>
+    <p>Gene Name: {{ results.gene_name }}</p>
+    <p>Genomic Coordinates: {{ results.genomic_coordinates }}</p>
+    <p>Population: {{ results.population }}</p>
+
+    <!-- Here you would display more detailed results fetched from your backend -->
+</div>
+{% endblock %}

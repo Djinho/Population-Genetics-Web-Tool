@@ -2,21 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Population Genomics Analysis</title>
+    <title>GenomePop Analytics</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- You can add other meta tags and head elements as needed -->
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('analysis_tools') }}">Analysis Tools</a></li>
-                <li><a href="{{ url_for('about') }}">About</a></li>
-                <li><a href="{{ url_for('contact') }}">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="top-banner">
+        <header class="site-header">
+            <h1>GenomePop Analytics</h1>
+            <nav class="site-nav">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="{{ url_for('analysis_tools') }}">Analysis Tools</a></li>
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+    </div>
     
     <main>
         {% block content %}

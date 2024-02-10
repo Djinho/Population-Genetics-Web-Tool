@@ -1,67 +1,214 @@
-.results-page {
+/* Style for the top banner */
+.top-banner {
+    background-color: #005ea2; /* Match the color to Ensembl's banner */
+    padding: 10px 0;
+    width: 100%; /* Ensure the banner spans the full width of the page */
+}
+
+/* Style for the site header */
+.site-header {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    color: white; /* Make the text color white for visibility */
 }
 
-.results-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    width: 100%;
-    max-width: 600px;
-    overflow-x: auto;
-}
-
-pre {
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 4px;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-.population-container {
+/* Style for the site navigation */
+.site-nav ul {
+    list-style: none;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    margin: 0;
+    padding: 0;
 }
 
-.population-label {
-    display: flex;
-    align-items: center;
-    background: #e9e9e9;
+.site-nav ul li {
+    margin: 0 10px;
+}
+
+.site-nav ul li a {
+    color: white; /* Make the link color white for visibility */
+    text-decoration: none;
     padding: 5px 10px;
-    border-radius: 20px;
-    margin: 5px;
-    cursor: pointer;
-    user-select: none; /* Prevents text selection */
+    font-weight: bold; /* Optional: makes the text bold like in Ensembl's menu */
 }
 
-.population-label input[type="checkbox"] {
-    margin-right: 5px;
-    cursor: pointer;
+.site-nav ul li a:hover {
+    text-decoration: underline;
+    background-color: #003d66; /* A darker shade of blue for the hover state */
+    border-radius: 5px; /* Optional: adds rounded corners to the buttons on hover */
 }
 
-/* Style for the analyze button */
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+/* Style for the welcome section */
+.welcome-section {
+    position: relative;
+    background: url('path_to_your_banner_image.jpg') no-repeat center center;
+    background-size: cover;
+    height: 50vh; /* Adjust the height as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Choose a color that stands out from the background */
+}
+
+.welcome-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for text readability */
+}
+
+.welcome-message {
+    position: relative; /* Position relative to the overlay */
+    text-align: center;
+    padding: 20px;
+    z-index: 2; /* Ensure the text appears above the overlay */
+}
+
+.welcome-message h1 {
+    font-size: 2.5em; /* Large text for the main welcome message */
+    margin-bottom: 0.5em;
+}
+
+.welcome-message p {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+}
+
+/* Style for the call to action button */
+.cta-button {
+    background-color: #007bff; /* Or any color that matches your design */
     color: white;
     padding: 10px 20px;
+    text-decoration: none;
     border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+.cta-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Updated styles for analysis-type-container, analysis-option, and added styles for analysis-options, analysis-box, and analysis-link */
+.analysis-options {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.analysis-box {
+    background-color: #f9f9f9; /* Light grey background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    width: 250px; /* Adjust the width as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    text-align: center;
+}
+
+.analysis-box h3 {
+    color: #005ea2; /* Heading color to match your theme */
+    margin-bottom: 10px;
+    font-size: 1.5em; /* Larger font size */
+}
+
+.analysis-box p {
+    color: #333; /* Dark text for readability */
+    font-size: 1em; /* Adjust the size as needed */
+    margin-bottom: 15px;
+}
+
+.analysis-link {
+    color: #007bff; /* Button/link color */
+    background-color: #f2f2f2; /* Background color for the link/button */
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px; /* Rounded corners for the link/button */
+    transition: background-color 0.3s ease;
+}
+
+.analysis-link:hover {
+    background-color: #e0e0e0; /* Darker background on hover */
+}
+
+/* Remaining styles for SNP Analysis Form Container, form elements, SNP Results Container, heading, paragraph styles, and responsive adjustments remain unchanged */
+
+
+/* Existing styles for SNP Analysis Form Container, form elements, SNP Results Container, heading, paragraph styles, and responsive adjustments */
+.snp-analysis-container {
+    background-color: #f2f2f2; /* Light background for contrast */
+    border-radius: 8px; /* Soften edges */
+    padding: 20px; /* Spacing inside the container */
+    margin: 20px auto; /* Centering */
+    width: 80%; /* Adjust width as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.snp-analysis-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between form elements */
+}
+
+.snp-analysis-container input[type="text"],
+.snp-analysis-container select {
+    padding: 10px;
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px; /* Rounded corners */
+    width: 100%; /* Full width */
+}
+
+.snp-analysis-container button[type="submit"] {
+    background-color: #007bff; /* Button color */
+    color: white; /* Button text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.snp-analysis-container button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker on hover */
+}
+
+.snp-results-container {
+    background-color: #f9f9f9; /* Light background for the results */
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%; /* Consistent with the form */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.snp-analysis-container h2,
+.snp-results-container h2 {
+    color: #005ea2; /* Heading color to match the top banner */
+    margin-bottom: 15px;
+}
+
+.snp-analysis-container p,
+.snp-results-container p {
+    color: #333; /* Dark text for readability */
+    line-height: 1.6; /* Improved line spacing for readability */
+}
+
+@media (max-width: 768px) {
+    .snp-analysis-container,
+    .snp-results-container,
+    .site-nav ul {
+        width: 95%; /* More width on smaller screens for better use of space */
+        padding: 15px; /* Slightly reduce padding */
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .site-nav ul li {
+        display: block;
+    }
 }

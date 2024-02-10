@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="snp-analysis-container">
+    <h2>SNP Frequency and Clinical Relevance</h2>
+    <p>Enter the SNP IDs, gene names, or genomic coordinates to retrieve frequency and clinical information.</p>
+
+    <form action="{{ url_for('snp_analysis_results') }}" method="post">
+        <input type="text" name="snp_id" placeholder="Enter SNP ID e.g., rs12345" required>
+        <input type="text" name="gene_name" placeholder="Enter Gene Name e.g., BRCA1">
+        <input type="text" name="genomic_coordinates" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
+        
+        <label for="population">Select Population:</label>
+        <select name="population" id="population">
+            <!-- Populate dropdown with population options -->
+        </select>
+        
+        <button type="submit" class="btn btn-primary">Analyze SNP</button>
+    </form>
+</div>
+{% endblock %}
