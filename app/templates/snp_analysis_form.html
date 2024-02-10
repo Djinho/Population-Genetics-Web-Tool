@@ -10,9 +10,14 @@
         <input type="text" name="gene_name" placeholder="Enter Gene Name e.g., BRCA1">
         <input type="text" name="genomic_coordinates" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
         
-        <label for="population">Select Population:</label>
-        <select name="population" id="population">
-            <!-- Populate dropdown with population options -->
+        <label for="population-select">Select Population:</label>
+        <select name="population" id="population-select">
+            <option value="">Select Population</option>
+            {% for population in populations %}
+                <option value="{{ population['PopulationID'] }}">
+                    {{ population['PopulationName'] }} {% if population['is_Superpopulation'] %}(Superpopulation){% endif %}
+                </option>
+            {% endfor %}
         </select>
         
         <button type="submit" class="btn btn-primary">Analyze SNP</button>

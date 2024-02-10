@@ -63,10 +63,14 @@ def admixture_form():
     populations = cursor.fetchall()
     return render_template('admixture_form.html', populations=populations)
 
-# Define route for SNP analysis form (New Feature)
 @app.route('/analysis_tools/snp')
 def snp_analysis_form():
-    return render_template('snp_analysis_form.html')
+    db = get_db()
+    if db is None:
+        return "Error: Unable to connect to the database."
+    cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM Populations ORDER BY PopulationName')
+    populations = cursor.fetchall()
+    return render_template('snp_analysis_form.html', populations=populations)
 
 # Define route for SNP analysis results (New Feature)
 @app.route('/analyze_snp', methods=['POST'])
