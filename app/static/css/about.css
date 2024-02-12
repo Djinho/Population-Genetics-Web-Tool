@@ -1,0 +1,20 @@
+
+
+.about-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-image: url('/static/images/Picture 2.png'); /* Update the path accordingly */
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.about-container h2, .about-container h3 {
+    color: #005ea2;
+}
+
+.about-container p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+}
+

@@ -1,8 +1,16 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
 /* Style for the top banner */
+
 .top-banner {
     background-color: #005ea2; /* Match the color to Ensembl's banner */
     padding: 10px 0;
     width: 100%; /* Ensure the banner spans the full width of the page */
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 /* Style for the site header */
@@ -15,6 +23,11 @@
     color: white; /* Make the text color white for visibility */
 }
 
+.logo-link {
+    font-size: 30px;
+    font-weight: bold;
+}
+
 /* Style for the site navigation */
 .site-nav ul {
     list-style: none;
@@ -25,6 +38,7 @@
 
 .site-nav ul li {
     margin: 0 10px;
+    padding: 30px;
 }
 
 .site-nav ul li a {
@@ -59,7 +73,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.5); /* Dark overlay for text readability */
+    
 }
 
 .welcome-message {
@@ -97,9 +111,25 @@
 /* Updated styles for analysis-type-container, analysis-option, and added styles for analysis-options, analysis-box, and analysis-link */
 .analysis-options {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    background-size: cover ;
+    background-image: url('/static/images/Picture 3.png'); /* Update the path accordingly */
+    /* Add additional styling properties if needed */
+    background-repeat: repeat;
+}
+
+.analysis-options h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    flex-direction: column;
 }
 
 .analysis-box {
@@ -109,12 +139,18 @@
     width: 250px; /* Adjust the width as needed */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     text-align: center;
+    margin-bottom: 20px;
+    justify-content: center;
+    gap: 20px;
+    flex: 1;
 }
 
 .analysis-box h3 {
     color: #005ea2; /* Heading color to match your theme */
     margin-bottom: 10px;
     font-size: 1.5em; /* Larger font size */
+    
+
 }
 
 .analysis-box p {
@@ -212,3 +248,47 @@
         display: block;
     }
 }
+
+
+.about-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    height: 100vh;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/static/images/Picture 2.png'); /* Update the path accordingly */
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    
+
+}
+
+.about-container h2, .about-container h3 {
+    color: #005ea2;
+    font-size: 2em;
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    color:  #252525;
+}
+
+.about-container p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+    font-size: 1.2em;
+}
+
+.site-title {
+    text-decoration: none;
+    color: white; 
+    font-size: 24px; /* Adjust the font size as needed */
+    font-weight: bold;
+}
+
+.site-title:hover {
+    text-decoration: underline;
+}
+
+
