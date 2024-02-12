@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Populations or Superpopulations</title>
+</head>
+<body>
+    <h2>Select Populations or Superpopulations for Analysis</h2>
+    <form action="/analyze" method="post">
+        <h3>Superpopulations</h3>
+        <div style="display: flex; flex-direction: column;">
+            <label><input type="checkbox" name="superpopulations" value="AFR"> AFR (African)</label>
+            <label><input type="checkbox" name="superpopulations" value="AMR"> AMR (Ad Mixed American)</label>
+            <label><input type="checkbox" name="superpopulations" value="EAS"> EAS (East Asian)</label>
+            <label><input type="checkbox" name="superpopulations" value="EUR"> EUR (European)</label>
+            <label><input type="checkbox" name="superpopulations" value="SAS"> SAS (South Asian)</label>
+        </div>
+
+        <h3>Specific Populations</h3>
+        <div style="display: flex; flex-direction: column;">
+            <label><input type="checkbox" name="populations" value="ACB"> ACB (African Caribbean in Barbados)</label>
+            <label><input type="checkbox" name="populations" value="ASW"> ASW (Americans of African Ancestry in SW USA)</label>
+            <label><input type="checkbox" name="populations" value="BEB"> BEB (Bengali in Bangladesh)</label>
+            <label><input type="checkbox" name="populations" value="CDX"> CDX (Chinese Dai in Xishuangbanna, China)</label>
+            <label><input type="checkbox" name="populations" value="CEU"> CEU (Utah Residents (CEPH) with Northern and Western European Ancestry)</label>
+            <label><input type="checkbox" name="populations" value="CHB"> CHB (Han Chinese in Beijing, China)</label>
+            <label><input type="checkbox" name="populations" value="CHS"> CHS (Southern Han Chinese)</label>
+            <label><input type="checkbox" name="populations" value="CLM"> CLM (Colombians from Medellin, Colombia)</label>
+            <label><input type="checkbox" name="populations" value="ESN"> ESN (Esan in Nigeria)</label>
+            <label><input type="checkbox" name="populations" value="FIN"> FIN (Finnish in Finland)</label>
+            <label><input type="checkbox" name="populations" value="GBR"> GBR (British in England and Scotland)</label>
+            <label><input type="checkbox" name="populations" value="GIH"> GIH (Gujarati Indian from Houston, Texas)</label>
+            <label><input type="checkbox" name="populations" value="GWD"> GWD (Gambian in Western Divisions in the Gambia)</label>
+            <label><input type="checkbox" name="populations" value="IBS"> IBS (Iberian Population in Spain)</label>
+            <label><input type="checkbox" name="populations" value="ITU"> ITU (Indian Telugu from the UK)</label>
+            <label><input type="checkbox" name="populations" value="JPT"> JPT (Japanese in Tokyo, Japan)</label>
+            <label><input type="checkbox" name="populations" value="KHV"> KHV (Kinh in Ho Chi Minh City, Vietnam)</label>
+            <label><input type="checkbox" name="populations" value="LWK"> LWK (Luhya in Webuye, Kenya)</label>
+            <label><input type="checkbox" name="populations" value="MSL"> MSL (Mende in Sierra Leone)</label>
+            <label><input type="checkbox" name="populations" value="MXL"> MXL (Mexican Ancestry from Los Angeles, USA)</label>
+            <label><input type="checkbox" name="populations" value="PEL"> PEL (Peruvians from Lima, Peru)</label>
+            <label><input type="checkbox" name="populations" value="PJL"> PJL (Punjabi from Lahore, Pakistan)</label>
+            <label><input type="checkbox" name="populations" value="PUR"> PUR (Puerto Ricans)</label>
+            <label><input type="checkbox" name="populations" value="SIB"> SIB (Siberian)</label>
+            <label><input type="checkbox" name="populations" value="STU"> STU (Sri Lankan Tamil from the UK)</label>
+            <label><input type="checkbox" name="populations" value="TSI"> TSI (Toscani in Italy)</label>
+            <label><input type="checkbox" name="populations" value="YRI"> YRI (Yoruba in Ibadan, Nigeria)</label>
+        </div>
+        <button type="submit">Analyze</button>
+    </form>
+</body>
+</html>
