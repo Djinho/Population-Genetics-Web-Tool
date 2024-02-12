@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admixture Analysis Results</title>
+</head>
+<body>
+    <h1>Admixture Analysis Results</h1>
+    <h2>{{ results.population_name }}</h2>
+    <div>
+        <h3>Ancestry Proportions</h3>
+        <ul>
+            {% for ancestry in results.ancestries %}
+                <li>{{ ancestry }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div>
+        <h3>Admixture Plot</h3>
+        <img src="{{ results.plot_url }}" alt="Admixture Plot">
+    </div>
+</body>
+</html>

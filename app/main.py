@@ -2,9 +2,14 @@ from flask import Flask, request, render_template, g, redirect, url_for, session
 from flask_session import Session
 import sqlite3
 import os
-import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+import numpy as np  # Ensure numpy is imported
+
+# Configure matplotlib to use the Agg backend for generating plots without a GUI
+import matplotlib
+matplotlib.use('Agg')  # This line needs to be before importing matplotlib.pyplot
+import matplotlib.pyplot as plt
 
 # Configure the Flask app
 app = Flask(__name__)
@@ -144,7 +149,7 @@ def perform_pca(selected_populations):
     placeholders = ','.join('?' for _ in selected_populations)
     query = f'''
     SELECT p.PopulationName, c.CoordinateID, c.PC1, c.PC2
-    FROM PCACoordinates AS c
+    FROM pca_coordinates AS c
     JOIN Populations AS p ON c.PopulationID = p.PopulationID
     WHERE c.PopulationID IN ({placeholders})
     '''
@@ -172,15 +177,110 @@ def plot_pca(pca_results):
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
     return plot_url
 
-# Add the new route for analyzing admixture, as requested
+
 @app.route('/analyze_admixture', methods=['POST'])
 def analyze_admixture():
-    # Implement admixture analysis logic here
     selected_populations = request.form.getlist('populations[]')
-    # Placeholder for actual analysis. Replace with your logic.
-    results = "Admixture analysis results for: " + ", ".join(selected_populations)
-    # Assuming 'admixture_results.html' is your result template
+    db = get_db()
+    if db is None:
+        return "Error: Unable to connect to the database."
+
+    placeholders = ','.join('?' for _ in selected_populations)
+    query = f'''
+    SELECT p.PopulationName, a.ancestry_1, a.ancestry_2, a.ancestry_3, a.ancestry_4, a.ancestry_5
+    FROM admixture_results AS a
+    JOIN populations AS p ON a.PopulationID = p.PopulationID
+    WHERE p.PopulationID IN ({placeholders})
+    '''
+    cursor = db.execute(query, selected_populations)
+    rows = cursor.fetchall()
+
+    ancestry_data = [{
+        'population_name': row['PopulationName'],
+        'ancestries': [row['ancestry_1'], row['ancestry_2'], row['ancestry_3'], row['ancestry_4'], row['ancestry_5']]
+    } for row in rows]
+
+    plot_url = plot_admixture(ancestry_data)
+
+    # Pass the correct format of results
+    results = {
+        'population_name': 'Combined Populations',
+        'ancestries': [data['ancestries'] for data in ancestry_data],
+        'plot_url': plot_url
+    }
+
     return render_template('admixture_results.html', results=results)
+
+
+def plot_admixture(ancestry_data):
+    fig, ax = plt.subplots(figsize=(10, 5))  # Adjust the size as needed
+
+    # Width of the bars: can also be len(x) sequence
+    bar_width = 0.4
+
+    indices = np.arange(len(ancestry_data))
+
+    bottom = np.zeros(len(ancestry_data))
+
+    colors = ['red', 'green', 'blue', 'yellow', 'purple']  # Adjust the number of colors as needed
+
+    for i, data in enumerate(ancestry_data):
+        for j, ancestry in enumerate(data['ancestries']):
+            ax.bar(indices[i], ancestry, bar_width, bottom=bottom[i], color=colors[j])
+            bottom[i] += ancestry
+
+    ax.set_xlabel('Samples')
+    ax.set_ylabel('Ancestry Proportion')
+    ax.set_title('Admixture Plot')
+    ax.set_xticks(indices)
+    ax.set_xticklabels([data['population_name'] for data in ancestry_data], rotation=90)
+
+    ax.legend(['Ancestry 1', 'Ancestry 2', 'Ancestry 3', 'Ancestry 4', 'Ancestry 5'])
+
+    buf = BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    plt.close()
+    buf.seek(0)
+
+    plot_url = base64.b64encode(buf.getvalue()).decode('utf-8')
+    
+    return 'data:image/png;base64,' + plot_url
+
+
+def generate_base64_image():
+    buf = BytesIO()
+    plt.figure()
+    plt.plot([1, 2, 3], [4, 5, 6])  # Example plot
+    plt.title("Example Plot")
+    plt.savefig(buf, format='png')
+    plt.close()
+    image_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    return image_base64
+# Example route to display the plot
+@app.route('/plot')
+def plot():
+    image_base64 = generate_base64_image()
+    return render_template('plot.html', image_base64=image_base64)
+
+# Function to generate PCA plot
+def plot_pca(pca_results):
+    x_coords = [result['pc1'] for result in pca_results]
+    y_coords = [result['pc2'] for result in pca_results]
+    labels = [result['population_name'] for result in pca_results]
+
+    plt.figure(figsize=(10, 8))
+    plt.scatter(x_coords, y_coords, alpha=0.5)
+    for label, x, y in zip(labels, x_coords, y_coords):
+        plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+    plt.title('PCA Plot')
+    plt.xlabel('PC1')
+    plt.ylabel('PC2')
+    img = BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url
 
 # Start the Flask application
 if __name__ == '__main__':
