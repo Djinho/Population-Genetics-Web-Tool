@@ -5,7 +5,9 @@ import os
 from io import BytesIO
 import base64
 import numpy as np  # Ensure numpy is imported
-
+import seaborn as sns
+import pandas as pd
+import re
 # Configure matplotlib to use the Agg backend for generating plots without a GUI
 import matplotlib
 matplotlib.use('Agg')  # This line needs to be before importing matplotlib.pyplot
@@ -181,6 +183,7 @@ def plot_pca(pca_results):
 @app.route('/analyze_admixture', methods=['POST'])
 def analyze_admixture():
     selected_populations = request.form.getlist('populations[]')
+    plot_type=request.form.get('plot_type', 'bar')
     db = get_db()
     if db is None:
         return "Error: Unable to connect to the database."
@@ -200,7 +203,12 @@ def analyze_admixture():
         'ancestries': [row['ancestry_1'], row['ancestry_2'], row['ancestry_3'], row['ancestry_4'], row['ancestry_5']]
     } for row in rows]
 
-    plot_url = plot_admixture(ancestry_data)
+    if plot_type == 'bar':
+        plot_url = plot_admixture(ancestry_data)
+    elif plot_type == 'heatmap':
+        plot_url = plot_admixture_heatmap(ancestry_data)
+    else:
+        return "Error: Invalid plot type specified."
 
     # Pass the correct format of results
     results = {
@@ -281,6 +289,34 @@ def plot_pca(pca_results):
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
     return plot_url
+
+
+def plot_admixture_heatmap(ancestry_data):
+    # Convert data to a DataFrame for easier manipulation
+    df = pd.DataFrame(ancestry_data).set_index('population_name')
+
+    # Set up the heatmap figure
+    plt.figure(figsize=(10, 6))
+
+    # Plot the heatmap using Seaborn
+    sns.heatmap(df.transpose(), cmap='viridis', annot=True, fmt=".3f", cbar_kws={'label': 'Ancestry Proportion'})
+
+    # Customize labels and title
+    plt.xlabel('Population')
+    plt.ylabel('Ancestry Components')
+    plt.title('Admixture Heatmap')
+
+    # Save the plot to a BytesIO buffer
+    buf = BytesIO()
+    plt.savefig(buf, format='png', bbox_inches='tight')
+    plt.close()
+    buf.seek(0)
+
+    # Convert the plot to a base64-encoded string
+    plot_url = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+    return 'data:image/png;base64,' + plot_url
+
 
 # Start the Flask application
 if __name__ == '__main__':

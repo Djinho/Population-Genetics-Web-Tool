@@ -17,6 +17,15 @@
     </div>
     <div>
         <h3>Admixture Plot</h3>
+        <form action="/analyze_admixture" method="post">
+            <label for="plot_type">Select Plot Type:</label>
+            <select name="plot_type" id="plot_type">
+                <option value="bar" {% if request.form.get('plot_type') == 'bar' %}selected{% endif %}>Bar Chart</option>
+                <option value="heatmap" {% if request.form.get('plot_type') == 'heatmap' %}selected{% endif %}>Heatmap</option>
+            </select>
+            <input type="hidden" name="populations" value="{{ ','.join(request.form.getlist('populations[]')) }}">
+            <input type="submit" value="Generate Plot">
+        </form>
         <img src="{{ results.plot_url }}" alt="Admixture Plot">
     </div>
 </body>
