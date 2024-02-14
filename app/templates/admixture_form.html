@@ -2,19 +2,55 @@
 
 {% block content %}
 <h2>Admixture Analysis Form</h2>
-<form action="{{ url_for('analyze_admixture') }}" method="post" id="admixtureForm">
+<!-- Container for the Plotly chart -->
+<div id="admixturePlot" style="width:100%;max-width:900px;height:500px;"></div>
+
+<form id="admixtureForm">
     <fieldset>
         <legend>Select Populations for Admixture Analysis:</legend>
         <div class="population-container">
             <!-- Loop through the populations passed from the Flask route and create a checkbox for each one -->
             {% for population in populations %}
-                <label class="population-label">
-                    <input type="checkbox" id="pop{{ population.PopulationID }}" name="populations[]" value="{{ population.PopulationID }}">
-                    <span>{{ population.PopulationName }}</span>
-                </label>
+            <label class="population-label">
+                <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
+                {{ population.PopulationName }}
+            </label>
             {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary">Analyze</button>
+        <button type="button" id="analyze-button" class="btn btn-primary">Analyze</button>
     </fieldset>
 </form>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const analyzeButton = document.getElementById('analyze-button');
+
+    analyzeButton.addEventListener('click', () => {
+        const selectedPopulations = Array.from(document.querySelectorAll('input[name="populations[]"]:checked')).map(checkbox => checkbox.value);
+
+        fetch('/analyze_admixture', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ populations: selectedPopulations }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            Plotly.newPlot('admixturePlot', data, {
+                barmode: 'stack',
+                title: 'Admixture Analysis',
+                xaxis: { title: 'Population' },
+                yaxis: { title: 'Ancestry Proportion' },
+                margin: { t: 40 } // Adjust top margin to ensure title visibility
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
+</script>
+
 {% endblock %}

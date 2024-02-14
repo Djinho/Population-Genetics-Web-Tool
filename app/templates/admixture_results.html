@@ -3,30 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <title>Admixture Analysis Results</title>
+    <!-- Include Plotly for plots -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
     <h1>Admixture Analysis Results</h1>
-    <h2>{{ results.population_name }}</h2>
-    <div>
-        <h3>Ancestry Proportions</h3>
-        <ul>
-            {% for ancestry in results.ancestries %}
-                <li>{{ ancestry }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div>
-        <h3>Admixture Plot</h3>
-        <form action="/analyze_admixture" method="post">
-            <label for="plot_type">Select Plot Type:</label>
-            <select name="plot_type" id="plot_type">
-                <option value="bar" {% if request.form.get('plot_type') == 'bar' %}selected{% endif %}>Bar Chart</option>
-                <option value="heatmap" {% if request.form.get('plot_type') == 'heatmap' %}selected{% endif %}>Heatmap</option>
-            </select>
-            <input type="hidden" name="populations" value="{{ ','.join(request.form.getlist('populations[]')) }}">
-            <input type="submit" value="Generate Plot">
-        </form>
-        <img src="{{ results.plot_url }}" alt="Admixture Plot">
-    </div>
+    
+    <!-- Button to show the heatmap, initially hidden -->
+    <button id="heatmap-button" style="display:none;">Show Heatmap</button>
+
+    <!-- Container for the Plotly chart -->
+    <div id="admixturePlot"></div>
+
+    <!-- Script to render the Plotly chart -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Assuming 'selected_populations_json' is already available in your environment
+            // If not, you should define it or fetch it before using it here
+            const selectedPopulations = JSON.parse('{{ selected_populations_json | safe }}');
+            
+            // Function to generate the admixture plot
+            function generateAdmixturePlot() {
+                fetch('/analyze_admixture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ populations: selectedPopulations })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var traces = [];
+                    for (var i = 0; i < data[0].y.length; i++) {
+                        var trace = {
+                            x: data[0].x,
+                            y: data[0].y[i],
+                            type: 'bar',
+                            name: 'Ancestry ' + (i + 1),
+                            marker: {
+                                color: data[0].marker.color[i]
+                            }
+                        };
+                        traces.push(trace);
+                    }
+                    
+                    var layout = {
+                        barmode: 'stack',
+                        title: 'Admixture Analysis',
+                        xaxis: { title: 'Population' },
+                        yaxis: { title: 'Ancestry Proportion' }
+                    };
+                    
+                    Plotly.newPlot('admixturePlot', traces, layout);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            // Initial admixture plot generation
+            generateAdmixturePlot();
+
+            // Event listener for the heatmap button
+            document.getElementById('heatmap-button').addEventListener('click', function() {
+                // Call the generateHeatmap function here
+                generateHeatmap();
+            });
+
+            // Function to generate the heatmap
+            function generateHeatmap() {
+                // AJAX call to server to fetch heatmap data
+                fetch('/generate_heatmap_data', {
+                    method: 'GET' // Or 'POST' if you need to send data
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Generate heatmap with the fetched data
+                    var data = [{
+                        z: data.heatmapData,
+                        type: 'heatmap'
+                    }];
+
+                    var layout = {
+                        title: 'Admixture Heatmap',
+                        // Additional layout properties can be defined here
+                    };
+
+                    Plotly.newPlot('admixturePlot', data, layout);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
