@@ -121,9 +121,10 @@ body {
     min-height: 100vh;
     background-color: white;
     background-size: cover ;
-    background-image: url('/static/images/Picture 3.png'); /* Update the path accordingly */
+    background-image: url('/static/images/Picture 4.png'); /* Update the path accordingly */
     /* Add additional styling properties if needed */
     background-repeat: repeat;
+    
 }
 
 .analysis-options h2 {
@@ -133,30 +134,40 @@ body {
 }
 
 .analysis-box {
-    background-color: #f9f9f9; /* Light grey background */
+    background-color: #ffff; /* Light grey background */
     border-radius: 8px; /* Rounded corners */
     padding: 20px;
     width: 250px; /* Adjust the width as needed */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     text-align: center;
     margin-bottom: 20px;
-    justify-content: center;
-    gap: 20px;
-    flex: 1;
+    border: 1px solid #ddd;
+    margin: 0 10px;
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    
+}
+.analysis-options a{
+    text-decoration: none;
+    color: #252525;
 }
 
 .analysis-box h3 {
-    color: #005ea2; /* Heading color to match your theme */
+    color: #005ea2 ; /* Heading color to match your theme */
     margin-bottom: 10px;
     font-size: 1.5em; /* Larger font size */
-    
-
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 .analysis-box p {
     color: #333; /* Dark text for readability */
     font-size: 1em; /* Adjust the size as needed */
     margin-bottom: 15px;
+    font-family: 'Bebas Neue', sans-serif;
 }
 
 .analysis-link {
@@ -166,11 +177,16 @@ body {
     padding: 10px 15px;
     border-radius: 5px; /* Rounded corners for the link/button */
     transition: background-color 0.3s ease;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    margin-top: auto;
 }
 
 .analysis-link:hover {
     background-color: #e0e0e0; /* Darker background on hover */
 }
+
+
 
 /* Remaining styles for SNP Analysis Form Container, form elements, SNP Results Container, heading, paragraph styles, and responsive adjustments remain unchanged */
 
@@ -251,20 +267,21 @@ body {
 
 
 .about-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    height: 100vh;
-    display:flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    background-image: url('/static/images/Picture 2.png'); /* Update the path accordingly */
-    background-repeat: no-repeat;
-    background-size: cover;
-    overflow: hidden;
+    min-height: 100vh;
+    background-color: white;
+    background-size: cover ;
+    background-image: url('/static/images/Picture 4.png'); /* Update the path accordingly */
+    /* Add additional styling properties if needed */
+    background-repeat: repeat;
     
-
 }
 
 .about-container h2, .about-container h3 {

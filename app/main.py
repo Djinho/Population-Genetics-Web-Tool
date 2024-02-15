@@ -424,6 +424,7 @@ def plot_pca(pca_results):
 
 def plot_admixture_heatmap(ancestry_data):
     # Convert data to a DataFrame for easier manipulation
+
     df = pd.DataFrame(ancestry_data).set_index('population_name')
 
     # Set up the heatmap figure
