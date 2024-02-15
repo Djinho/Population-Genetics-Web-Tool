@@ -1,5 +1,3 @@
-Integrating the detailed project documentation into your README file for the GitHub repository, I've crafted a comprehensive overview that incorporates the specifics of the system architecture, functionalities, design considerations, and how to use the application. This enhanced README aims to satisfy both documentation and architectural requirements outlined in your assignment for the MSC Bioinformatics Software Development Group Project 2024. Here's the revised content for your README file:
-
 ---
 
 # Population Genetics Web Tool
