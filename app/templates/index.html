@@ -56,6 +56,7 @@
         .card h2, .card h2, .card h3 {
             margin-bottom: 10px;
             font-size: 25px;
+            color: #252525;
             
 
         }
@@ -75,6 +76,8 @@
            
         }
 </style>
+
+    
     <div class="main-container">
 
         <!-- Integration of the welcome-section after the header -->
@@ -119,4 +122,24 @@
             <!-- Add more cards as needed -->
         </div>
     </div>
+
+    <div class="bottom-banner">
+        <footer class="site-footer"> 
+            <div class="footer-content">
+
+                <div class="social-media">
+                    <a href="#" target="_blank" rel="noopener noreferrer">
+                        <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                    </a>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+
+
 {% endblock %}
