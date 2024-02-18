@@ -87,20 +87,33 @@ def snp_analysis_form():
     populations = cursor.fetchall()
     return render_template('snp_analysis_form.html', populations=populations)
 
-# Define route for SNP analysis results (New Feature)
 @app.route('/analyze_snp', methods=['POST'])
 def snp_analysis_results():
     snp_id = request.form['snp_id']
-    gene_name = request.form['gene_name']
-    genomic_coordinates = request.form['genomic_coordinates']
-    population = request.form['population']
-    results = {
-        'snp_id': snp_id,
-        'gene_name': gene_name,
-        'genomic_coordinates': genomic_coordinates,
-        'population': population
-    }
-    return render_template('snp_results.html', results=results)
+    population_id = request.form['population']  # This should be the PopulationID from the form
+
+    db = get_db()
+    cursor = db.cursor()
+
+    # Corrected SQL query
+    cursor.execute('''
+        SELECT SNP_Information.ID as snp_id, SNP_Information.Chromosome, SNP_Information.Position, 
+               SNP_Information.REF, SNP_Information.ALT, Frequency.Genotype0Frequency, 
+               Frequency.Genotype1Frequency, Frequency.Genotype2Frequency, Frequency.AlleleFrequency
+        FROM SNP_Information
+        JOIN Frequency ON SNP_Information.SNPID = Frequency.SNPID
+        WHERE SNP_Information.ID = ? AND Frequency.PopulationID = ?
+    ''', (snp_id, population_id))
+
+    snp_data = cursor.fetchone()  # or fetchall() if multiple rows are expected
+
+    cursor.close()
+
+    if not snp_data:
+        return render_template('snp_results.html', error="No SNP data found for the provided ID and population.")
+
+    return render_template('snp_results.html', snp_data=snp_data)
+
 
 # Define route for PCA description page
 @app.route('/analysis_tools/pca_description')

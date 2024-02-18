@@ -11,7 +11,7 @@
         <input type="text" name="genomic_coordinates" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
         
         <label for="population-select">Select Population:</label>
-        <select name="population" id="population-select">
+        <select name="population" id="population-select" required>
             <option value="">Select Population</option>
             {% for population in populations %}
                 <option value="{{ population['PopulationID'] }}">

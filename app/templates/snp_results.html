@@ -3,12 +3,33 @@
 {% block content %}
 <div class="snp-results-container">
     <h2>SNP Analysis Results</h2>
-    <!-- Display the results here -->
-    <p>SNP ID: {{ results.snp_id }}</p>
-    <p>Gene Name: {{ results.gene_name }}</p>
-    <p>Genomic Coordinates: {{ results.genomic_coordinates }}</p>
-    <p>Population: {{ results.population }}</p>
-
-    <!-- Here you would display more detailed results fetched from your backend -->
+    {% if snp_data %}
+        <table class="table table-bordered">
+            <tr>
+                <th>SNP ID</th>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Reference Allele</th>
+                <th>Alternate Allele</th>
+                <th>Genotype 0 Frequency</th>
+                <th>Genotype 1 Frequency</th>
+                <th>Genotype 2 Frequency</th>
+                <th>Allele Frequency</th>
+            </tr>
+            <tr>
+                <td>{{ snp_data.snp_id }}</td>
+                <td>{{ snp_data.Chromosome }}</td>
+                <td>{{ snp_data.Position }}</td>
+                <td>{{ snp_data.REF }}</td>
+                <td>{{ snp_data.ALT }}</td>
+                <td>{{ snp_data.Genotype0Frequency }}</td>
+                <td>{{ snp_data.Genotype1Frequency }}</td>
+                <td>{{ snp_data.Genotype2Frequency }}</td>
+                <td>{{ snp_data.AlleleFrequency }}</td>
+            </tr>
+        </table>
+    {% else %}
+        <p>{{ error }}</p>
+    {% endif %}
 </div>
 {% endblock %}
