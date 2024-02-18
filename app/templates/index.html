@@ -5,141 +5,122 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">  
 </head>
 
-
 {% block content %}
 <style>
     .main-container {
-        background-image: url('/static/images/Picture 1.png'); /* Update the path accordingly */
-        /* Add additional styling properties if needed */
+        background-image: url('/static/images/Picture 1.png');
         background-repeat: no-repeat;
         background-size: cover;
-
+    }
     .cta-button {
-        background-color: #4a8db7; /* Change the button color to your preferred color */
-        padding: 10px 20px; /* Adjust padding as needed */
-        text-decoration: none; /* Remove underline */
+        background-color: #4a8db7;
+        padding: 10px 20px;
+        text-decoration: none;
         display: inline-block;
-        border-radius: 5px; /* Optional: Add rounded corners */
+        border-radius: 5px;
         font-family: 'Bebas Neue', sans-serif;
-        
-        }
     }
     .card-container {
-            display: flex;
-            justify-content: space-around; /* Adjust as needed */
-            margin-top: 20px; /* Adjust spacing between cards */
-        }
-
-        .card {
-            width: 300px; /* Set the width of each card */
-            border: 1px solid #ddd; /* Add border for a card-like appearance */
-            border-radius: 10px;
-            padding: 20px;
-            margin: 0 10px; /* Adjust spacing between cards */
-            background-color: #ffffff;
-            font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .card a{
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-        }
-        .card h2, .card h2, .card h3 {
-            margin-bottom: 10px;
-            font-size: 25px;
-            color: #252525;
-            
-
-        }
-        .card p {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 18px;
-        }
-        .card button {
-            background-color: #4a8db7;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Bebas Neue', sans-serif;
-            margin-top: auto;
-           
-        }
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+    .card {
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 0 10px;
+        background-color: #ffffff;
+        font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .card a {
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .card h2, .card h3 {
+        margin-bottom: 10px;
+        font-size: 25px;
+        color: #252525;
+    }
+    .card p {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 18px;
+    }
+    .card button {
+        background-color: #4a8db7;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Bebas Neue', sans-serif;
+        margin-top: auto;
+    }
 </style>
 
-    
-    <div class="main-container">
-
-        <!-- Integration of the welcome-section after the header -->
-        <div class="welcome-section">
-            <div class="welcome-message">
-                <h1 style="color: #252525; font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">WELCOME TO POPULATION GENOMICS ANALYSIS</h1>
-                <p style="color:#252525; font-family: 'Bebas Neue', sans-serif">Explore our comprehensive tools and databases to enhance your genomics research.</p>
-                <a href="{{ url_for('analysis_tools') }}" class="cta-button">Get Started</a>
-            </div>
-        </div>
-        <!-- The rest of your home page content -->
-        <div class="card-container">
-            <div class="card">
-                <a href="{{ url_for('pca_form') }}">
-                    <h2>PCA ANALYSIS</h2>
-                </a>
-                    <p class="Bebas Neue">Principal Component Analysis for population stratification.</p>
-                <a href="{{ url_for('pca_description') }}">
-                    <button class="Bebas Neue">Learn More!</button>
-                </a>
-            </div>
-           
-            <div class="card">
-                <a href="{{ url_for('admixture_form') }}">
-                    <h2>ADMIXTURE ANALYSIS</h2>
-                </a>
-                    <p class="Bebas Neue">Analyse genetic admixture in populations.</p>
-                <a href="{{ url_for('admixture_description') }}">
-                    <button class="Bebas Neue">Learn More!</button>
-                </a>
-            </div>
-            
-            <div class="card">
-                <a href=="{{ url_for('snp_analysis_form') }}">
-                    <h3>SNP ANALYSIS</h3>
-                </a>
-                    <p class="Bebas Neue">Single Nucleotide Polymorphism frequency analysis.</p>
-                <a href="{{ url_for('snp_description') }}"> 
-                    <button class="Bebas Neue">Learn More!</button>
-                </a>
-            </div>
-            <!-- Add more cards as needed -->
+<div class="main-container">
+    <div class="welcome-section">
+        <div class="welcome-message">
+            <h1 style="color: #252525; font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;">WELCOME TO POPULATION GENOMICS ANALYSIS</h1>
+            <p style="color:#252525; font-family: 'Bebas Neue', sans-serif">Explore our comprehensive tools and databases to enhance your genomics research.</p>
+            <a href="{{ url_for('analysis_tools') }}" class="cta-button">Get Started</a>
         </div>
     </div>
-
-    <div class="bottom-banner">
-        <footer class="site-footer"> 
-            <div class="footer-content">
-
-                <div class="social-media">
-                    <a href="#" target="_blank" rel="noopener noreferrer">
-                        <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
-                    </a>
-                </div>
-                <div class="copyright">
-                    <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
-                </div>
-
-            </div>
-        </footer>
+    <div class="card-container">
+        <div class="card">
+            <a href="{{ url_for('pca_form') }}">
+                <h2>PCA ANALYSIS</h2>
+            </a>
+            <p>Principal Component Analysis for population stratification.</p>
+            <a href="{{ url_for('pca_description') }}">
+                <button>Learn More!</button>
+            </a>
+        </div>
+        
+        <div class="card">
+            <a href="{{ url_for('admixture_form') }}">
+                <h2>ADMIXTURE ANALYSIS</h2>
+            </a>
+            <p>Analyse genetic admixture in populations.</p>
+            <a href="{{ url_for('admixture_description') }}">
+                <button>Learn More!</button>
+            </a>
+        </div>
+        
+        <div class="card">
+            <a href="{{ url_for('snp_analysis_form') }}"> <!-- Corrected the typo here -->
+                <h3>SNP ANALYSIS</h3>
+            </a>
+            <p>Single Nucleotide Polymorphism frequency analysis.</p>
+            <a href="{{ url_for('snp_description') }}"> 
+                <button>Learn More!</button>
+            </a>
+        </div>
     </div>
+</div>
 
-
+<div class="bottom-banner">
+    <footer class="site-footer"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>
 
 {% endblock %}
