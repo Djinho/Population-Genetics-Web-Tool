@@ -5,28 +5,34 @@
     <h2>SNP Analysis Results</h2>
     {% if snp_data %}
         <table class="table table-bordered">
-            <tr>
-                <th>SNP ID</th>
-                <th>Chromosome</th>
-                <th>Position</th>
-                <th>Reference Allele</th>
-                <th>Alternate Allele</th>
-                <th>Genotype 0 Frequency</th>
-                <th>Genotype 1 Frequency</th>
-                <th>Genotype 2 Frequency</th>
-                <th>Allele Frequency</th>
-            </tr>
-            <tr>
-                <td>{{ snp_data.snp_id }}</td>
-                <td>{{ snp_data.Chromosome }}</td>
-                <td>{{ snp_data.Position }}</td>
-                <td>{{ snp_data.REF }}</td>
-                <td>{{ snp_data.ALT }}</td>
-                <td>{{ snp_data.Genotype0Frequency }}</td>
-                <td>{{ snp_data.Genotype1Frequency }}</td>
-                <td>{{ snp_data.Genotype2Frequency }}</td>
-                <td>{{ snp_data.AlleleFrequency }}</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>SNP ID</th>
+                    <th>Chromosome</th>
+                    <th>Position</th>
+                    <th>Reference Allele</th>
+                    <th>Alternate Allele</th>
+                    <th>Genotype 0 Frequency</th>
+                    <th>Genotype 1 Frequency</th>
+                    <th>Genotype 2 Frequency</th>
+                    <th>Allele Frequency</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for snp in snp_data %}
+                <tr>
+                    <td data-label="SNP ID">{{ snp['snp_id'] }}</td>
+                    <td data-label="Chromosome">{{ snp['Chromosome'] }}</td>
+                    <td data-label="Position">{{ snp['Position'] }}</td>
+                    <td data-label="Reference Allele">{{ snp['REF'] }}</td>
+                    <td data-label="Alternate Allele">{{ snp['ALT'] }}</td>
+                    <td data-label="Genotype 0 Frequency">{{ snp['Genotype0Frequency'] }}</td>
+                    <td data-label="Genotype 1 Frequency">{{ snp['Genotype1Frequency'] }}</td>
+                    <td data-label="Genotype 2 Frequency">{{ snp['Genotype2Frequency'] }}</td>
+                    <td data-label="Allele Frequency">{{ snp['AlleleFrequency'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     {% else %}
         <p>{{ error }}</p>

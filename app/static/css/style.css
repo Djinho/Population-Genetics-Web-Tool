@@ -356,6 +356,7 @@ body {
     margin-right: 5px;
 }
 
+<<<<<<< HEAD
 .body-fst-calculator {
     font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     background-color: #fff;
@@ -429,3 +430,68 @@ body {
     max-width: 600px; /* Limit result width for better aesthetics */
 }
 
+=======
+
+
+/* Additional styles for SNP Results Table */
+.table-bordered {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.table-bordered th {
+    background-color: #007bff; /* Choose a color that fits your theme */
+    color: white;
+    font-weight: bold;
+}
+
+.table-bordered tr:nth-child(even) {
+    background-color: #f2f2f2; /* Zebra striping for rows */
+}
+
+.table-bordered tr:hover {
+    background-color: #ddd; /* Hover effect for rows */
+}
+
+/* Responsive table */
+@media screen and (max-width: 600px) {
+    .table-bordered thead {
+        display: none; /* Hide headers on small screens */
+    }
+
+    .table-bordered tr,
+    .table-bordered td {
+        display: block;
+        width: 100%;
+    }
+
+    .table-bordered tr {
+        margin-bottom: 15px;
+    }
+
+    .table-bordered td {
+        text-align: right;
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+    }
+
+    .table-bordered td::before {
+        content: attr(data-label); /* Using data-label attribute for mobile view */
+        position: absolute;
+        left: 0;
+        width: 50%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}
+>>>>>>> e4120c83079d164ff74e8013d84a5a38a6a21b6a
