@@ -1,0 +1,21 @@
+.site-footer {
+    background-color: #005ea2;
+    color: #fff;
+    padding: 5px;
+    text-align: center;
+    margin: auto;
+    font-size: 14px;
+    max-width: 100%;
+    position: fixed; /* Fixed position */
+    bottom: 0; /* Anchored to the bottom of the page */
+    left: 0; /* Align to the left */
+    right: 0; /* Align to the right */
+    z-index: 100; /* Ensures the footer stays on top of other elements */
+}
+
+.bottom-banner {
+    background-color: #005ea2;
+    padding: 5px 0;
+    color: #fff;
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}

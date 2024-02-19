@@ -471,6 +471,24 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
+fst_matrix = pd.read_csv('/Users/dhwani/Downloads/fst_matrix.txt', sep='\t', index_col=0)
+
+@app.route('/fst_calculator', methods=['GET', 'POST'])
+def calculate_fst():
+    if request.method == 'POST':
+        # Get selected populations from the form
+        population1 = request.form.get('population1')
+        population2 = request.form.get('population2')
+        
+        # Retrieve the Fst value from the matrix
+        fst_value = fst_matrix.loc[population1, population2]
+        
+        return render_template('fst_calculator.html', populations=fst_matrix.columns.tolist(), fst_value=fst_value, population1=population1, population2=population2)
+    else:
+        # GET request, just show the form
+        return render_template('fst_calculator.html', populations=fst_matrix.columns.tolist(), fst_value=None)
+
+
 
 # Start the Flask application
 if __name__ == '__main__':

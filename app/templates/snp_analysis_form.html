@@ -52,4 +52,22 @@
         <button type="submit" class="btn btn-primary">Analyze SNP</button>
     </form>
 </div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="site-footer">
+    <footer class="bottom-banner"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
 {% endblock %}
