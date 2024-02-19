@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pairwise Fst Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="body-fst-calculator">
+    <h1>Select Two Populations to Calculate Fst</h1>
+    <form method="post">
+        <select name="population1">
+            {% for population in populations %}
+            <option value="{{ population }}">{{ population }}</option>
+            {% endfor %}
+        </select>
+        <select name="population2">
+            {% for population in populations %}
+            <option value="{{ population }}">{{ population }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Calculate</button>
+    </form>
+    
+    {% if fst_value is not none %}
+    <h2 style="font-family: 'Bebas Neue', sans-serif; ">Result:</h2>
+    <p style="font-family: 'Bebas Neue', sans-serif; ">Fst between {{ population1 }} and {{ population2 }}: {{ fst_value }}</p>
+    {% endif %}
+
+
+
+</body>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="bottom-banner">
+    <footer class="site-footer"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+{% endblock %}
+
+

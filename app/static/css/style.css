@@ -308,9 +308,6 @@ body {
     text-decoration: underline;
 }
 
-
-
-
 .site-footer {
     background-color: #005ea2;
     color: #fff;
@@ -327,6 +324,7 @@ body {
     color: #fff;
     font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
+
 
 .social-media img {
     width: 30px; /* Adjust the width as needed */
@@ -357,3 +355,77 @@ body {
     /* It's a good idea to style your checkboxes to be consistent with your design */
     margin-right: 5px;
 }
+
+.body-fst-calculator {
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    background-color: #fff;
+    color: #252525;
+    margin: 0; /* Ensure there's no default margin */
+    padding: 0; /* Remove padding here if header and footer are outside the .body-fst-calculator */
+    text-align: center;
+    background-image: url('/static/images/Picture 4.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+/* If your page structure allows, consider wrapping content (excluding header/footer) in a container div */
+.content-container {
+    padding: 20px; /* Apply padding to content rather than the body */
+}
+
+.fst-calculator-title {
+    color: #337ab7;
+    margin-bottom: 20px;
+    margin-top: 20px; /* Adjust top margin if needed */
+}
+
+.fst-form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    margin-left: auto; /* Center form */
+    margin-right: auto; /* Center form */
+    max-width: 600px; /* Limit form width for better aesthetics */
+}
+
+.fst-form select, .fst-form button {
+    width: 100%; /* Make select fields and button take full width of the form */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.fst-form select {
+    padding: 10px;
+    margin-bottom: 10px; /* Adjust bottom margin */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-appearance: none; /* Remove default styling */
+    -moz-appearance: none; /* Remove default styling */
+    appearance: none;
+}
+
+.fst-form button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px; /* Add space above the button */
+}
+
+.fst-form button:hover {
+    background-color: #4cae4c;
+}
+
+.fst-result {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: auto; /* Center result */
+    margin-right: auto; /* Center result */
+    max-width: 600px; /* Limit result width for better aesthetics */
+}
+
