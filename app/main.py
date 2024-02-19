@@ -90,29 +90,38 @@ def snp_analysis_form():
 @app.route('/analyze_snp', methods=['POST'])
 def snp_analysis_results():
     snp_id = request.form['snp_id']
-    population_id = request.form['population']  # This should be the PopulationID from the form
+    population_ids = request.form.getlist('populations')  # Retrieve multiple population IDs
 
     db = get_db()
     cursor = db.cursor()
 
-    # Corrected SQL query
-    cursor.execute('''
+    # Use placeholders for parameter substitution in the SQL query
+    placeholders = ', '.join('?' * len(population_ids))
+    query = f'''
         SELECT SNP_Information.ID as snp_id, SNP_Information.Chromosome, SNP_Information.Position, 
                SNP_Information.REF, SNP_Information.ALT, Frequency.Genotype0Frequency, 
                Frequency.Genotype1Frequency, Frequency.Genotype2Frequency, Frequency.AlleleFrequency
         FROM SNP_Information
         JOIN Frequency ON SNP_Information.SNPID = Frequency.SNPID
-        WHERE SNP_Information.ID = ? AND Frequency.PopulationID = ?
-    ''', (snp_id, population_id))
+        WHERE SNP_Information.ID = ? AND Frequency.PopulationID IN ({placeholders})
+    '''
+    # Execute the query with the list of population_ids and the snp_id
+    cursor.execute(query, [snp_id] + population_ids)
 
-    snp_data = cursor.fetchone()  # or fetchall() if multiple rows are expected
+    # Fetch all rows from the database
+    snp_data = cursor.fetchall()
+
+    # Convert the rows to dictionaries to match the expected format in the template
+    snp_data_dicts = [dict(row) for row in snp_data]
 
     cursor.close()
 
-    if not snp_data:
-        return render_template('snp_results.html', error="No SNP data found for the provided ID and population.")
+    # If no data is found, render the template with an error message
+    if not snp_data_dicts:
+        return render_template('snp_results.html', error="No SNP data found for the provided ID and selected populations.")
 
-    return render_template('snp_results.html', snp_data=snp_data)
+    # Render the template with the SNP data
+    return render_template('snp_results.html', snp_data=snp_data_dicts)
 
 
 # Define route for PCA description page
