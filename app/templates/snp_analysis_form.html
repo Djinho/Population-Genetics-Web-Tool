@@ -10,15 +10,27 @@
         <input type="text" name="gene_name" placeholder="Enter Gene Name e.g., BRCA1">
         <input type="text" name="genomic_coordinates" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
         
-        <label for="population-select">Select Population:</label>
-        <select name="population" id="population-select" required>
-            <option value="">Select Population</option>
-            {% for population in populations %}
-                <option value="{{ population['PopulationID'] }}">
-                    {{ population['PopulationName'] }} {% if population['is_Superpopulation'] %}(Superpopulation){% endif %}
-                </option>
-            {% endfor %}
-        </select>
+        <div class="population-selection">
+            <h3>Select Super Populations:</h3>
+            <div class="checkbox-group">
+                <!-- Repeat for each superpopulation -->
+                {% for superpopulation in superpopulations %}
+                <label>
+                    <input type="checkbox" name="superpopulations" value="{{ superpopulation['PopulationID'] }}"> {{ superpopulation['PopulationName'] }} (Superpopulation)
+                </label>
+                {% endfor %}
+            </div>
+            
+            <h3>Select Populations:</h3>
+            <div class="checkbox-group">
+                <!-- Repeat for each population -->
+                {% for population in populations %}
+                <label>
+                    <input type="checkbox" name="populations" value="{{ population['PopulationID'] }}"> {{ population['PopulationName'] }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
         
         <button type="submit" class="btn btn-primary">Analyze SNP</button>
     </form>
