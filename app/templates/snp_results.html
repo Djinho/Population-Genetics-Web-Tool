@@ -4,38 +4,40 @@
 <div class="snp-results-container">
     <h2>SNP Analysis Results</h2>
     {% if snp_data %}
-        <table class="table table-bordered">
-            <thead>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
                 <tr>
-                    <th>SNP ID</th>
-                    <th>Chromosome</th>
-                    <th>Position</th>
-                    <th>Reference Allele</th>
-                    <th>Alternate Allele</th>
-                    <th>Genotype 0 Frequency</th>
-                    <th>Genotype 1 Frequency</th>
-                    <th>Genotype 2 Frequency</th>
-                    <th>Allele Frequency</th>
+                    <th scope="col">SNP ID</th>
+                    <th scope="col">Chromosome</th>
+                    <th scope="col">Position</th>
+                    <th scope="col">Reference Allele</th>
+                    <th scope="col">Alternate Allele</th>
+                    <th scope="col">Genotype 0 Frequency</th>
+                    <th scope="col">Genotype 1 Frequency</th>
+                    <th scope="col">Genotype 2 Frequency</th>
+                    <th scope="col">Allele Frequency</th>
                 </tr>
             </thead>
             <tbody>
                 {% for snp in snp_data %}
                 <tr>
-                    <td data-label="SNP ID">{{ snp['snp_id'] }}</td>
-                    <td data-label="Chromosome">{{ snp['Chromosome'] }}</td>
-                    <td data-label="Position">{{ snp['Position'] }}</td>
-                    <td data-label="Reference Allele">{{ snp['REF'] }}</td>
-                    <td data-label="Alternate Allele">{{ snp['ALT'] }}</td>
-                    <td data-label="Genotype 0 Frequency">{{ snp['Genotype0Frequency'] }}</td>
-                    <td data-label="Genotype 1 Frequency">{{ snp['Genotype1Frequency'] }}</td>
-                    <td data-label="Genotype 2 Frequency">{{ snp['Genotype2Frequency'] }}</td>
-                    <td data-label="Allele Frequency">{{ snp['AlleleFrequency'] }}</td>
+                    <td>{{ snp['ID'] }}</td>
+                    <td>{{ snp['Chromosome'] }}</td>
+                    <td>{{ snp['Position'] }}</td>
+                    <td>{{ snp['REF'] }}</td>
+                    <td>{{ snp['ALT'] }}</td>
+                    <td>{{ snp['Genotype0Frequency'] | default('N/A') }}</td>
+                    <td>{{ snp['Genotype1Frequency'] | default('N/A') }}</td>
+                    <td>{{ snp['Genotype2Frequency'] | default('N/A') }}</td>
+                    <td>{{ snp['AlleleFrequency'] | default('N/A') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <p>{{ error }}</p>
+        <div class="alert alert-warning" role="alert">
+            {{ error | default("No SNP data found for the provided criteria.") }}
+        </div>
     {% endif %}
 </div>
 {% endblock %}

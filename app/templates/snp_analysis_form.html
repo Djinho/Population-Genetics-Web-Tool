@@ -2,22 +2,36 @@
 
 {% block content %}
 <div class="snp-analysis-container">
-    <h2>SNP Frequency and Clinical Relevance</h2>
-    <p>Enter the SNP IDs, gene names, or genomic coordinates to retrieve frequency and clinical information.</p>
+    <h2>SNP Frequency and Clinical Relevance Analysis</h2>
+    <p>Enter SNP ID, Gene Name, or Genomic Coordinates to retrieve frequency and clinical information.</p>
 
     <form action="{{ url_for('snp_analysis_results') }}" method="post">
-        <input type="text" name="snp_id" placeholder="Enter SNP ID e.g., rs12345" required>
-        <input type="text" name="gene_name" placeholder="Enter Gene Name e.g., BRCA1">
-        <input type="text" name="genomic_coordinates" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
-        
+        <div class="form-group">
+            <label for="snp_id">Enter SNP ID (e.g., rs12345):</label>
+            <input type="text" id="snp_id" name="snp_id" class="form-control" placeholder="Enter SNP ID e.g., rs12345">
+        </div>
+
+        <div class="form-group">
+            <label for="gene_name">Enter Gene Name (e.g., BRCA1):</label>
+            <input type="text" id="gene_name" name="gene_name" class="form-control" placeholder="Enter Gene Name e.g., BRCA1">
+        </div>
+
+        <div class="form-group">
+            <label for="genomic_coordinates">Enter Genomic Coordinates (e.g., 17:43044295..43049304):</label>
+            <input type="text" id="genomic_coordinates" name="genomic_coordinates" class="form-control" placeholder="Enter Genomic Coordinates e.g., 17:43044295..43049304">
+        </div>
+
         <div class="population-selection">
             <h3>Select Super Populations:</h3>
             <div class="checkbox-group">
                 <!-- Repeat for each superpopulation -->
                 {% for superpopulation in superpopulations %}
-                <label>
-                    <input type="checkbox" name="superpopulations" value="{{ superpopulation['PopulationID'] }}"> {{ superpopulation['PopulationName'] }} (Superpopulation)
-                </label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="superpopulations" value="{{ superpopulation['PopulationID'] }}" id="superpop{{ superpopulation['PopulationID'] }}">
+                    <label class="form-check-label" for="superpop{{ superpopulation['PopulationID'] }}">
+                        {{ superpopulation['PopulationName'] }} (Superpopulation)
+                    </label>
+                </div>
                 {% endfor %}
             </div>
             
@@ -25,9 +39,12 @@
             <div class="checkbox-group">
                 <!-- Repeat for each population -->
                 {% for population in populations %}
-                <label>
-                    <input type="checkbox" name="populations" value="{{ population['PopulationID'] }}"> {{ population['PopulationName'] }}
-                </label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="populations" value="{{ population['PopulationID'] }}" id="pop{{ population['PopulationID'] }}">
+                    <label class="form-check-label" for="pop{{ population['PopulationID'] }}">
+                        {{ population['PopulationName'] }}
+                    </label>
+                </div>
                 {% endfor %}
             </div>
         </div>
