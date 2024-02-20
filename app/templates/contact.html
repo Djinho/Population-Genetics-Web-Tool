@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<div class="contact">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/content.css') }}">
+    <h2>Contact us</h2>
+        <p><strong>Email:</strong> contact@example.com</p>
+        <p><strong>Phone:</strong> +123 456 7890</p>
+        <p><strong>Address:</strong> 123 Example Street, City, Country</p>
+  
+  <!-- You can add more content here based on your project's needs -->
+  
+</div>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="site-footer">
+    <footer class="bottom-banner"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+{% endblock %}
