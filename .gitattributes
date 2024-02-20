@@ -1,1 +1,2 @@
 sql/PopulationGeneticsDB.sqlite filter=lfs diff=lfs merge=lfs -text
+sql/PopulationGeneticsDB_merged.sqlite filter=lfs diff=lfs merge=lfs -text
