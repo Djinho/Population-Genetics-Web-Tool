@@ -471,7 +471,8 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-fst_matrix = pd.read_csv('app/data/fst_matrix.txt', sep='\t', index_col=0)
+fst_matrix = pd.read_csv('data/fst_matrix.txt', sep='\t', index_col=0)
+
 
 @app.route('/fst_calculator', methods=['GET', 'POST'])
 def calculate_fst():
