@@ -471,24 +471,48 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-fst_matrix = pd.read_csv('app/data/fst_matrix.txt', sep='\t', index_col=0)
+DATABASE = 'sql/fst_matrix.db'  # Update this path to where you've stored fst_matrix.db in your project
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+        db.row_factory = sqlite3.Row  # This enables column access by name
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 @app.route('/fst_calculator', methods=['GET', 'POST'])
 def calculate_fst():
     if request.method == 'POST':
-        # Get selected populations from the form
         population1 = request.form.get('population1')
         population2 = request.form.get('population2')
         
-        # Retrieve the Fst value from the matrix
-        fst_value = fst_matrix.loc[population1, population2]
+        db = get_db()
+        cur = db.cursor()
+        cur.execute('SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ? UNION ALL SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ?', (population1, population2, population2, population1))
+        fst_value = cur.fetchone()
         
-        return render_template('fst_calculator.html', populations=fst_matrix.columns.tolist(), fst_value=fst_value, population1=population1, population2=population2)
+        if fst_value:
+            fst_value = fst_value['fst_value']
+        else:
+            fst_value = 'Not Found'
+        
+        cur.execute('SELECT DISTINCT population1 FROM fst_data')
+        populations = [row['population1'] for row in cur.fetchall()]
+        
+        return render_template('fst_calculator.html', populations=populations, fst_value=fst_value, population1=population1, population2=population2)
     else:
-        # GET request, just show the form
-        return render_template('fst_calculator.html', populations=fst_matrix.columns.tolist(), fst_value=None)
-
-
+        db = get_db()
+        cur = db.cursor()
+        cur.execute('SELECT DISTINCT population1 FROM fst_data')
+        populations = [row['population1'] for row in cur.fetchall()]
+        
+        return render_template('fst_calculator.html', populations=populations, fst_value=None)
 
 # Start the Flask application
 if __name__ == '__main__':
