@@ -485,6 +485,8 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+fst_matrix = pd.read_csv('data/fst_matrix.txt', sep='\t', index_col=0)
+
 
 @app.route('/fst_calculator', methods=['GET', 'POST'])
 def calculate_fst():
