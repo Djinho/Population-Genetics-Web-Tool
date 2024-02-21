@@ -477,26 +477,49 @@ def calculate_fst():
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE1)
+        db.row_factory = sqlite3.Row  # This enables column access by name: row['column_name']
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
 @app.route('/snp-analysis', methods=['GET', 'POST'])
 def snp_analysis():
-    # Fetch population codes, gene names, and SNP IDs from the database
-    db = get_db(DATABASE1)
-    cursor = db.execute('SELECT PopulationCode, GeneName, SNP_ID FROM SNP_Data')
-    data = cursor.fetchall()
+    db = get_db()
+    cursor = db.cursor()
     
-    # Fetch populations from the populations table
-    cursor = db.execute('SELECT PopulationCode FROM populations')
-    populations = [row['PopulationCode'] for row in cursor.fetchall()]
-    
-    # Handle form submission here if method is POST
     if request.method == 'POST':
-        # Process the selected genes and populations
-        selected_genes = request.form.getlist('selected_genes')
-        selected_populations = request.form.getlist('selected_populations')
-        # Add your data processing logic here
-
-    return render_template('snp_analysis.html', data=data, populations=populations)
-
+        # Add the code to handle the form submission and filter the results based on user input
+        pass  # Placeholder for form handling code
+    
+    # Fetch initial data to display on the page
+    cursor.execute('SELECT * FROM SNP_Data')
+    snp_data = cursor.fetchall()
+    
+    # Assuming 'snp_data' is a list of tuples
+    # Convert it to a list of dictionaries
+    snp_data_dicts = []
+    for row in snp_data:
+        snp_data_dicts.append({
+            'Chromosome': row[1],
+            'Position': row[2],
+            'ID': row[3],
+            'REF': row[4],
+            'ALT': row[5],
+            'GeneName': row[6],
+            'GeneType': row[7],
+            'ClinicalSignificance': row[8],
+            'Distance': row[9]
+        })
+    
+    return render_template('snp_analysis.html', snp_data=snp_data_dicts)
 
 
 

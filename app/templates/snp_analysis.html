@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,40 +10,52 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header class="site-header">
-        <!-- Your header content here -->
-    </header>
     <h1>SNP Analysis</h1>
     <form action="/snp-analysis" method="post">
-        <table border="1">
-            <tr>
-                <th>Position</th>
-                <th>ID</th>
-                <th>Gene</th>
-                <th>Select</th>
-            </tr>
-            {% for entry in data %}
-            <tr>
-                <td>{{ entry.position }}</td>
-                <td>{{ entry.rsid }}</td>
-                <td>{{ entry.gene }}</td>
-                <td><input type="checkbox" name="selected_genes" value="{{ entry.rsid }}"></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <div>
-            <h3>Populations:</h3>
-            {% for population in populations %}
-            <label>
-                <input type="checkbox" name="selected_populations" value="{{ population }}">
-                {{ population }}
-            </label><br>
-            {% endfor %}
-        </div>
+        <!-- Add form elements for gene and chromosome selection -->
         <input type="submit" value="Submit">
     </form>
+
+    <h2>Results:</h2>
+    <table border="1">
+        <tr>
+            <th>Chromosome</th>
+            <th>Position</th>
+            <th>ID</th>
+            <th>REF</th>
+            <th>ALT</th>
+            <th>Gene Name</th>
+            <th>Gene Type</th>
+            <th>Clinical Significance</th>
+            <th>Distance</th>
+        </tr>
+        {% for entry in snp_data %}
+        <tr>
+            <td>{{ entry['Chromosome'] }}</td>
+            <td>{{ entry['Position'] }}</td>
+            <td>{{ entry['ID'] }}</td>
+            <td>{{ entry['REF'] }}</td>
+            <td>{{ entry['ALT'] }}</td>
+            <td>{{ entry['GeneName'] }}</td>
+            <td>{{ entry['GeneType'] }}</td>
+            <td>{{ entry['ClinicalSignificance'] }}</td>
+            <td>{{ entry['Distance'] }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9">No data found.</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 </html>
+
+
+
+
+
+
+
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 <div class="site-footer">
