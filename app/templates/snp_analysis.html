@@ -12,41 +12,49 @@
 <body>
     <h1>SNP Analysis</h1>
     <form action="/snp-analysis" method="post">
-        <!-- Add form elements for gene and chromosome selection -->
+        <!-- Include form elements for filtering if needed -->
         <input type="submit" value="Submit">
     </form>
+<body>
+    <h1>SNP Analysis</h1>
+    <form action="/snp-analysis" method="post">
+        <form action="/snp-analysis" method="post">
+            <div class="populations">
+                <h3>Select Population:</h3>
+                {% for population in populations %}
+                <label>
+                    <input type="checkbox" name="selected_populations" value="{{ population }}">
+                    {{ population }}
+                </label>
+                {% endfor %}
+            </div>
 
-    <h2>Results:</h2>
-    <table border="1">
-        <tr>
-            <th>Chromosome</th>
-            <th>Position</th>
-            <th>ID</th>
-            <th>REF</th>
-            <th>ALT</th>
-            <th>Gene Name</th>
-            <th>Gene Type</th>
-            <th>Clinical Significance</th>
-            <th>Distance</th>
-        </tr>
-        {% for entry in snp_data %}
-        <tr>
-            <td>{{ entry['Chromosome'] }}</td>
-            <td>{{ entry['Position'] }}</td>
-            <td>{{ entry['ID'] }}</td>
-            <td>{{ entry['REF'] }}</td>
-            <td>{{ entry['ALT'] }}</td>
-            <td>{{ entry['GeneName'] }}</td>
-            <td>{{ entry['GeneType'] }}</td>
-            <td>{{ entry['ClinicalSignificance'] }}</td>
-            <td>{{ entry['Distance'] }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="9">No data found.</td>
-        </tr>
-        {% endfor %}
-    </table>
+
+        <h2>Results:</h2>
+        <table border="1">
+            <tr>
+                <th>Position</th>
+                <th>ID</th>
+                <th>Gene Name</th>
+                <th>Select</th>
+                <th>Frequency</th>
+            </tr>
+            {% for entry in snp_data %}
+            <tr>
+                <td>{{ entry['Position'] }}</td>
+                <td>{{ entry['ID'] }}</td>
+                <td>{{ entry['GeneName'] }}</td>
+                <td><input type="checkbox" name="selected_snps" value="{{ entry['ID'] }}"></td>
+                <td>{{ entry['Frequency'] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No data found.</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
 
