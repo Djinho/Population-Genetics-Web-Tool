@@ -20,27 +20,32 @@ Session(app)
 
 # Get the parent directory of this file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
+DATABASE1 = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
+DATABASE2 = os.path.join(BASE_DIR, '..', 'sql', 'fst_matrix.db')
 
+# Print the database paths to console (for debugging)
+print("Database 1 path:", DATABASE1)
+print("Database 2 path:", DATABASE2)
 
-# Print the database path to console
-print("Database path:", DATABASE)
-
-def get_db():
+def get_db(database):
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(database)
         db.row_factory = sqlite3.Row
         db.execute('PRAGMA foreign_keys = ON')
         db.commit()
     return db
 
-
+@app.teardown_appcontext
+def close_db(error):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 @app.route('/get_populations')
 def get_populations():
-    db = get_db()
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM Populations')
+    db = get_db(DATABASE1)
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
     populations = cursor.fetchall()
     return jsonify([{'PopulationID': population['PopulationID'], 'PopulationName': population['PopulationName']} for population in populations])
 
@@ -66,67 +71,32 @@ def analysis_tools():
 # Define route for PCA form
 @app.route('/analysis_tools/pca')
 def pca_form():
-    db = get_db()
+    db = get_db(DATABASE1)
     if db is None:
         return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM Populations')
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
     populations = cursor.fetchall()
     return render_template('pca_form.html', populations=populations)
 
 # Define route for Admixture form
 @app.route('/analysis_tools/admixture')
 def admixture_form():
-    db = get_db()
+    db = get_db(DATABASE1)
     if db is None:
         return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM Populations')
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
     populations = cursor.fetchall()
     return render_template('admixture_form.html', populations=populations)
 
 @app.route('/analysis_tools/snp')
 def snp_analysis_form():
-    db = get_db()
+    db = get_db(DATABASE1)
     if db is None:
         return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM Populations ORDER BY PopulationName')
+    cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM populations ORDER BY PopulationName')
     populations = cursor.fetchall()
-    return render_template('snp_analysis_form.html', populations=populations)
+    return render_template('snp_analysis.html', populations=populations)
 
-@app.route('/analyze_snp', methods=['POST'])
-def snp_analysis_results():
-    snp_id = request.form['snp_id']
-    population_ids = request.form.getlist('populations')  # Retrieve multiple population IDs
-
-    db = get_db()
-    cursor = db.cursor()
-
-    # Use placeholders for parameter substitution in the SQL query
-    placeholders = ', '.join('?' * len(population_ids))
-    query = f'''
-        SELECT SNP_Information.ID as snp_id, SNP_Information.Chromosome, SNP_Information.Position, 
-               SNP_Information.REF, SNP_Information.ALT, Frequency.Genotype0Frequency, 
-               Frequency.Genotype1Frequency, Frequency.Genotype2Frequency, Frequency.AlleleFrequency
-        FROM SNP_Information
-        JOIN Frequency ON SNP_Information.SNPID = Frequency.SNPID
-        WHERE SNP_Information.ID = ? AND Frequency.PopulationID IN ({placeholders})
-    '''
-    # Execute the query with the list of population_ids and the snp_id
-    cursor.execute(query, [snp_id] + population_ids)
-
-    # Fetch all rows from the database
-    snp_data = cursor.fetchall()
-
-    # Convert the rows to dictionaries to match the expected format in the template
-    snp_data_dicts = [dict(row) for row in snp_data]
-
-    cursor.close()
-
-    # If no data is found, render the template with an error message
-    if not snp_data_dicts:
-        return render_template('snp_results.html', error="No SNP data found for the provided ID and selected populations.")
-
-    # Render the template with the SNP data
-    return render_template('snp_results.html', snp_data=snp_data_dicts)
 
 
 
@@ -181,14 +151,14 @@ def display_results():
 
 # Function to perform PCA analysis
 def perform_pca(selected_populations):
-    db = get_db()
+    db = get_db(DATABASE1)
     if db is None:
         return []
     placeholders = ','.join('?' for _ in selected_populations)
     query = f'''
     SELECT p.PopulationName, c.CoordinateID, c.PC1, c.PC2
     FROM pca_coordinates AS c
-    JOIN Populations AS p ON c.PopulationID = p.PopulationID
+    JOIN populations AS p ON c.PopulationID = p.PopulationID
     WHERE c.PopulationID IN ({placeholders})
     '''
     cursor = db.execute(query, selected_populations)
@@ -220,7 +190,7 @@ def plot_pca(pca_results):
 def analyze_admixture():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db()
+    db = get_db(DATABASE1)
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -254,7 +224,7 @@ def analyze_admixture():
 def analyze_admixture():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db()
+    db = get_db(DATABASE1)
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -283,7 +253,7 @@ def analyze_admixture():
 
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db()
+    db = get_db(DATABASE1)
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -373,7 +343,7 @@ def download_heatmap():
 def generate_heatmap_data():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db()
+    db = get_db(DATABASE1)
     cursor = db.cursor()
 
     # SQL query to fetch admixture data for selected populations
@@ -477,22 +447,6 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-DATABASE1 = 'sql/fst_matrix.db'
-
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE1)
-        db.row_factory = sqlite3.Row  # This enables column access by name
-    return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
-
-
 
 @app.route('/fst_calculator', methods=['GET', 'POST'])
 def calculate_fst():
@@ -500,7 +454,7 @@ def calculate_fst():
         population1 = request.form.get('population1')
         population2 = request.form.get('population2')
         
-        db = get_db()
+        db = get_db(DATABASE2)
         cur = db.cursor()
         cur.execute('SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ? UNION ALL SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ?', (population1, population2, population2, population1))
         fst_value = cur.fetchone()
@@ -515,7 +469,7 @@ def calculate_fst():
         
         return render_template('fst_calculator.html', populations=populations, fst_value=fst_value, population1=population1, population2=population2)
     else:
-        db = get_db()
+        db = get_db(DATABASE2)
         cur = db.cursor()
         cur.execute('SELECT DISTINCT population1 FROM fst_data')
         populations = [row['population1'] for row in cur.fetchall()]
@@ -523,16 +477,16 @@ def calculate_fst():
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
-
 @app.route('/snp-analysis', methods=['GET', 'POST'])
 def snp_analysis():
-    # Replace with actual data fetching logic
-    data = [
-        {'position': '1:18431', 'rsid': 'rs1152', 'gene': 'PCKR2'},
-        {'position': '1:11540', 'rsid': 'rs1249', 'gene': 'LCION'},
-        {'position': '1:860217', 'rsid': 'rs1178', 'gene': 'CHR3M'}
-    ]
-    populations = ['ACB', 'CEB', 'GDR', 'JPY']
+    # Fetch population codes, gene names, and SNP IDs from the database
+    db = get_db(DATABASE1)
+    cursor = db.execute('SELECT PopulationCode, GeneName, SNP_ID FROM SNP_Data')
+    data = cursor.fetchall()
+    
+    # Fetch populations from the populations table
+    cursor = db.execute('SELECT PopulationCode FROM populations')
+    populations = [row['PopulationCode'] for row in cursor.fetchall()]
     
     # Handle form submission here if method is POST
     if request.method == 'POST':
@@ -542,6 +496,8 @@ def snp_analysis():
         # Add your data processing logic here
 
     return render_template('snp_analysis.html', data=data, populations=populations)
+
+
 
 
 # Start the Flask application
