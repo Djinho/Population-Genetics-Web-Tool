@@ -477,12 +477,12 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-DATABASE = 'sql/fst_matrix.db'
+DATABASE1 = 'sql/fst_matrix.db'
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(DATABASE1)
         db.row_factory = sqlite3.Row  # This enables column access by name
     return db
 
