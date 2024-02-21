@@ -476,7 +476,7 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-
+DATABASE = 'sql/fst_matrix.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -490,7 +490,7 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-fst_matrix = pd.read_csv('data/fst_matrix.txt', sep='\t', index_col=0)
+
 
 
 @app.route('/fst_calculator', methods=['GET', 'POST'])
