@@ -129,6 +129,7 @@ def snp_analysis_results():
     return render_template('snp_results.html', snp_data=snp_data_dicts)
 
 
+
 # Define route for PCA description page
 @app.route('/analysis_tools/pca_description')
 def pca_description():
@@ -520,6 +521,28 @@ def calculate_fst():
         populations = [row['population1'] for row in cur.fetchall()]
         
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
+    
+
+
+@app.route('/snp-analysis', methods=['GET', 'POST'])
+def snp_analysis():
+    # Replace with actual data fetching logic
+    data = [
+        {'position': '1:18431', 'rsid': 'rs1152', 'gene': 'PCKR2'},
+        {'position': '1:11540', 'rsid': 'rs1249', 'gene': 'LCION'},
+        {'position': '1:860217', 'rsid': 'rs1178', 'gene': 'CHR3M'}
+    ]
+    populations = ['ACB', 'CEB', 'GDR', 'JPY']
+    
+    # Handle form submission here if method is POST
+    if request.method == 'POST':
+        # Process the selected genes and populations
+        selected_genes = request.form.getlist('selected_genes')
+        selected_populations = request.form.getlist('selected_populations')
+        # Add your data processing logic here
+
+    return render_template('snp_analysis.html', data=data, populations=populations)
+
 
 # Start the Flask application
 if __name__ == '__main__':

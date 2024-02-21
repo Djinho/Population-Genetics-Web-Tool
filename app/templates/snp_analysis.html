@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenomePop Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <!-- Your header content here -->
+    </header>
+    <h1>SNP Analysis</h1>
+    <form action="/snp-analysis" method="post">
+        <table border="1">
+            <tr>
+                <th>Position</th>
+                <th>ID</th>
+                <th>Gene</th>
+                <th>Select</th>
+            </tr>
+            {% for entry in data %}
+            <tr>
+                <td>{{ entry.position }}</td>
+                <td>{{ entry.rsid }}</td>
+                <td>{{ entry.gene }}</td>
+                <td><input type="checkbox" name="selected_genes" value="{{ entry.rsid }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div>
+            <h3>Populations:</h3>
+            {% for population in populations %}
+            <label>
+                <input type="checkbox" name="selected_populations" value="{{ population }}">
+                {{ population }}
+            </label><br>
+            {% endfor %}
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="site-footer">
+    <footer class="bottom-banner"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+{% endblock %}
