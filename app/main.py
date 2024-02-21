@@ -22,7 +22,10 @@ Session(app)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
 
-# Function to get a database connection
+
+# Print the database path to console
+print("Database path:", DATABASE)
+
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -31,6 +34,8 @@ def get_db():
         db.execute('PRAGMA foreign_keys = ON')
         db.commit()
     return db
+
+
 
 @app.route('/get_populations')
 def get_populations():
@@ -471,7 +476,7 @@ def plot_admixture_heatmap(ancestry_data):
 
     return 'data:image/png;base64,' + plot_url
 
-DATABASE = 'sql/fst_matrix.db'  # Update this path to where you've stored fst_matrix.db in your project
+
 
 def get_db():
     db = getattr(g, '_database', None)
