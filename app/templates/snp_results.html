@@ -8,13 +8,8 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">SNP ID</th>
-                    <th scope="col">Chromosome</th>
+                    <th scope="col">Gene Name</th>
                     <th scope="col">Position</th>
-                    <th scope="col">Reference Allele</th>
-                    <th scope="col">Alternate Allele</th>
-                    <th scope="col">Genotype 0 Frequency</th>
-                    <th scope="col">Genotype 1 Frequency</th>
-                    <th scope="col">Genotype 2 Frequency</th>
                     <th scope="col">Allele Frequency</th>
                 </tr>
             </thead>
@@ -22,14 +17,9 @@
                 {% for snp in snp_data %}
                 <tr>
                     <td>{{ snp['ID'] }}</td>
-                    <td>{{ snp['Chromosome'] }}</td>
+                    <td>{{ snp['GeneName'] }}</td>
                     <td>{{ snp['Position'] }}</td>
-                    <td>{{ snp['REF'] }}</td>
-                    <td>{{ snp['ALT'] }}</td>
-                    <td>{{ snp['Genotype0Frequency'] | default('N/A') }}</td>
-                    <td>{{ snp['Genotype1Frequency'] | default('N/A') }}</td>
-                    <td>{{ snp['Genotype2Frequency'] | default('N/A') }}</td>
-                    <td>{{ snp['AlleleFrequency'] | default('N/A') }}</td>
+                    <td>{{ snp['Frequency'] | default('N/A') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -41,3 +31,4 @@
     {% endif %}
 </div>
 {% endblock %}
+
