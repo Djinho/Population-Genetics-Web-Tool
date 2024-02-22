@@ -88,14 +88,6 @@ def admixture_form():
     populations = cursor.fetchall()
     return render_template('admixture_form.html', populations=populations)
 
-@app.route('/analysis_tools/snp')
-def snp_analysis_form():
-    db = get_db()
-    if db is None:
-        return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM populations ORDER BY PopulationName')
-    populations = cursor.fetchall()
-    return render_template('snp_analysis.html', populations=populations)
 
 
 
@@ -476,6 +468,51 @@ def calculate_fst():
         
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
+
+@app.route('/analysis_tools/snp', methods=['GET', 'POST'])
+def snp_analysis_form():
+    db = get_db(DATABASE)
+    cursor = db.cursor()
+    
+    # Define all available populations
+    populations = ['AFR', 'AMR', 'EAS', 'EUR', 'SAS', 'ACB', 'ASW', 'BEB', 'CDX', 'CEU', 'CHB', 'CHS', 'CLM', 'ESN', 'FIN', 'GBR', 'GIH', 'GWD', 'IBS', 'ITU', 'JPT', 'KHV', 'LWK', 'MSL', 'MXL', 'PEL', 'PJL', 'PUR', 'SIB', 'STU', 'TSI', 'YRI']
+
+    if request.method == 'POST':
+        selected_snps = request.form.getlist('selected_snps')
+        selected_populations = request.form.getlist('selected_populations')
+        
+        # Since multiple populations can be selected, we need to handle them accordingly
+        # For simplicity, let's just handle the first selected population
+        if selected_populations:
+            selected_population = selected_populations[0]
+            population_column = selected_population + '_Frequency'
+
+            query = f'SELECT Position, ID, GeneName, {population_column} FROM SNP_Data WHERE ID IN ({",".join("?" * len(selected_snps))})'
+            cursor.execute(query, selected_snps)
+            results = cursor.fetchall()
+
+            # Convert the fetched data into a list of dictionaries
+            snp_data_dicts = [{
+                'Position': row[0], 
+                'ID': row[1], 
+                'GeneName': row[2], 
+                'Frequency': row[4] if len(row) > 3 else None
+            } for row in results]
+
+            return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations, selected_populations=selected_populations)
+
+        else:
+            # Handle the case where no populations are selected
+            return "No population selected", 400
+
+    # Initial GET request
+    else:
+        cursor.execute('SELECT Position, ID, GeneName FROM SNP_Data')
+        snp_data = cursor.fetchall()
+        snp_data_dicts = [{'Position': row[0], 'ID': row[1], 'GeneName': row[2]} for row in snp_data]
+
+        return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
+
 
 
 @app.route('/snp-analysis', methods=['GET', 'POST'])

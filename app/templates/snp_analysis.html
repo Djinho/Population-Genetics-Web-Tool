@@ -12,23 +12,15 @@
 <body>
     <h1>SNP Analysis</h1>
     <form action="/snp-analysis" method="post">
-        <!-- Include form elements for filtering if needed -->
-        <input type="submit" value="Submit">
-    </form>
-<body>
-    <h1>SNP Analysis</h1>
-    <form action="/snp-analysis" method="post">
-        <form action="/snp-analysis" method="post">
-            <div class="populations">
-                <h3>Select Population:</h3>
-                {% for population in populations %}
-                <label>
-                    <input type="checkbox" name="selected_populations" value="{{ population }}">
-                    {{ population }}
-                </label>
-                {% endfor %}
-            </div>
-
+        <div class="populations">
+            <h3>Select Population:</h3>
+            {% for population in populations %}
+            <label>
+                <input type="checkbox" name="selected_populations" value="{{ population }}">
+                {{ population }}
+            </label>
+            {% endfor %}
+        </div>
 
         <h2>Results:</h2>
         <table border="1">
@@ -57,29 +49,5 @@
     </form>
 </body>
 </html>
-
-
-
-
-
-
-
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
-<div class="site-footer">
-    <footer class="bottom-banner"> 
-        <div class="footer-content">
-            <div class="social-media">
-                <a href="#" target="_blank" rel="noopener noreferrer">
-                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
-                </a>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
-            </div>
-
-        </div>
-    </footer>
-</div>
 
 {% endblock %}
