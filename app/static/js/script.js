@@ -1,11 +1,36 @@
 $(document).ready(function() {
-    // Autocomplete for gene names
-    $('#gene-name').autocomplete({
-        source: '/autocomplete/gene_names',
-        minLength: 2 // Trigger autocomplete with at least 2 characters
+    // Column-specific search functionalities
+    $('#positionSearch').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+            $(this).toggle($(this).find('td:eq(0)').text().toLowerCase().indexOf(value) > -1)
+        });
     });
 
-    // Fetch populations and populate checkboxes on page load
+    $('#snpIdSearch').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+            $(this).toggle($(this).find('td:eq(1)').text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    $('#geneNameSearch').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $("table tbody tr").filter(function() {
+            $(this).toggle($(this).find('td:eq(2)').text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // Handling checkbox selection for SNPs
+    $('table tbody').on('change', 'input[type="checkbox"]', function() {
+        var selectedSnps = [];
+        $('table tbody input[type="checkbox"]:checked').each(function() {
+            selectedSnps.push($(this).closest('tr').data('snp-id'));
+        });
+        $('#selectedSnps').val(selectedSnps.join(','));
+    });
+
+    // Existing code for fetching populations
     fetch('/get_populations')
         .then(response => response.json())
         .then(data => {
@@ -42,14 +67,15 @@ $(document).ready(function() {
         })
         .catch(error => console.error('Error fetching populations:', error));
 
-    // Event listener for the analyze button
+    // Handling the analysis button click event
     document.getElementById('analyze-btn').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent default form submission
 
         var formData = {
             geneName: $('#gene-name').val(),
             superpopulations: [],
-            populations: []
+            populations: [],
+            selectedSnps: $('#selectedSnps').val().split(',')
         };
 
         // Collect superpopulation checkbox values
@@ -73,8 +99,7 @@ $(document).ready(function() {
         .then(response => response.json())
         .then(response => {
             console.log('Analysis Results:', response);
-            // Here you should add the logic to display the results
-            // For instance, updating a chart or a table with the new data
+            // Here, add logic to display the results, such as updating a chart or table
         })
         .catch(error => {
             console.error('Error:', error);

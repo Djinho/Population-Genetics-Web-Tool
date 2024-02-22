@@ -15,12 +15,12 @@
             position: sticky; 
             top: 0; 
             background-color: #fff; 
-            z-index: 1;
+            z-index: 1; 
         }
         .scrollTable { 
             display: block; 
             overflow-y: auto; 
-            height: 400px; 
+            height: 400px; /* Adjusted height */
             margin: auto; 
             width: 80%; 
         }
@@ -28,8 +28,34 @@
             cursor: pointer; 
         }
         .selected-row { 
-            background-color: #add8e6; /* Light blue to indicate selection */
-            color: #000; /* Ensure text is readable */
+            background-color: #add8e6;
+            color: #000; 
+        }
+        .search-boxes { /* Adjusted for alignment */
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .populations { /* Adjusting for horizontal display */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; /* Adjust the gap as needed */
+            margin-bottom: 20px;
+        }
+        .populations label { /* Optional: Adjust label styling if needed */
+            display: inline-block; /* Makes labels flow horizontally */
+            margin-right: 10px; /* Adjust spacing between checkboxes */
+        }
+        th, td {
+            text-align: center;
+        }
+        .search-box { /* New style for search inputs to match column width */
+            width: 100%;
         }
     </style>
 </head>
@@ -46,13 +72,13 @@
             {% endfor %}
         </div>
 
-        <h2>Results:</h2>
-        <div>
-            <input type="text" id="positionSearch" placeholder="Search Position">
-            <input type="text" id="snpIdSearch" placeholder="Search SNP ID">
-            <input type="text" id="geneNameSearch" placeholder="Search Gene Name">
-        </div>
         <div class="scrollTable">
+            <div class="search-boxes">
+                <input class="search-box" type="text" id="positionSearch" placeholder="Search Position">
+                <input class="search-box" type="text" id="snpIdSearch" placeholder="Search SNP ID">
+                <input class="search-box" type="text" id="geneNameSearch" placeholder="Search Gene Name">
+                <div></div> <!-- Placeholder for alignment -->
+            </div>
             <table border="1">
                 <thead class="fixedHeader">
                     <tr>
@@ -68,7 +94,7 @@
                         <td>{{ entry['Position'] }}</td>
                         <td>{{ entry['ID'] }}</td>
                         <td>{{ entry['GeneName'] }}</td>
-                        <td>{{ entry['Frequency'] }}</td>
+                        <td><input type="checkbox" name="frequency_select_{{ entry['ID'] }}"></td>
                     </tr>
                     {% else %}
                     <tr>
@@ -78,28 +104,9 @@
                 </tbody>
             </table>
         </div>
-        <!-- Hidden input to store selected SNP IDs -->
         <input type="hidden" id="selectedSnps" name="selected_snps">
         <input type="submit" value="Analyze">
     </form>
-
-    <script>
-        $(document).ready(function() {
-            // Highlight and select row on click
-            $(document).on('click', '.clickable-row', function() {
-                $(this).toggleClass('selected-row');
-                var selectedIds = $('.selected-row').map(function() {
-                    return $(this).data('snp-id');
-                }).get();
-                $('#selectedSnps').val(selectedIds.join(','));
-            });
-
-            // Autocomplete setups
-            $("#positionSearch").autocomplete({ source: ['Sample1', 'Sample2'] });
-            $("#snpIdSearch").autocomplete({ source: ['ID1', 'ID2'] });
-            $("#geneNameSearch").autocomplete({ source: ['Gene1', 'Gene2'] });
-        });
-    </script>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

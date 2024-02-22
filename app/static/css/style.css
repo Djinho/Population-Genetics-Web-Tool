@@ -494,3 +494,79 @@ body {
         text-align: left;
     }
 }
+
+
+/* Resets to ensure consistency across browsers */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Main body styling for a clean and consistent look */
+body {
+    font-family: 'Arial', sans-serif; /* Ensures readability */
+    background-color: #f4f4f4; /* Soft background color for less eye strain */
+    padding: 20px; /* Spacing around the content for better layout */
+}
+
+/* Ensures the form and results are centered and not too wide for readability */
+form, .scrollTable {
+    max-width: 960px; /* Adjust based on your preference */
+    margin: 20px auto; /* Centering */
+}
+
+/* Styling for the table to make it more readable and visually appealing */
+table {
+    width: 100%; /* Table width to fill its container */
+    border-collapse: collapse; /* Removes gaps between borders */
+}
+
+th, td {
+    text-align: left; /* Aligns text to the left for consistency */
+    padding: 8px; /* Adds space around text for readability */
+}
+
+th {
+    background-color: #007bff; /* Adds a blue background to header cells */
+    color: white; /* Ensures text is readable against the dark background */
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2; /* Zebra striping for easier reading */
+}
+
+/* Hover and selection styles for table rows */
+tr:hover, .selected-row {
+    background-color: #add8e6; /* Light blue background for hover and selection */
+    color: #000; /* Text color to ensure readability */
+}
+
+/* Adjustments to input and button elements for consistency and usability */
+input[type="text"], input[type="submit"] {
+    padding: 10px;
+    margin: 5px 0; /* Vertical margin for spacing */
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 4px; /* Rounded corners for modern appearance */
+}
+
+input[type="submit"] {
+    background-color: #4CAF50; /* Green background for a 'go' indication */
+    color: white;
+    cursor: pointer; /* Changes cursor to indicate it's clickable */
+}
+
+input[type="submit"]:hover {
+    background-color: #45a049; /* Darker green on hover for feedback */
+}
+
+/* Specific styles for the populations selection to improve layout */
+.populations label {
+    display: block; /* Each label on its own line for better readability */
+    margin: 5px 0; /* Adds spacing between checkbox options */
+}
+
+/* Additional styles if needed for responsiveness or specific layout adjustments */
+@media screen and (max-width: 768px) {
+    /* Responsive styles for mobile devices */
+}
