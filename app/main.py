@@ -20,12 +20,12 @@ Session(app)
 
 # Get the parent directory of this file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE1 = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
-DATABASE2 = os.path.join(BASE_DIR, '..', 'sql', 'fst_matrix.db')
+DATABASE = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
+#DATABASE2 = os.path.join(BASE_DIR, '..', 'sql', 'fst_matrix.db')
 
 # Print the database paths to console (for debugging)
-print("Database 1 path:", DATABASE1)
-print("Database 2 path:", DATABASE2)
+print("Database 1 path:", DATABASE)
+#print("Database 2 path:", DATABASE2)
 
 def get_db(database):
     db = getattr(g, '_database', None)
@@ -44,7 +44,7 @@ def close_db(error):
 
 @app.route('/get_populations')
 def get_populations():
-    db = get_db(DATABASE1)
+    db = get_db(DATABASE)
     cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
     populations = cursor.fetchall()
     return jsonify([{'PopulationID': population['PopulationID'], 'PopulationName': population['PopulationName']} for population in populations])
@@ -71,7 +71,7 @@ def analysis_tools():
 # Define route for PCA form
 @app.route('/analysis_tools/pca')
 def pca_form():
-    db = get_db(DATABASE1)
+    db = get_db(DATABASE)
     if db is None:
         return "Error: Unable to connect to the database."
     cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
@@ -81,7 +81,7 @@ def pca_form():
 # Define route for Admixture form
 @app.route('/analysis_tools/admixture')
 def admixture_form():
-    db = get_db(DATABASE1)
+    db = get_db(DATABASE)
     if db is None:
         return "Error: Unable to connect to the database."
     cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
@@ -90,7 +90,7 @@ def admixture_form():
 
 @app.route('/analysis_tools/snp')
 def snp_analysis_form():
-    db = get_db(DATABASE1)
+    db = get_db()
     if db is None:
         return "Error: Unable to connect to the database."
     cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM populations ORDER BY PopulationName')
@@ -151,7 +151,7 @@ def display_results():
 
 # Function to perform PCA analysis
 def perform_pca(selected_populations):
-    db = get_db(DATABASE1)
+    db = get_db(DATABASE)
     if db is None:
         return []
     placeholders = ','.join('?' for _ in selected_populations)
@@ -190,7 +190,7 @@ def plot_pca(pca_results):
 def analyze_admixture():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db(DATABASE1)
+    db = get_db(DATABASE)
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -224,7 +224,7 @@ def analyze_admixture():
 def analyze_admixture():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db(DATABASE1)
+    db = get_db()
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -253,7 +253,7 @@ def analyze_admixture():
 
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db(DATABASE1)
+    db = get_db()
     cursor = db.cursor()
     
     # SQL query to fetch admixture data for selected populations
@@ -343,7 +343,7 @@ def download_heatmap():
 def generate_heatmap_data():
     data = request.get_json()
     selected_populations = data['populations']
-    db = get_db(DATABASE1)
+    db = get_db()
     cursor = db.cursor()
 
     # SQL query to fetch admixture data for selected populations
@@ -477,22 +477,10 @@ def calculate_fst():
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE1)
-        db.row_factory = sqlite3.Row  # This enables column access by name: row['column_name']
-    return db
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
 
 @app.route('/snp-analysis', methods=['GET', 'POST'])
 def snp_analysis():
-    db = get_db()
+    db = get_db(DATABASE)
     cursor = db.cursor()
     
     # Define all available populations
