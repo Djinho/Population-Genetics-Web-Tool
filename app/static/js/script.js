@@ -1,12 +1,18 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch populations and populate checkboxes
+$(document).ready(function() {
+    // Autocomplete for gene names
+    $('#gene-name').autocomplete({
+        source: '/autocomplete/gene_names',
+        minLength: 2 // Trigger autocomplete with at least 2 characters
+    });
+
+    // Fetch populations and populate checkboxes on page load
     fetch('/get_populations')
         .then(response => response.json())
         .then(data => {
             const superPopulationContainer = document.querySelector('.superpopulation-checkbox-group');
             const populationContainer = document.querySelector('.population-checkbox-group');
 
-            // Assuming data is an object with 'superpopulations' and 'populations' arrays
+            // Populate superpopulations
             data.superpopulations.forEach(spop => {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -20,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 superPopulationContainer.appendChild(label);
             });
 
+            // Populate populations
             data.populations.forEach(pop => {
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -35,27 +42,27 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error fetching populations:', error));
 
-    // Add event listener to the analyze button
+    // Event listener for the analyze button
     document.getElementById('analyze-btn').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent default form submission
 
-        // Prepare formData object
         var formData = {
+            geneName: $('#gene-name').val(),
             superpopulations: [],
             populations: []
         };
 
         // Collect superpopulation checkbox values
-        document.querySelectorAll('input[name="superpopulations"]:checked').forEach((checkbox) => {
-            formData.superpopulations.push(checkbox.value);
+        $('input[name="superpopulations"]:checked').each(function() {
+            formData.superpopulations.push(this.value);
         });
 
         // Collect population checkbox values
-        document.querySelectorAll('input[name="populations"]:checked').forEach((checkbox) => {
-            formData.populations.push(checkbox.value);
+        $('input[name="populations"]:checked').each(function() {
+            formData.populations.push(this.value);
         });
 
-        // AJAX request
+        // AJAX request to analyze admixture
         fetch('/analyze_admixture', {
             method: 'POST',
             headers: {
@@ -65,12 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(response => {
-            console.log('Analysis Results:', response); // Log response data
-            // Pass data to interactive_plot.js for chart rendering or handle it here as needed
+            console.log('Analysis Results:', response);
+            // Here you should add the logic to display the results
+            // For instance, updating a chart or a table with the new data
         })
         .catch(error => {
             console.error('Error:', error);
-            // Handle error, e.g., display error message to user
+            // Display error message to the user
         });
     });
 });

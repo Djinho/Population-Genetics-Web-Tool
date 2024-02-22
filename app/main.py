@@ -49,6 +49,15 @@ def get_populations():
     populations = cursor.fetchall()
     return jsonify([{'PopulationID': population['PopulationID'], 'PopulationName': population['PopulationName']} for population in populations])
 
+@app.route('/autocomplete/gene_names')
+def autocomplete_gene_names():
+    query = request.args.get('term', '')  # 'term' is a common query parameter used by jQuery UI Autocomplete
+    db = get_db(DATABASE)
+    cursor = db.cursor()
+    cursor.execute("SELECT DISTINCT GeneName FROM SNP_Data WHERE GeneName LIKE ?", (f'%{query}%',))
+    results = cursor.fetchall()
+    gene_names = [result['GeneName'] for result in results]
+    return jsonify(gene_names)
 
 
 # Function to close the database connection

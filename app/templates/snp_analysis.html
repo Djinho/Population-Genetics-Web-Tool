@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +7,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GenomePop Analytics</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <style>
+        .fixedHeader { 
+            position: sticky; 
+            top: 0; 
+            background-color: #fff; 
+            z-index: 1;
+        }
+        .scrollTable { 
+            display: block; 
+            overflow-y: auto; 
+            height: 400px; 
+            margin: auto; 
+            width: 80%; 
+        }
+        .clickable-row { 
+            cursor: pointer; 
+        }
+        .selected-row { 
+            background-color: #add8e6; /* Light blue to indicate selection */
+            color: #000; /* Ensure text is readable */
+        }
+    </style>
 </head>
 <body>
     <h1>SNP Analysis</h1>
@@ -23,31 +47,61 @@
         </div>
 
         <h2>Results:</h2>
-        <table border="1">
-            <tr>
-                <th>Position</th>
-                <th>ID</th>
-                <th>Gene Name</th>
-                <th>Select</th>
-                <th>Frequency</th>
-            </tr>
-            {% for entry in snp_data %}
-            <tr>
-                <td>{{ entry['Position'] }}</td>
-                <td>{{ entry['ID'] }}</td>
-                <td>{{ entry['GeneName'] }}</td>
-                <td><input type="checkbox" name="selected_snps" value="{{ entry['ID'] }}"></td>
-                <td>{{ entry['Frequency'] }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5">No data found.</td>
-            </tr>
-            {% endfor %}
-        </table>
-        <input type="submit" value="Submit">
+        <div>
+            <input type="text" id="positionSearch" placeholder="Search Position">
+            <input type="text" id="snpIdSearch" placeholder="Search SNP ID">
+            <input type="text" id="geneNameSearch" placeholder="Search Gene Name">
+        </div>
+        <div class="scrollTable">
+            <table border="1">
+                <thead class="fixedHeader">
+                    <tr>
+                        <th>Pos</th>
+                        <th>ID</th>
+                        <th>Gene Name</th>
+                        <th>Frequency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in snp_data %}
+                    <tr class="clickable-row" data-snp-id="{{ entry['ID'] }}">
+                        <td>{{ entry['Position'] }}</td>
+                        <td>{{ entry['ID'] }}</td>
+                        <td>{{ entry['GeneName'] }}</td>
+                        <td>{{ entry['Frequency'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No data found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Hidden input to store selected SNP IDs -->
+        <input type="hidden" id="selectedSnps" name="selected_snps">
+        <input type="submit" value="Analyze">
     </form>
+
+    <script>
+        $(document).ready(function() {
+            // Highlight and select row on click
+            $(document).on('click', '.clickable-row', function() {
+                $(this).toggleClass('selected-row');
+                var selectedIds = $('.selected-row').map(function() {
+                    return $(this).data('snp-id');
+                }).get();
+                $('#selectedSnps').val(selectedIds.join(','));
+            });
+
+            // Autocomplete setups
+            $("#positionSearch").autocomplete({ source: ['Sample1', 'Sample2'] });
+            $("#snpIdSearch").autocomplete({ source: ['ID1', 'ID2'] });
+            $("#geneNameSearch").autocomplete({ source: ['Gene1', 'Gene2'] });
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
-
 {% endblock %}
