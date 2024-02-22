@@ -561,6 +561,7 @@ def snp_analysis():
         return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
 
 
+
 # Start the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
