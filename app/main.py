@@ -488,58 +488,42 @@ def snp_analysis():
     cursor = db.cursor()
 
     populations = ['AFR', 'AMR', 'EAS', 'EUR', 'SAS', 'ACB', 'ASW', 'BEB', 'CDX', 'CEU', 'CHB', 'CHS', 'CLM', 'ESN', 'FIN', 'GBR', 'GIH', 'GWD', 'IBS', 'ITU', 'JPT', 'KHV', 'LWK', 'MSL', 'MXL', 'PEL', 'PJL', 'PUR', 'SIB', 'STU', 'TSI', 'YRI']
-
     if request.method == 'POST':
-        print(request.form)
         selected_snps = request.form.getlist('selected_snps[]')
         selected_populations = request.form.getlist('selected_populations[]')
 
         if not selected_populations:
             return "No population selected", 400
 
-        # Query database and process results
-        snp_results = {}
-        for pop in selected_populations:
-            population_column = f"{pop}_Frequency"
-            placeholders = ','.join('?' * len(selected_snps))
-            query = f"SELECT ID, GeneName, {population_column}, ClinicalSignificance FROM SNP_Data WHERE ID IN ({placeholders})"
-            cursor.execute(query, selected_snps)
-            results = cursor.fetchall()
+        # Base query with all the static columns
 
-            for row in results:
-                snp_id = row[0]
-                if snp_id not in snp_results:
-                    snp_results[snp_id] = {
-                        'GeneName': row[1],
-                        'ClinicalSignificance': row[3],
-                        'Frequencies': {}
-                    }
-                snp_results[snp_id]['Frequencies'][pop] = row[2]
+        base_query = """
+            SELECT SNPID, GeneName, Chromosome, Position, ID, REF, ALT, GeneType,
+                   ClinicalSignificance, ExonicFunction, DistanceToAdjacentGenes
+        """
+       
+        # Add dynamic selection for frequency columns
+        frequency_columns = ', '.join(f"{pop}_Frequency" for pop in selected_populations)
+        query = f"{base_query}, {frequency_columns} FROM SNP_Data WHERE ID IN ({','.join(['?'] * len(selected_snps))})"
+        cursor.execute(query, selected_snps)
+        results = cursor.fetchall()
 
-        flat_results = []
-        for snp_id, info in snp_results.items():
-            for pop in selected_populations:
-                entry = {
-                    'Population': pop,
-                    'SNP ID': snp_id,
-                    'Gene Name': info['GeneName'],
-                    'Clinical Significance': info['ClinicalSignificance'],
-                    'Allele Frequency': info['Frequencies'].get(pop, 'N/A')
-                }
-                flat_results.append(entry)
+        # Convert the results into a list of dictionaries
+        columns = [desc[0] for desc in cursor.description]
+        snp_data_dicts = [dict(zip(columns, row)) for row in results]
 
-        return render_template('snp_results.html', snp_data=flat_results, selected_populations=selected_populations)
+        return render_template('snp_results.html', snp_data=snp_data_dicts, selected_populations=selected_populations)
     else:
         # Fetching initial SNP data for display
         cursor.execute('SELECT Position, ID, GeneName FROM SNP_Data')
         snp_data = cursor.fetchall()
-        snp_data_dicts = [{'Position': row[0], 'ID': row[1], 'GeneName': row[2]} for row in snp_data]
+        snp_data_dicts = [{col[0]: value for col, value in zip(cursor.description, row)} for row in snp_data]
 
         return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
-
 
 
 
 # Start the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
+
