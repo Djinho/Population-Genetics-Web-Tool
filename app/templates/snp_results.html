@@ -23,42 +23,50 @@
 <body>
     <h1>SNP Analysis Results</h1>
     <table>
-        <thead>
-            <tr>
-                <th>Population</th>
-                <th>SNP ID</th>
-                <th>Gene Name</th>
-                <th>Chromosome</th>
-                <th>Position</th>
-                <th>Reference Allele</th>
-                <th>Alternate Allele</th>
-                <th>Allele Frequency</th>
-                <th>Clinical Significance</th>
-                <th>Exonic Function</th>
-                <th>Distance to Adjacent Genes</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for result in snp_data %}
-            <tr>
-                <td>{{ result['Population'] }}</td>
-                <td>{{ result['SNP ID'] }}</td>
-                <td>{{ result['Gene Name'] }}</td>
-                <td>{{ result['Chromosome'] }}</td>
-                <td>{{ result['Position'] }}</td>
-                <td>{{ result['Reference Allele'] }}</td>
-                <td>{{ result['Alternate Allele'] }}</td>
-                <td>{{ result['Allele Frequency'] }}</td>
-                <td>{{ result['Clinical Significance'] }}</td>
-                <td>{{ result['Exonic Function'] }}</td>
-                <td>{{ result['Distance to Adjacent Genes'] }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="11">No SNP data found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+
+<thead>
+    <tr>
+        <th>Chromosome</th>
+        <th>Position</th>
+        <th>SNP ID</th>
+        <th>rsID</th> <!-- Assuming rsID is to be added and it's equivalent to the 'ID' from your schema -->
+        <th>Reference Allele</th>
+        <th>Alternate Allele</th>
+        <th>Gene Type</th>
+        <th>Gene Name</th>
+        <th>Exonic Function</th>
+        <th>Distance to Exonic Genes</th>
+        <th>Clinical Significance</th>
+        {% for pop in selected_populations %}
+        <th>{{ pop }} Genotype;Allele Frequency</th>
+        {% endfor %}
+    </tr>
+</thead>
+<tbody>
+    {% for result in snp_data %}
+    <tr>
+        <td>{{ result['Chromosome'] }}</td>
+        <td>{{ result['Position'] }}</td>
+        <td>{{ result['SNPID'] }}</td>
+        <td>{{ result['ID'] }}</td> <!-- Assuming this is where the rsID would come from -->
+        <td>{{ result['REF'] }}</td>
+        <td>{{ result['ALT'] }}</td>
+        <td>{{ result['GeneType'] }}</td>
+        <td>{{ result['GeneName'] }}</td>
+        <td>{{ result['ExonicFunction'] }}</td>
+        <td>{{ result['DistanceToAdjacentGenes'] }}</td>
+        <td>{{ result['ClinicalSignificance'] }}</td>
+        {% for pop in selected_populations %}
+        <td>{{ result[pop + '_Frequency'] }}</td>
+        {% endfor %}
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="{{ 11 + selected_populations|length }}">No SNP data found.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
     </table>
 </body>
 </html>
