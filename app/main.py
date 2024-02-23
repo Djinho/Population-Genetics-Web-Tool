@@ -49,15 +49,6 @@ def get_populations():
     populations = cursor.fetchall()
     return jsonify([{'PopulationID': population['PopulationID'], 'PopulationName': population['PopulationName']} for population in populations])
 
-@app.route('/autocomplete/gene_names')
-def autocomplete_gene_names():
-    query = request.args.get('term', '')  # 'term' is a common query parameter used by jQuery UI Autocomplete
-    db = get_db(DATABASE)
-    cursor = db.cursor()
-    cursor.execute("SELECT DISTINCT GeneName FROM SNP_Data WHERE GeneName LIKE ?", (f'%{query}%',))
-    results = cursor.fetchall()
-    gene_names = [result['GeneName'] for result in results]
-    return jsonify(gene_names)
 
 
 # Function to close the database connection
@@ -478,47 +469,20 @@ def calculate_fst():
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
-@app.route('/analysis_tools/snp', methods=['GET', 'POST'])
-def snp_analysis_form():
+
+@app.route('/autocomplete/gene_names')
+def autocomplete_gene_names():
+    query = request.args.get('term', '')  # 'term' is a common query parameter used by jQuery UI Autocomplete
     db = get_db(DATABASE)
     cursor = db.cursor()
-    
-    # Define all available populations
-    populations = ['AFR', 'AMR', 'EAS', 'EUR', 'SAS', 'ACB', 'ASW', 'BEB', 'CDX', 'CEU', 'CHB', 'CHS', 'CLM', 'ESN', 'FIN', 'GBR', 'GIH', 'GWD', 'IBS', 'ITU', 'JPT', 'KHV', 'LWK', 'MSL', 'MXL', 'PEL', 'PJL', 'PUR', 'SIB', 'STU', 'TSI', 'YRI']
+    cursor.execute("SELECT DISTINCT GeneName FROM SNP_Data WHERE GeneName LIKE ?", (f'%{query}%',))
+    results = cursor.fetchall()
+    gene_names = [result['GeneName'] for result in results]
+    return jsonify(gene_names)
 
-    if request.method == 'POST':
-        selected_snps = request.form.getlist('selected_snps')
-        selected_populations = request.form.getlist('selected_populations')
-        
-        if selected_populations:
-            selected_population = selected_populations[0]
-            population_column = selected_population + '_Frequency'
 
-            # Corrected query execution and result processing
-            query = f'SELECT Position, ID, GeneName, {population_column} FROM SNP_Data WHERE ID IN ({",".join(["?"] * len(selected_snps))})'
-            cursor.execute(query, selected_snps)
-            results = cursor.fetchall()
 
-            snp_data_dicts = [{
-                'Position': row[0], 
-                'ID': row[1], 
-                'GeneName': row[2], 
-                'Frequency': row[3]  # Corrected index for frequency
-            } for row in results]
-
-            return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations, selected_populations=selected_populations)
-        else:
-            # Handle the case where no populations are selected
-            return "No population selected", 400
-
-    else:
-        # Handle initial GET request by fetching all SNP data for display
-        cursor.execute('SELECT Position, ID, GeneName FROM SNP_Data')
-        snp_data = cursor.fetchall()
-        snp_data_dicts = [{'Position': row[0], 'ID': row[1], 'GeneName': row[2]} for row in snp_data]
-
-        return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
-
+@app.route('/analysis_tools/snp', methods=['GET', 'POST'])
 @app.route('/snp-analysis', methods=['GET', 'POST'])
 def snp_analysis():
     db = get_db(DATABASE)
@@ -535,7 +499,6 @@ def snp_analysis():
             selected_population = selected_populations[0]
             population_column = selected_population + '_Frequency'
 
-            # Corrected query execution and result processing
             query = f'SELECT Position, ID, GeneName, {population_column} FROM SNP_Data WHERE ID IN ({",".join("?" for _ in selected_snps)})'
             cursor.execute(query, selected_snps)
             results = cursor.fetchall()
@@ -544,23 +507,18 @@ def snp_analysis():
                 'Position': row[0], 
                 'ID': row[1], 
                 'GeneName': row[2], 
-                'Frequency': row[3]  # Corrected index for frequency
+                'Frequency': row[3]
             } for row in results]
 
             return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations, selected_populations=selected_populations)
         else:
-            # Handle the case where no populations are selected
             return "No population selected", 400
-
-    # Initial GET request handling
     else:
         cursor.execute('SELECT Position, ID, GeneName FROM SNP_Data')
         snp_data = cursor.fetchall()
         snp_data_dicts = [{'Position': row[0], 'ID': row[1], 'GeneName': row[2]} for row in snp_data]
 
         return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
-
-
 
 # Start the Flask application
 if __name__ == '__main__':
