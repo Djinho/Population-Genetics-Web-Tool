@@ -1,35 +1,4 @@
 $(document).ready(function() {
-    // Column-specific search functionalities
-    $('#positionSearch').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $("table tbody tr").filter(function() {
-            $(this).toggle($(this).find('td:eq(0)').text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-
-    $('#snpIdSearch').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $("table tbody tr").filter(function() {
-            $(this).toggle($(this).find('td:eq(1)').text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-
-    $('#geneNameSearch').on('keyup', function() {
-        var value = $(this).val().toLowerCase();
-        $("table tbody tr").filter(function() {
-            $(this).toggle($(this).find('td:eq(2)').text().toLowerCase().indexOf(value) > -1)
-        });
-    });
-
-    // Handling checkbox selection for SNPs
-    $('table tbody').on('change', 'input[type="checkbox"]', function() {
-        var selectedSnps = [];
-        $('table tbody input[type="checkbox"]:checked').each(function() {
-            selectedSnps.push($(this).closest('tr').data('snp-id'));
-        });
-        $('#selectedSnps').val(selectedSnps.join(','));
-    });
-
     // Existing code for fetching populations
     fetch('/get_populations')
         .then(response => response.json())
@@ -67,26 +36,15 @@ $(document).ready(function() {
         })
         .catch(error => console.error('Error fetching populations:', error));
 
-    // Handling the analysis button click event
+    // Handling the analysis button click event for admixture analysis
     document.getElementById('analyze-btn').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent default form submission
 
         var formData = {
             geneName: $('#gene-name').val(),
-            superpopulations: [],
-            populations: [],
-            selectedSnps: $('#selectedSnps').val().split(',')
+            superpopulations: $('input[name="superpopulations"]:checked').map(function() { return this.value; }).get(),
+            populations: $('input[name="populations"]:checked').map(function() { return this.value; }).get(),
         };
-
-        // Collect superpopulation checkbox values
-        $('input[name="superpopulations"]:checked').each(function() {
-            formData.superpopulations.push(this.value);
-        });
-
-        // Collect population checkbox values
-        $('input[name="populations"]:checked').each(function() {
-            formData.populations.push(this.value);
-        });
 
         // AJAX request to analyze admixture
         fetch('/analyze_admixture', {

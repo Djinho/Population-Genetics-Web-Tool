@@ -20,7 +20,7 @@
         .scrollTable { 
             display: block; 
             overflow-y: auto; 
-            height: 400px; /* Adjusted height */
+            height: 400px; 
             margin: auto; 
             width: 80%; 
         }
@@ -31,7 +31,7 @@
             background-color: #add8e6;
             color: #000; 
         }
-        .search-boxes { /* Adjusted for alignment */
+        .search-boxes { 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
@@ -40,21 +40,21 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .populations { /* Adjusting for horizontal display */
+        .populations { 
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px; /* Adjust the gap as needed */
+            gap: 15px; 
             margin-bottom: 20px;
         }
-        .populations label { /* Optional: Adjust label styling if needed */
-            display: inline-block; /* Makes labels flow horizontally */
-            margin-right: 10px; /* Adjust spacing between checkboxes */
+        .populations label { 
+            display: inline-block; 
+            margin-right: 10px; 
         }
         th, td {
             text-align: center;
         }
-        .search-box { /* New style for search inputs to match column width */
+        .search-box { 
             width: 100%;
         }
     </style>
@@ -66,7 +66,7 @@
             <h3>Select Population:</h3>
             {% for population in populations %}
             <label>
-                <input type="checkbox" name="selected_populations" value="{{ population }}">
+                <input type="checkbox" name="selected_populations[]" value="{{ population }}">
                 {{ population }}
             </label>
             {% endfor %}
@@ -82,33 +82,52 @@
             <table border="1">
                 <thead class="fixedHeader">
                     <tr>
-                        <th>Pos</th>
+                        <th>Position</th>
                         <th>ID</th>
                         <th>Gene Name</th>
-                        <th>Select</Select></th>
+                        <th>Select</th>
+                        {% for population in selected_populations %}
+                        <th>{{ population }} Allele Frequency</th>
+                        {% endfor %}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="snpTableBody">
                     {% for entry in snp_data %}
                     <tr class="clickable-row" data-snp-id="{{ entry['ID'] }}">
                         <td>{{ entry['Position'] }}</td>
                         <td>{{ entry['ID'] }}</td>
                         <td>{{ entry['GeneName'] }}</td>
-                        <td><input type="checkbox" name="frequency_select_{{ entry['ID'] }}"></td>
+                        <td><input type="checkbox" name="selected_snps[]" value="{{ entry['ID'] }}"></td>
+                        {% for population in selected_populations %}
+                        <td>
+                            <input type="number" step="0.001" name="allele_frequency_{{ entry['ID'] }}_{{ population }}">
+                        </td>
+                        {% endfor %}
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4">No data found.</td>
+                        <td colspan="{{ 4 + selected_populations|length }}">No data found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <input type="hidden" id="selectedSnps" name="selected_snps">
         <input type="submit" value="Analyze">
     </form>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Initialize table filtering if you're including the filter functionality
+        $(document).ready(function() {
+            initializeTableFiltering();
+        });
+
+        // Script to handle form submission and capture selected SNP IDs
+        $('form').submit(function(e) {
+            var selectedSnps = $('input[type="checkbox"][name="selected_snps[]"]:checked')
+                                .map(function() { return this.value; }).get();
+            console.log(selectedSnps); // For debugging, can be removed
+        });
+    </script>
 </body>
 </html>
 {% endblock %}

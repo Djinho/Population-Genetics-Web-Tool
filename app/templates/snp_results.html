@@ -1,34 +1,64 @@
-{% extends "layout.html" %}
-
-{% block content %}
-<div class="snp-results-container">
-    <h2>SNP Analysis Results</h2>
-    {% if snp_data %}
-        <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">SNP ID</th>
-                    <th scope="col">Gene Name</th>
-                    <th scope="col">Position</th>
-                    <th scope="col">Allele Frequency</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for snp in snp_data %}
-                <tr>
-                    <td>{{ snp['ID'] }}</td>
-                    <td>{{ snp['GeneName'] }}</td>
-                    <td>{{ snp['Position'] }}</td>
-                    <td>{{ snp['Frequency'] | default('N/A') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-warning" role="alert">
-            {{ error | default("No SNP data found for the provided criteria.") }}
-        </div>
-    {% endif %}
-</div>
-{% endblock %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNP Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>SNP Analysis Results</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Population</th>
+                <th>SNP ID</th>
+                <th>Gene Name</th>
+                <th>Chromosome</th>
+                <th>Position</th>
+                <th>Reference Allele</th>
+                <th>Alternate Allele</th>
+                <th>Allele Frequency</th>
+                <th>Clinical Significance</th>
+                <th>Exonic Function</th>
+                <th>Distance to Adjacent Genes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in snp_data %}
+            <tr>
+                <td>{{ result['Population'] }}</td>
+                <td>{{ result['SNP ID'] }}</td>
+                <td>{{ result['Gene Name'] }}</td>
+                <td>{{ result['Chromosome'] }}</td>
+                <td>{{ result['Position'] }}</td>
+                <td>{{ result['Reference Allele'] }}</td>
+                <td>{{ result['Alternate Allele'] }}</td>
+                <td>{{ result['Allele Frequency'] }}</td>
+                <td>{{ result['Clinical Significance'] }}</td>
+                <td>{{ result['Exonic Function'] }}</td>
+                <td>{{ result['Distance to Adjacent Genes'] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="11">No SNP data found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
