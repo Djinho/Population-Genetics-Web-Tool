@@ -86,14 +86,21 @@ def admixture_form():
     return render_template('admixture_form.html', populations=populations)
 
 
-
-# Define route for analysis request
 @app.route('/analyze', methods=['POST'])
 def analyze():
     selected_populations = request.form.getlist('populations[]')
-    results = perform_pca(selected_populations)
-    session['results'] = results  # Store the results in the session
-    return redirect(url_for('display_results'))
+    per_sample = request.form.get('perSample')  # Check if Per Sample is selected
+    
+    # Decide which analysis to perform based on the Per Sample checkbox
+    if per_sample:
+        results = perform_pca_individuals(selected_populations)
+        session['results'] = results
+        return redirect(url_for('display_persample_results'))
+    else:
+        results = perform_pca(selected_populations)
+        session['results'] = results
+        return redirect(url_for('display_results'))
+
 
 
 #PCA ANALYSIS 1
@@ -106,6 +113,7 @@ def display_results():
         return "Error: No results data provided."
     plot_url = plot_pca(results)
     return render_template('results.html', results=results, plot_url=plot_url)
+
 # Function to perform PCA analysis
 def perform_pca(selected_populations):
     db = get_db(DATABASE)
@@ -121,6 +129,8 @@ def perform_pca(selected_populations):
     cursor = db.execute(query, selected_populations)
     pca_data = cursor.fetchall()
     return [{'population_name': row['PopulationName'], 'coordinate_id': row['CoordinateID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+
+
 # Function to generate PCA plot
 def plot_pca(pca_results):
     x_coords = [result['pc1'] for result in pca_results]
@@ -140,6 +150,67 @@ def plot_pca(pca_results):
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode('utf8')
     return plot_url
+
+#PER SAMPLE PCA
+def perform_pca_individuals(selected_populations):
+    db = get_db(DATABASE)
+    if db is None:
+        return []
+    placeholders = ','.join('?' for _ in selected_populations)
+    query = f'''
+    SELECT p.PopulationName, i.SampleID, i.PC1, i.PC2
+    FROM individual_pca_coordinates AS i
+    JOIN populations AS p ON i.PopulationID = p.PopulationID
+    WHERE i.PopulationID IN ({placeholders})
+    '''
+    cursor = db.execute(query, selected_populations)
+    pca_data = cursor.fetchall()
+    return [{'population_name': row['PopulationName'], 'sample_id': row['SampleID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+
+
+#DISPLAY PER SAMPLE RESULTS 
+@app.route('/results_persample')
+def display_persample_results():
+    results = session.get('results', None)
+    if results is None:
+        return "Error: No results data provided."
+    plot_url = plot_pca_individuals(results)  # Ensure you modify the plotting function to handle individual results
+    return render_template('Per_sample_pca.html', results=results, plot_url=plot_url)
+
+
+
+#PLOT PCA FOR SAMPLES 
+def plot_pca_individuals(pca_results):
+    # Assuming pca_results includes a 'population_name' for each sample
+    populations = list(set([result['population_name'] for result in pca_results]))
+    # Assign a unique color to each population
+    colors = plt.cm.rainbow(np.linspace(0, 1, len(populations)))
+    population_color_map = dict(zip(populations, colors))
+    
+    plt.figure(figsize=(10, 8))
+    for result in pca_results:
+        x = result['pc1']
+        y = result['pc2']
+        population = result['population_name']
+        plt.scatter(x, y, alpha=0.5, label=population, color=population_color_map[population])
+    
+    # Create a legend with population labels
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))  # Eliminate duplicate labels
+    plt.legend(by_label.values(), by_label.keys(), title="Populations")
+    
+    plt.title('PCA Plot for Individual Samples')
+    plt.xlabel('PC1')
+    plt.ylabel('PC2')
+    
+    img = BytesIO()
+    plt.savefig(img, format='png', bbox_inches='tight')
+    plt.close()
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    return plot_url
+
+
 
 #ADMIXTURE ANALYSIS 2 
 @app.route('/analyze_admixture', methods=['POST'])

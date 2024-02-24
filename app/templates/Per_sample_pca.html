@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>PCA Analysis Results for Individual Samples</h1>
+    <!-- Display a brief description or introduction if needed -->
+    <p>This PCA plot visualizes the genetic variance of individual samples across selected populations, color-coded for clarity.</p>
+    <!-- Display the PCA plot -->
+    <div class="pca-plot-container">
+        <img src="data:image/png;base64,{{ plot_url }}" alt="PCA Plot" class="pca-plot-image">
+    </div>
+</div>
+{% endblock %}

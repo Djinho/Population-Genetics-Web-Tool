@@ -13,13 +13,18 @@
                     <span>{{ population.PopulationName }}</span>
                 </label>
             {% endfor %}
+            <!-- Checkbox for per sample option -->
+            <label class="population-label">
+                <input type="checkbox" id="perSample" name="perSample" value="perSample">
+                <span>Per Sample</span>
+            </label>
         </div>
         <button type="submit" class="btn btn-primary">Analyze</button>
     </fieldset>
 </form>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 <div class="site-footer">
-    <footer class="bottom-banner> 
+    <footer class="bottom-banner"> <!-- Fixed missing quote -->
         <div class="footer-content">
 
             <div class="social-media">
