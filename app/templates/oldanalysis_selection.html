@@ -6,7 +6,7 @@
   <h2 class="center-text">Select Analysis Type</h2>
   <div class="analysis-box">
     <!-- Existing PCA Analysis Box -->
-    <h3><a href="{{ url_for('pca_form') }}">PCA ANALYSIS</a></h3>
+    <h3 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;"><a href="{{ url_for('pca_form') }}">PCA ANALYSIS</a></h3>
     <p>Principal Component Analysis for population stratification.</p>
     <a href="{{ url_for('pca_description') }}">
       <button class="analysis-link">Learn More</button>
@@ -14,7 +14,7 @@
   </div>
   <div class="analysis-box">
     <!-- Existing Admixture Analysis Box -->
-    <h3><a href="{{ url_for('admixture_form') }}">ADMIXTURE ANALYSIS</a></h3>
+    <h3 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;"><a href="{{ url_for('admixture_form') }}">ADMIXTURE ANALYSIS</a></h3>
     <p>Analyze genetic admixture in populations.</p>
     <a href="{{ url_for('admixture_description') }}">
       <button class="analysis-link">Learn More</button>
@@ -22,17 +22,28 @@
   </div>
   <div class="analysis-box">
     <!-- Updated SNP Analysis Box -->
-    <h3><a href="{{ url_for('snp_analysis') }}">SNP ANALYSIS</a></h3>
+    <h3 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;"><a href="{{ url_for('snp_analysis') }}">SNP ANALYSIS</a></h3> <!-- Add this anchor tag -->
     <p>Single Nucleotide Polymorphism frequency analysis.</p>
     <a href="{{ url_for('snp_description') }}">
       <button class="analysis-link">Learn More</button>
     </a>
   </div>
+  <div class="analysis-box">
+    <!-- Updated SNP Analysis Box -->
+    <h3 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;"><a href="{{ url_for('calculate_fst') }}">FST</a></h3> <!-- Add this anchor tag -->
+    <p>FST</p>
+    <a href="{{ url_for('snp_description') }}">
+      <button class="analysis-link">Learn More</button>
+    </a>
+  </div>
+
 </div>
+
 
 <div class="bottom-banner">
   <footer class="site-footer"> 
       <div class="footer-content">
+
           <div class="social-media">
               <a href="#" target="_blank" rel="noopener noreferrer">
                   <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
@@ -41,6 +52,7 @@
           <div class="copyright">
               <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
           </div>
+
       </div>
   </footer>
 </div>
