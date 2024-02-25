@@ -2,32 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-        <header class="site-header">
-            <title>GenomePop Analytics</title>
-            <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-            
-        </header>
-    
+    <title>GenomePop Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="top-banner">
-        <header class="site-header">
-            <nav class="site-nav">
-                <ul>
-                    <li><a href="{{ url_for('index') }}" class="logo-link">GenomePop Analytics</a></li>
-                    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-                </ul>
-            </nav>
-            
-            <nav class="site-nav">
-                <ul>
-                    <li><a href="{{ url_for('index') }}">HOME</a></li>
-                    <li><a href="{{ url_for('analysis_tools') }}">ANALYSIS TOOLS</a></li>
-                    <li><a href="{{ url_for('about') }}">ABOUT</a></li>
-                    <li><a href="{{ url_for('contact') }}">CONTACT</a></li>
-                </ul>
-            </nav>
-        </header>
+        <nav class="site-nav">
+            <ul>
+                <li><a href="{{ url_for('index') }}" class="logo-link">GenomePop Analytics</a></li>
+            </ul>
+        </nav>
+        <nav class="site-nav">
+            <ul>
+                <li><a href="{{ url_for('index') }}">HOME</a></li>
+                <li><a href="{{ url_for('analysis_tools') }}">ANALYSIS TOOLS</a></li>
+                <li><a href="{{ url_for('about') }}">ABOUT</a></li>
+                <li><a href="{{ url_for('contact') }}">CONTACT</a></li>
+            </ul>
+        </nav>
     </div>
     
     <main>
