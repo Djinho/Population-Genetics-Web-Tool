@@ -7,6 +7,7 @@ import base64
 import numpy as np
 import seaborn as sns
 import pandas as pd
+from itertools import combinations
 import re
 import matplotlib
 matplotlib.use('Agg')  # Configure matplotlib to use the Agg backend for generating plots
@@ -281,56 +282,112 @@ def calculate_fst():
         return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
-# SNP ANALAYSIS 4
+# SNP ANALYSIS 4
 @app.route('/autocomplete/gene_names')
 def autocomplete_gene_names():
-    query = request.args.get('term', '')  # 'term' is a common query parameter used by jQuery UI Autocomplete
+    query = request.args.get('term', '')
     db = get_db(DATABASE)
     cursor = db.cursor()
-    cursor.execute("SELECT DISTINCT GeneName FROM SNP_Data WHERE GeneName LIKE ?", (f'%{query}%',))
+    cursor.execute("SELECT DISTINCT GeneName FROM SNP_Data WHERE GeneName LIKE ?", (f'%{query}%,'))
     results = cursor.fetchall()
     gene_names = [result['GeneName'] for result in results]
     return jsonify(gene_names)
+
 @app.route('/analysis_tools/snp', methods=['GET', 'POST'])
 @app.route('/snp-analysis', methods=['GET', 'POST'])
 def snp_analysis():
     db = get_db(DATABASE)
     cursor = db.cursor()
 
-    populations = ['AFR', 'AMR', 'EAS', 'EUR', 'SAS', 'ACB', 'ASW', 'BEB', 'CDX', 'CEU', 'CHB', 'CHS', 'CLM', 'ESN', 'FIN', 'GBR', 'GIH', 'GWD', 'IBS', 'ITU', 'JPT', 'KHV', 'LWK', 'MSL', 'MXL', 'PEL', 'PJL', 'PUR', 'SIB', 'STU', 'TSI', 'YRI']
+    populations = ['ACB', 'ASW', 'BEB', 'CDX', 'CEU', 'CHB', 'CHS', 'CLM', 'ESN', 'FIN', 'GBR', 'GIH', 'GWD', 'IBS', 'ITU', 'JPT', 'KHV', 'LWK', 'MSL', 'MXL', 'PEL', 'PJL', 'PUR', 'SIB', 'STU', 'TSI', 'YRI']
     if request.method == 'POST':
+        action = request.form.get('action')
         selected_snps = request.form.getlist('selected_snps[]')
         selected_populations = request.form.getlist('selected_populations[]')
 
         if not selected_populations:
             return "No population selected", 400
 
-        # Base query with all the static columns
-
-        base_query = """
+        base_query = '''
             SELECT SNPID, GeneName, Chromosome, Position, ID, REF, ALT, GeneType,
                    ClinicalSignificance, ExonicFunction, DistanceToAdjacentGenes
-        """
-       
-        # Add dynamic selection for frequency columns
-        frequency_columns = ', '.join(f"{pop}_Frequency" for pop in selected_populations)
+        '''
+        if not selected_snps:
+            return "No SNP selected", 400
+        frequency_columns = ", ".join(f"{pop}_Frequency" for pop in selected_populations)
         query = f"{base_query}, {frequency_columns} FROM SNP_Data WHERE ID IN ({','.join(['?'] * len(selected_snps))})"
         cursor.execute(query, selected_snps)
         results = cursor.fetchall()
 
-        # Convert the results into a list of dictionaries
         columns = [desc[0] for desc in cursor.description]
         snp_data_dicts = [dict(zip(columns, row)) for row in results]
 
-        return render_template('snp_results.html', snp_data=snp_data_dicts, selected_populations=selected_populations)
+        if action == 'Analyze':
+            return render_template('snp_results.html', snp_data=snp_data_dicts, selected_populations=selected_populations)
+        elif action == 'Calculate FST':
+            fst_values = calculate_fst_from_averages(snp_data_dicts, selected_populations, population_sample_sizes)
+            return render_template('snp_fst.html', fst_values=fst_values, selected_populations=selected_populations)
+        # Handle other actions or missing actions
+        return "Unrecognized action", 400
     else:
-        # Fetching initial SNP data for display
         cursor.execute('SELECT Position, ID, GeneName FROM SNP_Data')
         snp_data = cursor.fetchall()
         snp_data_dicts = [{col[0]: value for col, value in zip(cursor.description, row)} for row in snp_data]
-
         return render_template('snp_analysis.html', snp_data=snp_data_dicts, populations=populations)
+    
+population_sample_sizes = {'SIB': 726, 'GBR': 91, 'FIN': 99, 'CHS': 163, 'PUR': 139, 'CDX': 93, 'CLM': 132,
+                                       'IBS': 157, 'PEL': 122, 'PJL': 146, 'KHV': 122, 'ACB': 116, 'GWD': 178, 'ESN': 149,
+                                       'BEB': 131, 'MSL': 99, 'STU': 114, 'ITU': 107, 'CEU': 179, 'YRI': 178, 'CHB': 103,
+                                       'JPT': 104, 'LWK': 99, 'ASW': 74, 'MXL': 97, 'TSI': 107, 'GIH': 103
+                                       }
 
+def extract_frequency(freq_str):
+    if not freq_str or freq_str in ['NaN', '', 'None']:
+        return np.nan
+    try:
+        freq_parts = freq_str.split(';')
+        freq_str = freq_parts[-1]  # Considering the last part as the relevant frequency
+        return float(freq_str)
+    except ValueError:
+        return np.nan
+        
+def calculate_fst_improved(frequencies, sample_sizes):
+    weights = [sample_sizes[pop] for pop in frequencies.keys()]
+    weighted_allele_freq = np.average([freq for freq in frequencies.values()], weights=weights)
+
+    h_within_each_pop = [2 * freq * (1 - freq) for freq in frequencies.values()]
+    weighted_h_within = np.average(h_within_each_pop, weights=weights)
+
+    h_total = 2 * weighted_allele_freq * (1 - weighted_allele_freq)
+
+    fst = (h_total - weighted_h_within) / h_total if h_total > 0 else np.nan
+    return fst
+
+def calculate_fst_from_averages(data_dicts, selected_populations, population_sample_sizes):
+    fst_results = {}
+    for pair in combinations(selected_populations, 2):
+        freq_data = {pop: [] for pop in pair}
+        for snp in data_dicts:
+            for pop in pair:
+                freq = extract_frequency(snp.get(f'{pop}_Frequency'))
+                if not np.isnan(freq):
+                    freq_data[pop].append(freq)
+
+        avg_frequencies = {pop: np.nanmean(freq_data[pop]) if len(freq_data[pop]) > 0 else np.nan for pop in pair}
+        
+        if np.isnan(avg_frequencies[pair[0]]) or np.isnan(avg_frequencies[pair[1]]):
+            fst_results[pair] = np.nan
+        else:
+            sample_sizes = {pop: population_sample_sizes[pop] for pop in pair}
+            fst_results[pair] = calculate_fst_improved(avg_frequencies, sample_sizes)
+
+    fst_matrix = pd.DataFrame(index=selected_populations, columns=selected_populations, dtype=float)
+    for (pop1, pop2), avg_fst in fst_results.items():
+        fst_matrix.at[pop1, pop2] = avg_fst
+        fst_matrix.at[pop2, pop1] = avg_fst
+    np.fill_diagonal(fst_matrix.values, 0)
+
+    return fst_matrix
 
  #ABOUT PAGES
 
