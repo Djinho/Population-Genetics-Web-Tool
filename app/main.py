@@ -348,7 +348,7 @@ def calculate_fst_from_averages(data_dicts, selected_populations, population_sam
     for index, row in fst_matrix.reset_index().iterrows():
         row_dict = {"Population": row["index"]}
         for pop in selected_populations:
-            row_dict[pop] = round(row[pop], 3) if pd.notnull(row[pop]) else "N/A"
+            row_dict[pop] = round(row[pop], 7) if pd.notnull(row[pop]) else "N/A"
         html_fst_matrix_list.append(row_dict)
 
     heatmap_json = generate_heatmap(fst_matrix)
@@ -367,6 +367,28 @@ population_sample_sizes = {'SIB': 726, 'GBR': 91, 'FIN': 99, 'CHS': 163, 'PUR': 
                                        'BEB': 131, 'MSL': 99, 'STU': 114, 'ITU': 107, 'CEU': 179, 'YRI': 178, 'CHB': 103,
                                        'JPT': 104, 'LWK': 99, 'ASW': 74, 'MXL': 97, 'TSI': 107, 'GIH': 103
                                        }
+
+def round_and_preserve_format(value):
+    # Return a default value if input is None
+    if value is None:
+        return 'N/A'  
+    def process_element(element):
+        try:
+            return str(round(float(element), 3))
+        except ValueError:  # In case the element can't be converted to float
+            return element
+    try:
+        genotype_part, allele_freq_part = value.split(';')
+        genotypes = genotype_part.split(':')
+        rounded_genotypes = [process_element(g) for g in genotypes]
+        rounded_genotype_part = ":".join(rounded_genotypes)
+        rounded_allele_freq_part = process_element(allele_freq_part)
+        return f"{rounded_genotype_part};{rounded_allele_freq_part}"
+    except ValueError:  # In case the value doesn't follow the expected format
+        return value  # Return the original value or a placeholder if preferred
+
+app.jinja_env.filters['round_preserve'] = round_and_preserve_format
+
 
 @app.route('/autocomplete/gene_names')
 def autocomplete_gene_names():
@@ -428,7 +450,6 @@ def snp_analysis():
 def download_route(filename):
     tmp_directory = os.path.join(os.path.dirname(__file__), 'tmp')
     return send_from_directory(tmp_directory, filename, as_attachment=True)
-
  #ABOUT PAGES
 
  # Define route for PCA description page
