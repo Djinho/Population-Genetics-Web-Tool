@@ -11,7 +11,7 @@
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <style>
-        .fixedHeader { 
+        .fixedHeader, .populations { 
             position: sticky; 
             top: 0; 
             background-color: #fff; 
@@ -20,7 +20,7 @@
         .scrollTable { 
             display: block; 
             overflow-y: auto; 
-            height: 400px; 
+            height: 500px; /* Adjusted height to make the table longer */
             margin: auto; 
             width: 80%; 
         }
@@ -39,6 +39,8 @@
             width: 80%;
             margin-left: auto;
             margin-right: auto;
+            position: relative; /* Ensure it's not part of the scrollable area */
+            z-index: 2;
         }
         .populations { 
             display: flex;
@@ -61,25 +63,27 @@
 </head>
 <body>
     <h1>SNP Analysis</h1>
-    <form action="/snp-analysis" method="post">
+    <form action="/snp-analysis" method="post" target="_blank">
         <div class="populations">
             <h3>Select Population:</h3>
+            <button type="button" id="select-all-pop">Select All</button>
+            <button type="button" id="deselect-all-pop">Deselect All</button>
             {% for population in populations %}
             <label>
-                <input type="checkbox" name="selected_populations[]" value="{{ population }}">
+                <input type="checkbox" name="selected_populations[]" class="population-checkbox" value="{{ population }}">
                 {{ population }}
             </label>
             {% endfor %}
         </div>
-        <div id="counter">Maximum genes you can select: <span id="maxCounter">100</span></div>
-
+        <div class="search-boxes">
+            <input class="search-box" type="text" id="positionSearch" placeholder="Search Position">
+            <input class="search-box" type="text" id="snpIdSearch" placeholder="Search SNP ID">
+            <input class="search-box" type="text" id="geneNameSearch" placeholder="Search Gene Name">
+            <!-- Adding Select/Deselect All for table rows -->
+            <button type="button" id="select-all-snps">Select All</button>
+            <button type="button" id="deselect-all-snps">Deselect All</button>
+        </div>
         <div class="scrollTable">
-            <div class="search-boxes">
-                <input class="search-box" type="text" id="positionSearch" placeholder="Search Position">
-                <input class="search-box" type="text" id="snpIdSearch" placeholder="Search SNP ID">
-                <input class="search-box" type="text" id="geneNameSearch" placeholder="Search Gene Name">
-                <div></div> <!-- Placeholder for alignment -->
-            </div>
             <table border="1">
                 <thead class="fixedHeader">
                     <tr>
@@ -98,7 +102,7 @@
                         <td>{{ entry['Position'] }}</td>
                         <td>{{ entry['ID'] }}</td>
                         <td>{{ entry['GeneName'] }}</td>
-                        <td><input type="checkbox" name="selected_snps[]" value="{{ entry['ID'] }}"></td>
+                        <td><input type="checkbox" name="selected_snps[]" class="snp-checkbox" value="{{ entry['ID'] }}"></td>
                         {% for population in selected_populations %}
                         <td>
                             <input type="number" step="0.001" name="allele_frequency_{{ entry['ID'] }}_{{ population }}">
@@ -114,55 +118,10 @@
             </table>
         </div>
         <input type="submit" value="Analyze">
+        <input type="submit" value="Calculate FST" style="margin-left: 10px;">
     </form>
 
-    <script>
-        // Initialize table filtering if you're including the filter functionality
-        $(document).ready(function() {
-            initializeTableFiltering();
-        });
-
-        // Script to handle form submission and capture selected SNP IDs
-        $('form').submit(function(e) {
-            var selectedSnps = $('input[type="checkbox"][name="selected_snps[]"]:checked')
-                                .map(function() { return this.value; }).get();
-            console.log(selectedSnps); // For debugging, can be removed
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            let maxGenes = 100;
-            const counterDisplay = document.getElementById('maxCounter');
-
-  // Function to update the counter
-            function updateCounter() {
-                const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked').length;
-                console.log('Selected Checkboxes:', selectedCheckboxes); // Debugging line
-                counterDisplay.textContent = maxGenes - selectedCheckboxes;
-            }
-
-  // Add change event listener to all checkboxes
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            console.log('Total Checkboxes:', checkboxes.length); // Debugging line
-
-            checkboxes.forEach((checkbox, index) => {
-                checkbox.addEventListener('change', () => {
-                    console.log('Checkbox ' + index + ' changed'); // Debugging line
-                        if(document.querySelectorAll('input[type="checkbox"]:checked').length > maxGenes) {
-                        alert('Maximum limit reached');
-                        checkbox.checked = false;
-                }
-                updateCounter();
-            });
-        });
-
-  // Initialize the counter for the first time
-            updateCounter();
-        });
-
-    </script>
+    <script src="{{ url_for('static', filename='js/snp.js') }}"></script>
 </body>
 </html>
-
-
 {% endblock %}
