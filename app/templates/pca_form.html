@@ -4,24 +4,40 @@
 <h2>PCA Analysis Form</h2>
 <form action="{{ url_for('analyze') }}" method="post" id="pcaForm">
     <fieldset>
-        <legend>Select Populations for PCA Analysis:</legend>
+        <legend>Select Superpopulations for PCA Analysis:</legend>
         <div class="population-container">
-            <!-- Loop through the populations passed from the Flask route and create a checkbox for each one -->
-            {% for population in populations %}
+            {% for population in superpopulations %}
                 <label class="population-label">
-                    <input type="checkbox" id="pop{{ population.PopulationID }}" name="populations[]" value="{{ population.PopulationID }}">
-                    <span>{{ population.PopulationName }}</span>
+                    <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
+                    {{ population.PopulationName }}
                 </label>
             {% endfor %}
-            <!-- Checkbox for per sample option -->
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Select Regular Populations for PCA Analysis:</legend>
+        <div class="population-container">
+            {% for population in regular_populations %}
+                <label class="population-label">
+                    <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
+                    {{ population.PopulationName }}
+                </label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <fieldset>
+        <!-- Checkbox for per sample option -->
             <label class="population-label">
                 <input type="checkbox" id="perSample" name="perSample" value="perSample">
-                <span>Per Sample</span>
+                    <span>Per Sample</span>
             </label>
-        </div>
-        <button type="submit" class="btn btn-primary">Analyze</button>
     </fieldset>
+    <button type="submit">Analyze</button>
 </form>
+
+
+
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 <div class="site-footer">
     <footer class="bottom-banner"> <!-- Fixed missing quote -->

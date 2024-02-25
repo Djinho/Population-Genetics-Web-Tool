@@ -79,9 +79,18 @@ def pca_form():
     db = get_db(DATABASE)
     if db is None:
         return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
-    populations = cursor.fetchall()
-    return render_template('pca_form.html', populations=populations)
+    
+    # Fetch superpopulations
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
+    superpopulations = cursor.fetchall()
+    
+    # Fetch regular populations
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
+    regular_populations = cursor.fetchall()
+
+    # Pass both sets to the template
+    return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
+
 
 # Define route for Admixture form
 @app.route('/analysis_tools/admixture')
@@ -137,6 +146,8 @@ def perform_pca(selected_populations):
     cursor = db.execute(query, selected_populations)
     pca_data = cursor.fetchall()
     return [{'population_name': row['PopulationName'], 'coordinate_id': row['CoordinateID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+
+
 
 
 # Function to generate PCA plot
