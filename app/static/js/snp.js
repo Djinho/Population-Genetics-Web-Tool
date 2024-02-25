@@ -1,102 +1,75 @@
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function initializeTableFiltering() {
-    const positionSearch = $('#positionSearch');
-    const snpIdSearch = $('#snpIdSearch');
-    const geneNameSearch = $('#geneNameSearch');
-    const snpTableBody = $('#snpTableBody');
-
-    function filterTable() {
-        const positionValue = positionSearch.val().toLowerCase();
-        const snpIdValue = snpIdSearch.val().toLowerCase();
-        const geneNameValue = geneNameSearch.val().toLowerCase();
-
-        snpTableBody.find('tr').filter(function() {
-            $(this).toggle(
-                $(this).text().toLowerCase().indexOf(positionValue) > -1 &&
-                $(this).text().toLowerCase().indexOf(snpIdValue) > -1 &&
-                $(this).text().toLowerCase().indexOf(geneNameValue) > -1
-            );
-        });
-    }
-
-    // Debouncing filter function
-    positionSearch.on('keyup', debounce(filterTable, 250));
-    snpIdSearch.on('keyup', debounce(filterTable, 250));
-    geneNameSearch.on('keyup', debounce(filterTable, 250));
-}
-
-
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    let maxGenes = 100;
-    const counterDisplay = document.getElementById('maxCounter');
-  
-    // Function to update the counter
-    function updateCounter() {
-      const selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked').length;
-      console.log('Selected Checkboxes:', selectedCheckboxes); // Debugging line
-      counterDisplay.textContent = maxGenes - selectedCheckboxes;
-    }
-  
-    // Add change event listener to all checkboxes
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    console.log('Total Checkboxes:', checkboxes.length); // Debugging line
-  
-    checkboxes.forEach((checkbox, index) => {
-      checkbox.addEventListener('change', () => {
-        console.log('Checkbox ' + index + ' changed'); // Debugging line
-        if(document.querySelectorAll('input[type="checkbox"]:checked').length > maxGenes) {
-          alert('Maximum limit reached');
-          checkbox.checked = false;
-        }
-        updateCounter();
-      });
-    });
-  
-    // Initialize the counter for the first time
-    updateCounter();
-  });
-  
-  
-
-  
-// This function captures the selected SNP IDs and submits them with the form
-function captureAndSubmitSelectedSNPs() {
-    $('form').submit(function(e) {
-        // Prevent the default form submission to manually handle the data
-        e.preventDefault();
-
-        // Capture selected SNP IDs
-        var selectedSnps = $('input[type="checkbox"][name="selected_snps[]"]:checked')
-                            .map(function() { return this.value; }).get();
-        
-        // Optional: Log the selected SNPs for debugging
-        console.log("Selected SNPs:", selectedSnps);
-
-        // Append selected SNP IDs to a hidden input field or directly submit the form here
-        // For example, you might adjust the form data here if needed before submission
-
-        // Submit the form
-        // e.currentTarget.submit(); // Uncomment this if you need to manually submit after processing
-
-        // If you're using AJAX to submit the form, construct your AJAX request here
-        // and include 'selectedSnps' with the data you're sending to the server
-    });
-}
-
 $(document).ready(function() {
+    function debounce(func, wait) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    function initializeTableFiltering() {
+        var positionSearch = $('#positionSearch');
+        var snpIdSearch = $('#snpIdSearch');
+        var geneNameSearch = $('#geneNameSearch');
+        var tableBody = $('#snpTableBody');
+
+        function filterTableAndScroll() {
+            var positionValue = positionSearch.val().toLowerCase();
+            var snpIdValue = snpIdSearch.val().toLowerCase();
+            var geneNameValue = geneNameSearch.val().toLowerCase();
+            
+            // Temporarily detach table body for efficient manipulation
+            var detachedBody = tableBody.detach();
+            var rows = detachedBody.find('tr').toArray();
+            var foundRow = null;
+
+            rows.forEach(function(row) {
+                var $row = $(row);
+                var rowText = $row.text().toLowerCase();
+                var match = rowText.includes(positionValue) && rowText.includes(snpIdValue) && rowText.includes(geneNameValue);
+                if (match && !foundRow) {
+                    foundRow = $row;
+                }
+                $row.toggle(match);
+            });
+
+            // Reattach the table body
+            $('#snpTableBody').replaceWith(detachedBody);
+
+            if (foundRow) {
+                $('.scrollTable').animate({
+                    scrollTop: foundRow.position().top + $('.scrollTable').scrollTop() - $('.scrollTable').position().top
+                }, 500);
+            } else {
+                $('.scrollTable').scrollTop(0);
+            }
+        }
+
+        var debouncedFilter = debounce(filterTableAndScroll, 250);
+        positionSearch.on('input', debouncedFilter);
+        snpIdSearch.on('input', debouncedFilter);
+        geneNameSearch.on('input', debouncedFilter);
+    }
+
+    // Retaining the existing form submission handling and select/deselect functionalities
+    function handleSelectDeselect() {
+        $('#select-all-pop').click(function() { $('.population-checkbox').prop('checked', true); });
+        $('#deselect-all-pop').click(function() { $('.population-checkbox').prop('checked', false); });
+        $('#select-all-snps').click(function() { $('.snp-checkbox').prop('checked', true); });
+        $('#deselect-all-snps').click(function() { $('.snp-checkbox').prop('checked', false); });
+    }
+
+    $('input[type="submit"]').click(function(e) {
+        e.preventDefault();
+        $('input[name="action"]').remove();
+        $('<input>').attr({ type: 'hidden', name: 'action', value: $(this).val() }).appendTo($(this).closest('form'));
+        $(this).closest('form').submit();
+    });
+
+    // Initialize functionalities
     initializeTableFiltering();
-    // Initialize the function to capture and submit selected SNPs
-    captureAndSubmitSelectedSNPs();
+    handleSelectDeselect();
 });
