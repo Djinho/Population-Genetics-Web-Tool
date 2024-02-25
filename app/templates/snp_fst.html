@@ -1,0 +1,38 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FST Results - GenomePop Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>FST Calculation Results</h1>
+    <p>Below is the pairwise matrix of average FST values calculated for the selected SNP data and populations:</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Population</th>
+                {% for population in fst_values.keys() %}
+                    <th>{{ population }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for pop1, values in fst_values.items() %}
+                <tr>
+                    <td>{{ pop1 }}</td>
+                    {% for pop2 in fst_values.keys() %}
+                        <td>{{ '%0.6f' | format(values.get(pop2, 'N/A')) }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/snp-analysis">Back to SNP Analysis</a>
+</body>
+</html>
+{% endblock %}
