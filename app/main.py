@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template, jsonify, g, redirect, url_for, session
+from flask import Flask, request, render_template, jsonify, g, redirect, url_for, session, send_from_directory
 from flask_session import Session
+from werkzeug.utils import secure_filename
 import sqlite3
 import os
 from io import BytesIO
@@ -12,6 +13,12 @@ import re
 import matplotlib
 matplotlib.use('Agg')  # Configure matplotlib to use the Agg backend for generating plots
 import matplotlib.pyplot as plt
+import plotly
+import plotly.express as px
+import json
+import tempfile
+from flask import send_file
+import uuid
 
 # Configure the Flask app
 app = Flask(__name__)
