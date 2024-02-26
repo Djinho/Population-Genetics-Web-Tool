@@ -285,11 +285,12 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: white;
+    background-color: #f8f8f8;
     background-size: cover ;
     background-image: url('/static/images/Picture 4.png'); /* Update the path accordingly */
     /* Add additional styling properties if needed */
     background-repeat: repeat;
+    
     
 }
 
@@ -579,3 +580,5 @@ input[type="submit"]:hover {
 @media screen and (max-width: 768px) {
     /* Responsive styles for mobile devices */
 }
+
+
