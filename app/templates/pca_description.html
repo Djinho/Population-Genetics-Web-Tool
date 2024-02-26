@@ -1,16 +1,89 @@
 <!-- pca_description.html -->
 {% extends "layout.html" %}
 
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Your head content here (e.g., title, meta tags) -->
+  <style>
+    body {
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      line-height: 1.6;
+      color: #252525;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+  
+    .content {
+      background-color: #fff;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    }
+  
+    h2 {
+      color: #252525;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    }
+  
+    p {
+      margin-bottom: 16px; /* adds space between paragraphs */
+      text-align: justify;
+      line-height:2; /* optional: justifies the text of paragraphs */
+    }
+  
+    /* You can add more styles as needed */
+  </style>
+  
+</head>
+
 {% block content %}
 <div class="content">
-    <h2>PCA Analysis Description</h2>
+    <h2 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 50px; text-align: center;">PRINCIPLE COMPONENT ANALYSIS</h2>
+    <br>
     <p>
-        Here you can add information about what PCA analysis is, how it is used, etc.
+        Principle Component Analysis, also known as PCA, is used for large datasets as a dimensionality reduction method. This is done by transformation of potentially correlated variables into a set with a much smaller size that still retain the original information. It also helps to eliminate or minimise the chances of multicollinearity and overfitting [1]. The key feature of PCA is that it can be used to project sample data onto orthogonal axes comprised of linear combinations or genotypic or allelic values across SNPs. This is chosen so the first principle component can be used to explain the greatest variance amongst the whole data [2]. 
+    </p>
+    <br>
+
+    <p>
+        In population genetics, it can be used to identify ancestry differences between populations and samples, irrespective of any historical patterns in the structure. Population stratification, the differences between allele frequencies that can lead to incorrect associations in disease studies, can be overcome by the use of PCA [3].
+    </p>
+    <br>
+    <p>
+        Using genotype data to conduct PCA to capture structures of populations involves multiple steps. This includes removal of related individuals, and excluding outlier samples which could imply distant relatedness or poor genotyping quality. Additionally, some analyses could require restriction to individuals of homogenous ancestry [4]. 
+    </p>
+    <br>
+    <p style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size:30px;">
+        REFERENCES
+    </p>
+    <br>
+    <p>
+        [1] What is principal component analysis? [Internet]. 2023 [cited 2024 Feb 26]. Available from: <a href="https://www.ibm.com/topics/principal-component-analysis" target="_blank"> https://www.ibm.com/topics/principal-component-analysis </a>
+    </p>
+    <br>
+    <p>
+        [2] McVean G. A genealogical interpretation of Principal Components Analysis. PLoS Genetics. 2009 Oct 16;5(10). doi: <a href="https://doi.org/10.1371/journal.pgen.1000686 " target="_blank">https://doi.org/10.1371/journal.pgen.1000686 </a> 
+    </p>
+    <br> 
+    <p>
+        [3] Reich D, Price AL, Patterson N. Principal component analysis of Genetic Data. Nature Genetics. 2008 May;40(5):491–2. doi: <a href="https://doi.org/10.1038/ng0508-491 " target="_blank">https://doi.org/10.1038/ng0508-491 </a> 
+    </p>
+    <br>
+    <p>
+        [4] Privé F, Luu K, Blum MG, McGrath JJ, Vilhjálmsson BJ. Efficient toolkit implementing best practices for principal component analysis of population genetic data. Bioinformatics. 2020 May 16;36(16):4449–57. doi: <a href="https://doi.org/10.1093/bioinformatics/btaa520 " target="_blank">https://doi.org/10.1093/bioinformatics/btaa520 </a> 
     </p>
 
 
 
 </div>
+
+
+
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 <div class="site-footer">

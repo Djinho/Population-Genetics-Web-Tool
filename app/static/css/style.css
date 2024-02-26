@@ -1,7 +1,11 @@
+html {
+    height: 100%
+}
 body {
     margin: 0;
     padding: 0;
     font-family: 'Bebas Neue', sans-serif;
+
 }
 
 /* Style for the top banner */
@@ -316,11 +320,12 @@ body {
 .site-footer {
     background-color: #005ea2;
     color: #fff;
-    padding: 5px;
+    padding: 27px;
     text-align: center;
     max-width: 1200px;
     margin: auto;
-    font-size: 14px
+    font-size: 14px;
+
 }
 
 .bottom-banner {
@@ -328,6 +333,7 @@ body {
     padding: 5px 0;
     color: #fff;
     font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    
 }
 
 

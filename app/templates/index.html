@@ -11,6 +11,8 @@
         background-image: url('/static/images/Picture 1.png');
         background-repeat: no-repeat;
         background-size: cover;
+        min-height: calc(100vh - [footer-height]); /* Replace [footer-height] with the actual height of your footer */
+        flex: 1;
     }
     .cta-button {
         background-color: #4a8db7;
@@ -111,6 +113,7 @@
 <div class="bottom-banner">
     <footer class="site-footer"> 
         <div class="footer-content">
+
             <div class="social-media">
                 <a href="#" target="_blank" rel="noopener noreferrer">
                     <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
@@ -119,8 +122,17 @@
             <div class="copyright">
                 <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
             </div>
+
         </div>
     </footer>
 </div>
 
+
+
 {% endblock %}
+
+
+
+
+
+
