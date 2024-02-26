@@ -8,32 +8,49 @@
     <title>FST Results - GenomePop Analytics</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        #fstHeatmap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .scrollable-table {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: auto;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
     <h1>FST Calculation Results</h1>
-    <div id="fstHeatmap" style="margin-bottom: 20px;"></div>
+    <div id="fstHeatmap"></div>
     <script type="text/javascript">
         var fstHeatmapData = {{ fst_heatmap_json | safe }};
         Plotly.react('fstHeatmap', fstHeatmapData.data, fstHeatmapData.layout);
     </script>
 
     <h2>Pairwise FST Values</h2>
-    <table>
-        <tr>
-            <th>Population</th>
-            {% for population in selected_populations %}
-                <th>{{ population }}</th>
-            {% endfor %}
-        </tr>
-        {% for row in fst_matrix_list %}
+    <div class="scrollable-table">
+        <table>
             <tr>
-                <td>{{ row['Population'] }}</td>
+                <th>Population</th>
                 {% for population in selected_populations %}
-                    <td>{{ row[population] }}</td>
+                    <th>{{ population }}</th>
                 {% endfor %}
             </tr>
-        {% endfor %}
-    </table>
+            {% for row in fst_matrix_list %}
+                <tr>
+                    <td>{{ row['Population'] }}</td>
+                    {% for population in selected_populations %}
+                        <td>{{ row[population] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
     
     <!-- Using a button element for 'Download FST Matrix CSV' -->
     <button onclick="location.href='{{ url_for('download_route', filename=fst_matrix_csv_filename) }}'" style="margin-right: 10px;">Download FST Matrix CSV</button>
