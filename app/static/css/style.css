@@ -5,25 +5,28 @@ body {
 }
 
 /* Style for the top banner */
-
 .top-banner {
-    background-color: #005ea2; /* Match the color to Ensembl's banner */
+    background-color: #005ea2;
     padding: 10px 0;
-    width: 100%; /* Ensure the banner spans the full width of the page */
+    width: 100%;
+    display: flex; /* Add display flex here */
+    justify-content: center; /* Center the site-header content */
+    align-items: center; /* Align items vertically */
     font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
-/* Style for the site header */
 .site-header {
     max-width: 1200px;
-    margin: 0 auto;
+    width: 100%; /* Add width to ensure it spans the full parent width */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white; /* Make the text color white for visibility */
+    color: white;
 }
 
-.logo-link {
+.logo-link, .logo-link:visited {
+    color: white; /* This will make sure the color stays white */
+    text-decoration: none;
     font-size: 30px;
     font-weight: bold;
 }
@@ -507,7 +510,7 @@ body {
 body {
     font-family: 'Arial', sans-serif; /* Ensures readability */
     background-color: #f4f4f4; /* Soft background color for less eye strain */
-    padding: 20px; /* Spacing around the content for better layout */
+    /* Spacing around the content for better layout */
 }
 
 /* Ensures the form and results are centered and not too wide for readability */

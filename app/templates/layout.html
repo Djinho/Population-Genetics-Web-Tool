@@ -8,20 +8,19 @@
 </head>
 <body>
     <div class="top-banner">
-        <nav class="site-nav">
-            <ul>
-                <li><a href="{{ url_for('index') }}" class="logo-link">GenomePop Analytics</a></li>
-            </ul>
-        </nav>
-        <nav class="site-nav">
-            <ul>
-                <li><a href="{{ url_for('index') }}">HOME</a></li>
-                <li><a href="{{ url_for('analysis_tools') }}">ANALYSIS TOOLS</a></li>
-                <li><a href="{{ url_for('about') }}">ABOUT</a></li>
-                <li><a href="{{ url_for('contact') }}">CONTACT</a></li>
-            </ul>
-        </nav>
+        <div class="site-header"> <!-- Add this div to contain the logo and the navigation -->
+            <a href="{{ url_for('index') }}" class="logo-link">GenomePop Analytics</a>
+            <nav class="site-nav">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">HOME</a></li>
+                    <li><a href="{{ url_for('analysis_tools') }}">ANALYSIS TOOLS</a></li>
+                    <li><a href="{{ url_for('about') }}">ABOUT</a></li>
+                    <li><a href="{{ url_for('contact') }}">CONTACT</a></li>
+                </ul>
+            </nav>
+        </div>
     </div>
+    
     
     <main>
         {% block content %}
