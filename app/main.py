@@ -303,9 +303,23 @@ def calculate_fst():
 # SNP ANALYSIS 4
 # Function to create a Plotly heatmap from the matrix and encode it into JSON
 def generate_heatmap(fst_matrix):
-    fig = px.imshow(fst_matrix, text_auto=True, labels=dict(x="Population", y="Population", color="FST Value"),
-                    x=fst_matrix.columns, y=fst_matrix.index)
-    fig.update_xaxes(side="top")
+    fig = px.imshow(
+        fst_matrix,
+        text_auto=True,
+        labels=dict(x="Population", y="Population", color="FST Value"),
+        x=fst_matrix.columns,
+        y=fst_matrix.index
+    )
+    fig.update_xaxes(side="top", tickangle=-45)  # Rotate x-axis labels
+    fig.update_yaxes(tickangle=45)  # Rotate y-axis labels
+    fig.update_layout(
+        font=dict(size=9),  # Adjust font size if necessary
+        autosize=False,
+        width=1000,  # Increase width to spread out x-axis labels
+        height=600,  # Adjust height if necessary
+        margin=dict(t=50, l=50, b=100, r=50)  # Increase bottom margin
+    )
+    fig.update_traces(showscale=True)  # Ensure the color scale is shown
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 def calculate_fst_improved(frequencies, sample_sizes):
