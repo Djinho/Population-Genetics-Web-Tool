@@ -98,9 +98,11 @@ def admixture_form():
     db = get_db(DATABASE)
     if db is None:
         return "Error: Unable to connect to the database."
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
-    populations = cursor.fetchall()
-    return render_template('admixture_form.html', populations=populations)
+    cursor = db.execute('SELECT PopulationID, PopulationName, is_Superpopulation FROM populations')
+    all_populations = cursor.fetchall()
+    superpopulations = [p for p in all_populations if p['is_Superpopulation'] == 1]
+    regular_populations = [p for p in all_populations if p['is_Superpopulation'] == 0]
+    return render_template('admixture_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
 
 
 @app.route('/analyze', methods=['POST'])
@@ -235,27 +237,30 @@ def plot_pca_individuals(pca_results):
 @app.route('/analyze_admixture', methods=['POST'])
 def analyze_admixture():
     data = request.get_json()
-    selected_populations = data['populations']
+    selected_populations = data.get('populations', [])
+    selected_superpopulations = data.get('superpopulations', [])
+    all_selected = selected_populations + selected_superpopulations
+
     db = get_db(DATABASE)
     cursor = db.cursor()
-    
-    # SQL query to fetch admixture data for selected populations
-    placeholder = ','.join('?' for _ in selected_populations)
+
+    # SQL query to fetch admixture data for selected populations and superpopulations
+    placeholder = ','.join('?' * len(all_selected))
     query = f'''
     SELECT p.PopulationName, a.ancestry_1, a.ancestry_2, a.ancestry_3, a.ancestry_4, a.ancestry_5
     FROM admixture_results AS a
     JOIN populations AS p ON a.PopulationID = p.PopulationID
     WHERE a.PopulationID IN ({placeholder})
     '''
-    
-    cursor.execute(query, selected_populations)
+
+    cursor.execute(query, all_selected)
     rows = cursor.fetchall()
-    
+
     # Convert the rows to the correct Plotly structure
     plot_data = []
     ancestries = ['ancestry_1', 'ancestry_2', 'ancestry_3', 'ancestry_4', 'ancestry_5']
     colors = ['rgba(222,45,38,0.8)', 'rgba(204,204,204,1)', 'rgba(62,150,81,0.8)', 'rgba(107,76,154,0.8)', 'rgba(37,37,37,0.8)']
-    
+
     for i, ancestry in enumerate(ancestries):
         trace = {
             'x': [row['PopulationName'] for row in rows],
@@ -265,8 +270,9 @@ def analyze_admixture():
             'marker': {'color': colors[i]}
         }
         plot_data.append(trace)
-    
+
     return jsonify(plot_data)
+
 
 
 
