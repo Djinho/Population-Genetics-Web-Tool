@@ -11,7 +11,7 @@
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <style>
-        .fixedHeader, .populations { 
+        .fixedHeader, .populations {
             position: sticky; 
             top: 0; 
             background-color: #fff; 
@@ -20,7 +20,7 @@
         .scrollTable { 
             display: block; 
             overflow-y: auto; 
-            height: 500px; /* Adjusted height to make the table longer */
+            height: 500px; 
             margin: auto; 
             width: 80%; 
         }
@@ -39,7 +39,7 @@
             width: 80%;
             margin-left: auto;
             margin-right: auto;
-            position: relative; /* Ensure it's not part of the scrollable area */
+            position: relative; 
             z-index: 2;
         }
         .populations { 
@@ -79,10 +79,10 @@
             <input class="search-box" type="text" id="positionSearch" placeholder="Search Position">
             <input class="search-box" type="text" id="snpIdSearch" placeholder="Search SNP ID">
             <input class="search-box" type="text" id="geneNameSearch" placeholder="Search Gene Name">
-            <!-- Adding Select/Deselect All for table rows -->
             <button type="button" id="select-all-snps">Select All</button>
             <button type="button" id="deselect-all-snps">Deselect All</button>
         </div>
+        <p id="selection-counter">Selected SNPs: 0</p>
         <div class="scrollTable">
             <table border="1">
                 <thead class="fixedHeader">
@@ -121,9 +121,87 @@
         <input type="submit" value="Calculate FST" style="margin-left: 10px;">
     </form>
 
-    <script src="{{ url_for('static', filename='js/snp.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Insert the provided JavaScript functionality here
+            // Prevent default form submission for 'Enter' key in search inputs and execute search logic
+            $('.search-box').keypress(function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent the form submission
+                    filterRowsBasedOnSearch(); // Perform the actual search and filter functionality
+                }
+            });
+
+            // Function to filter rows based on the search input values and scroll to the first match
+            function filterRowsBasedOnSearch() {
+                var positionValue = $('#positionSearch').val().toLowerCase();
+                var snpIdValue = $('#snpIdSearch').val().toLowerCase();
+                var geneNameValue = $('#geneNameSearch').val().toLowerCase();
+                var anyRowFound = false;
+
+                $('#snpTableBody tr').each(function() {
+                    var row = $(this);
+                    var positionMatches = row.find('td:nth-child(1)').text().toLowerCase().includes(positionValue);
+                    var snpIdMatches = row.find('td:nth-child(2)').text().toLowerCase().includes(snpIdValue);
+                    var geneNameMatches = row.find('td:nth-child(3)').text().toLowerCase().includes(geneNameValue);
+
+                    if (positionMatches && snpIdMatches && geneNameMatches && !anyRowFound) {
+                        $('.scrollTable').animate({
+                            scrollTop: row.position().top + $('.scrollTable').scrollTop() - $('.scrollTable').position().top
+                        }, 500);
+                        row.css('background-color', '#add8e6'); // Highlighting logic
+                        anyRowFound = true; // Mark as found
+                    }
+                });
+
+                if (!anyRowFound) {
+                    alert('No matching rows found.');
+                }
+            }
+
+            // Update selection counter
+            function updateSelectionCounter() {
+                var selectedCount = $('.snp-checkbox:checked').length;
+                $('#selection-counter').text('Selected SNPs: ' + selectedCount);
+            }
+
+            $('input.snp-checkbox').change(function() {
+                updateSelectionCounter();
+            });
+
+            $('#select-all-snps').click(function() {
+                $('.snp-checkbox').prop('checked', true);
+                updateSelectionCounter();
+            });
+
+            $('#deselect-all-snps').click(function() {
+                $('.snp-checkbox').prop('checked', false);
+                updateSelectionCounter();
+            });
+
+            $('#select-all-pop').click(function() { $('.population-checkbox').prop('checked', true); });
+            $('#deselect-all-pop').click(function() { $('.population-checkbox').prop('checked', false); });
+
+            $('input[type="submit"]').click(function(event) {
+                event.preventDefault();
+                var selectedCount = $('input.snp-checkbox:checked').length;
+                var actionValue = $(this).val();
+                if (selectedCount > 100) {
+                    if(confirm('Warning: loading may take a few minutes if selected SNPs exceed 100. Do you want to proceed?')) {
+                        submitForm(actionValue);
+                    }
+                } else {
+                    submitForm(actionValue);
+                }
+            });
+
+            function submitForm(actionValue) {
+                $('input[name="action"]').remove();
+                $('<input>').attr({ type: 'hidden', name: 'action', value: actionValue }).appendTo('form');
+                $('form').submit();
+            }
+        });
+    </script>
 </body>
-
-
 </html>
 {% endblock %}
