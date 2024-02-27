@@ -1,69 +1,88 @@
 $(document).ready(function() {
-    $('.search-box').on('input', function() { // Respond immediately to input changes
-        searchAndScroll();
-    });
+    var tableBody = $('#snpTableBody');
+    var snpIdSearch = $('#snpIdSearch');
+    var geneNameSearch = $('#geneNameSearch');
+    var positionSearch = $('#positionSearch');
 
-    function searchAndScroll() {
-        var positionValue = $('#positionSearch').val().toLowerCase();
-        var snpIdValue = $('#snpIdSearch').val().toLowerCase();
-        var geneNameValue = $('#geneNameSearch').val().toLowerCase();
+    function highlightMatchingRows() {
+        var searchValueSnpId = snpIdSearch.val().toLowerCase().trim();
+        var searchValueGeneName = geneNameSearch.val().toLowerCase().trim();
+        var searchValuePosition = positionSearch.val().toLowerCase().trim();
 
-        var found = false; // Flag to identify if any matching row is found
-        
-        $('#snpTableBody tr').css('background-color', ''); // Reset any previous highlighting
+        // Remove any previous highlight
+        tableBody.find('tr').removeClass('selected-row');
+        let firstMatchFound = false; // Flag to track if the first match has been found
 
-        if (!positionValue && !snpIdValue && !geneNameValue) {
-            // If all search fields are empty, avoid unnecessary processing
+        if (searchValueSnpId === '' && searchValueGeneName === '' && searchValuePosition === '') {
             return;
         }
 
-        $('#snpTableBody tr').each(function() {
-            var $this = $(this);
-            // Extract text for each specified field
-            var positionText = $this.find('td:nth-child(1)').text().toLowerCase();
-            var snpIdText = $this.find('td:nth-child(2)').text().toLowerCase();
-            var geneNameText = $this.find('td:nth-child(3)').text().toLowerCase();
+        var rows = tableBody.find('tr');
 
-            // Check if the row matches all non-empty search fields
-            if (positionText.includes(positionValue) && snpIdText.includes(snpIdValue) && geneNameText.includes(geneNameValue) && !found) {
-                $('html, body').animate({
-                    scrollTop: $this.offset().top - $('.scrollTable').offset().top + $('.scrollTable').scrollTop()
-                }, 500);
-                $this.css('background-color', '#add8e6'); // Highlight the first matching row
-                found = true; // Avoid scrolling to other rows and multiple highlights
+        // Iterate over rows to find and highlight the exact match
+        rows.each(function() {
+            var row = $(this);
+            var cellTextSnpId = row.find('td:nth-child(2)').text().toLowerCase().trim(); // SNP ID is in the second column
+            var cellTextGeneName = row.find('td:nth-child(3)').text().toLowerCase().trim(); // Gene Name is in the third column
+            var cellTextPosition = row.find('td:nth-child(1)').text().toLowerCase().trim(); // Position is in the first column
+
+            // Highlight the row that exactly matches the search value
+            if (cellTextSnpId === searchValueSnpId || cellTextGeneName === searchValueGeneName || cellTextPosition === searchValuePosition) {
+                row.addClass('selected-row');
+                if (!firstMatchFound) {
+                    // Attempt to center the first matching row in the viewport
+                    row[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstMatchFound = true; // Update flag to avoid scrolling to other matches
+                }
             }
         });
+    }
 
-        if (!found) { // Optionally handle case where no rows are found
-            console.log("No matches found!"); // Placeholder action, e.g., showing a message
+    $('.search-box').keypress(function(e) {
+        if (e.which == 13) {
+            e.preventDefault(); // Prevent form submission on 'Enter' press
+            highlightMatchingRows(); // Call function to highlight and scroll
+        }
+    });
+
+    function updateSelectionCounter() {
+        var selectedCount = $('.snp-checkbox:checked').length;
+        $('#selection-counter').text('Selected SNPs: ' + selectedCount);
+        // Alert user when 100 SNPs are selected
+        if (selectedCount === 100) {
+            alert('100 SNPs have been selected.');
         }
     }
 
-    // Implementation for preventing form submission on 'Enter' press
-    $('.search-box').keypress(function(e) {
-        if (e.which == 13) {
-            e.preventDefault();
-          }
-      });
+    $('.snp-checkbox').change(updateSelectionCounter);
 
-      // Corrected: Moved these inside the $(document).ready function
-      // Update selection counter
-      function updateSelectionCounter() {
-          var selectedCount = $('.snp-checkbox:checked').length;
-          $('#selection-counter').text('Selected SNPs: ' + selectedCount);
-      }
-      
-      // Attach event handlers for checkboxes to update the selection counter
-      $('.snp-checkbox').change(updateSelectionCounter);
+    function handleSelectDeselect() {
+        $('#select-all-snps').click(function() {
+            $('.snp-checkbox').prop('checked', true);
+            updateSelectionCounter();
+        });
+        $('#deselect-all-snps').click(function() {
+            $('.snp-checkbox').prop('checked', false);
+            updateSelectionCounter();
+        });
+    }
 
-      // Handlers for 'Select All' and 'Deselect All' actions
-      $('#select-all-snps').click(function() {
-          $('.snp-checkbox').prop('checked', true);
-          updateSelectionCounter();
-      });
-      
-      $('#deselect-all-snps').click(function() {
-          $('.snp-checkbox').prop('checked', false);
-          updateSelectionCounter();
-      });
-  });
+    function handlePopulationSelectDeselect() {
+        $('#select-all-pop').click(function() {
+            $('.population-checkbox').prop('checked', true);
+        });
+        $('#deselect-all-pop').click(function() {
+            $('.population-checkbox').prop('checked', false);
+        });
+    }
+
+    $('input[type="submit"]').click(function(e) {
+        e.preventDefault();
+        $('input[name="action"]').remove();
+        $('<input>').attr({type: 'hidden', name: 'action', value: $(this).val()}).appendTo($(this).closest('form'));
+        $(this).closest('form').submit();
+    });
+
+    handleSelectDeselect();
+    handlePopulationSelectDeselect();
+});

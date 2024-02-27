@@ -506,6 +506,10 @@ body {
 }
 
 
+
+
+
+
 /* Resets to ensure consistency across browsers */
 * {
     box-sizing: border-box;
@@ -582,3 +586,50 @@ input[type="submit"]:hover {
 }
 
 
+
+
+
+
+
+
+
+
+
+.selected-row {
+    background-color: #add8e6 !important; /* Ensures the selected row has a light blue background */
+    /* The !important rule is used to override other background styles on the table row */
+}
+
+/* Styles to prevent the selected row from changing color on hover */
+.selected-row:hover {
+    background-color: #add8e6 !important; /* Keeps the blue background on hover */
+}
+
+/* Adjustments to ensure the autocomplete does not overlap with the header when scrolling */
+.scrollTable {
+    position: relative; /* Ensures that the scrollable table is positioned relative to its container */
+    z-index: 1; /* Lower z-index than the autocomplete to allow dropdown to appear on top */
+}
+
+/* Styles for the search inputs to ensure they are visually distinct */
+.search-box {
+    width: calc(100% - 20px); /* Adjusts width to account for padding */
+    margin-bottom: 10px; /* Adds space below the search box */
+    padding: 5px 10px; /* Padding inside the search box */
+    border: 1px solid #ccc; /* Border for the search box */
+    border-radius: 4px; /* Rounded corners for the search box */
+}
+
+/* Optional: Add a transition effect for the selected row for a smoother visual effect */
+.selected-row {
+    transition: background-color 0.3s ease;
+}
+
+/* Ensures that the input fields for search do not shrink too much on smaller screens */
+@media (max-width: 768px) {
+    .search-box {
+        width: 100%; /* Allows the search box to fill the width of its container on small screens */
+    }
+}
+
+/* Add any additional styles you need for your application below */
