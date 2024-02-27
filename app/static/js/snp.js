@@ -43,29 +43,27 @@ $(document).ready(function() {
     $('.search-box').keypress(function(e) {
         if (e.which == 13) {
             e.preventDefault();
-        }
-    });
+          }
+      });
 
-    // Below this point, append your existing code for selection counters and checkbox handlers
-});
+      // Corrected: Moved these inside the $(document).ready function
+      // Update selection counter
+      function updateSelectionCounter() {
+          var selectedCount = $('.snp-checkbox:checked').length;
+          $('#selection-counter').text('Selected SNPs: ' + selectedCount);
+      }
+      
+      // Attach event handlers for checkboxes to update the selection counter
+      $('.snp-checkbox').change(updateSelectionCounter);
 
-    // Update selection counter
-    function updateSelectionCounter() {
-        var selectedCount = $('.snp-checkbox:checked').length;
-        $('#selection-counter').text('Selected SNPs: ' + selectedCount);
-    }
-    
-    // Attach event handlers for checkboxes to update the selection counter
-    $('.snp-checkbox').change(updateSelectionCounter);
-
-    // Handlers for 'Select All' and 'Deselect All' actions
-    $('#select-all-snps').click(function() {
-        $('.snp-checkbox').prop('checked', true);
-        updateSelectionCounter();
-    });
-    
-    $('#deselect-all-snps').click(function() {
-        $('.snp-checkbox').prop('checked', false);
-        updateSelectionCounter();
-    });
-
+      // Handlers for 'Select All' and 'Deselect All' actions
+      $('#select-all-snps').click(function() {
+          $('.snp-checkbox').prop('checked', true);
+          updateSelectionCounter();
+      });
+      
+      $('#deselect-all-snps').click(function() {
+          $('.snp-checkbox').prop('checked', false);
+          updateSelectionCounter();
+      });
+  });
