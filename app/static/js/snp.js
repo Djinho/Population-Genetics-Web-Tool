@@ -68,4 +68,4 @@ $(document).ready(function() {
         $('.snp-checkbox').prop('checked', false);
         updateSelectionCounter();
     });
-});
+
