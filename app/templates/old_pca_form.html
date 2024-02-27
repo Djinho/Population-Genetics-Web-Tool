@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>PCA Analysis Form</h2>
+<form action="{{ url_for('analyze') }}" method="post" id="pcaForm">
+    <fieldset>
+        <legend>Select Superpopulations for PCA Analysis:</legend>
+        <div class="population-container">
+            {% for population in superpopulations %}
+                <label class="population-label">
+                    <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
+                    {{ population.PopulationName }}
+                </label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Select Regular Populations for PCA Analysis:</legend>
+        <div class="population-container">
+            {% for population in regular_populations %}
+                <label class="population-label">
+                    <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
+                    {{ population.PopulationName }}
+                </label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <fieldset>
+        <!-- Checkbox for per sample option -->
+            <label class="population-label">
+                <input type="checkbox" id="perSample" name="perSample" value="perSample">
+                    <span>Per Sample</span>
+            </label>
+    </fieldset>
+    <button type="submit">Analyze</button>
+</form>
+
+
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="site-footer">
+    <footer class="bottom-banner"> <!-- Fixed missing quote -->
+        <div class="footer-content">
+
+            <div class="social-media">
+                <a href="#" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+</div>
+
+{% endblock %}

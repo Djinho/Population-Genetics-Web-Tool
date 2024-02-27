@@ -19,7 +19,7 @@ import json
 import tempfile
 from flask import send_file
 import uuid
-
+import plotly.graph_objects as go
 # Configure the Flask app
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -72,11 +72,33 @@ def index():
 @app.route('/analysis_tools')
 def analysis_tools():
     return render_template('analysis_selection.html')
+def fetch_superpopulations(db):
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
+    return cursor.fetchall() #ADDITION 
 
+def fetch_regular_populations(db):
+    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
+    return cursor.fetchall()
 # Define route for PCA form
-@app.route('/analysis_tools/pca')
+#@app.route('/analysis_tools/pca')
+#def pca_form():
+ #   db = get_db(DATABASE)
+  #  if db is None:
+   #     return "Error: Unable to connect to the database."
+    
+    # Fetch superpopulations
+    #cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
+    #superpopulations = cursor.fetchall()
+    
+    # Fetch regular populations
+    #cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
+    #regular_populations = cursor.fetchall()
+
+    # Pass both sets to the template
+    #return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
+@app.route('/analysis_tools/pca') #ADDITION 2
 def pca_form():
-    db = get_db(DATABASE)
+    db = get_db(DATABASE)  # Pass DATABASE as an argument to get_db
     if db is None:
         return "Error: Unable to connect to the database."
     
@@ -103,37 +125,65 @@ def admixture_form():
     superpopulations = [p for p in all_populations if p['is_Superpopulation'] == 1]
     regular_populations = [p for p in all_populations if p['is_Superpopulation'] == 0]
     return render_template('admixture_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
+@app.route('/pca_form_with_results')  #ADDITION 3
+def pca_form_with_results():
+    db = get_db(DATABASE)
+    superpopulations = fetch_superpopulations(db)
+    regular_populations = fetch_regular_populations(db)
+    selected_populations = session.get('selected_populations', [])
+    per_sample = session.get('per_sample', False)
+    plot_json = session.get('plot_json', None)
+    
+    return render_template('pca_form.html', 
+                           superpopulations=superpopulations,
+                           regular_populations=regular_populations,
+                           selected_populations=selected_populations,
+                           per_sample=per_sample,
+                           plot_json=plot_json)
 
-
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    selected_populations = request.form.getlist('populations[]')
-    per_sample = request.form.get('perSample')  # Check if Per Sample is selected
+#@app.route('/analyze', methods=['POST'])
+#def analyze():
+ #   selected_populations = request.form.getlist('populations[]')
+  #  per_sample = request.form.get('perSample')  # Check if Per Sample is selected
     
     # Decide which analysis to perform based on the Per Sample checkbox
+   # if per_sample:
+    #    results = perform_pca_individuals(selected_populations)
+     #   session['results'] = results
+      #  return redirect(url_for('display_persample_results'))
+    #else:
+     #   results = perform_pca(selected_populations)
+      #  session['results'] = results
+       # return redirect(url_for('display_results'))
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    selected_populations = request.form.getlist('populations[]') #ADDITION/REPACEMENT
+    per_sample = 'perSample' in request.form
+    session['selected_populations'] = selected_populations
+    session['per_sample'] = per_sample
+
     if per_sample:
         results = perform_pca_individuals(selected_populations)
-        session['results'] = results
-        return redirect(url_for('display_persample_results'))
     else:
         results = perform_pca(selected_populations)
-        session['results'] = results
-        return redirect(url_for('display_results'))
+    plot_json = plot_pca(results)
 
+    session['plot_json'] = plot_json
+    return redirect(url_for('pca_form_with_results'))
 
 
 #PCA ANALYSIS 1
 
 # Define route for displaying PCA results
-@app.route('/results')
-def display_results():
-    results = session.get('results', None)
-    if results is None:
-        return "Error: No results data provided."
-    plot_url = plot_pca(results)
-    return render_template('results.html', results=results, plot_url=plot_url)
+#@app.route('/results')
+#def display_results():
+ #   results = session.get('results', None)
+  #  if results is None:
+   #     return "Error: No results data provided."
+    #plot_url = plot_pca(results)
+    #return render_template('results.html', results=results, plot_url=plot_url)
 
-# Function to perform PCA analysis
+#Function to perform PCA analysis
 def perform_pca(selected_populations):
     db = get_db(DATABASE)
     if db is None:
@@ -153,25 +203,33 @@ def perform_pca(selected_populations):
 
 
 # Function to generate PCA plot
-def plot_pca(pca_results):
-    x_coords = [result['pc1'] for result in pca_results]
-    y_coords = [result['pc2'] for result in pca_results]
-    labels = [result['population_name'] for result in pca_results]
+#def plot_pca(pca_results):
+ #   x_coords = [result['pc1'] for result in pca_results]
+  #  y_coords = [result['pc2'] for result in pca_results]
+   # labels = [result['population_name'] for result in pca_results]
 
-    plt.figure(figsize=(10, 8))
-    plt.scatter(x_coords, y_coords, alpha=0.5)
-    for label, x, y in zip(labels, x_coords, y_coords):
-        plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
-    plt.title('PCA Plot')
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
-    img = BytesIO()
-    plt.savefig(img, format='png', bbox_inches='tight')
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-    return plot_url
-
+    #plt.figure(figsize=(10, 8))
+    #plt.scatter(x_coords, y_coords, alpha=0.5)
+    #for label, x, y in zip(labels, x_coords, y_coords):
+     #   plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
+    #plt.title('PCA Plot')
+    #plt.xlabel('PC1')
+    #plt.ylabel('PC2')
+    #img = BytesIO()
+    #plt.savefig(img, format='png', bbox_inches='tight')
+    #plt.close()
+    #img.seek(0)
+    #plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    #return plot_url
+def plot_pca(pca_data):
+    # Assuming pca_data is already in the correct format
+    df = pd.DataFrame(pca_data)
+    fig = px.scatter(df, x='pc1', y='pc2', color='population_name',
+                     labels={"pc1": "PC1", "pc2": "PC2"}, #ADDITION
+                     title="PCA Plot")
+    fig.update_layout(width=700)  # Adjust width here
+    plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return plot_json
 #PER SAMPLE PCA
 def perform_pca_individuals(selected_populations):
     db = get_db(DATABASE)
@@ -190,46 +248,59 @@ def perform_pca_individuals(selected_populations):
 
 
 #DISPLAY PER SAMPLE RESULTS 
-@app.route('/results_persample')
-def display_persample_results():
-    results = session.get('results', None)
-    if results is None:
-        return "Error: No results data provided."
-    plot_url = plot_pca_individuals(results)  # Ensure you modify the plotting function to handle individual results
-    return render_template('Per_sample_pca.html', results=results, plot_url=plot_url)
+#@app.route('/results_persample')
+#def display_persample_results():
+ #   results = session.get('results', None)
+  #  if results is None:
+   #     return "Error: No results data provided."
+    #plot_url = plot_pca_individuals(results)  # Ensure you modify the plotting function to handle individual results
+    #return render_template('Per_sample_pca.html', results=results, plot_url=plot_url)
 
 
 
 #PLOT PCA FOR SAMPLES 
-def plot_pca_individuals(pca_results):
+#def plot_pca_individuals(pca_results):
     # Assuming pca_results includes a 'population_name' for each sample
-    populations = list(set([result['population_name'] for result in pca_results]))
+ #   populations = list(set([result['population_name'] for result in pca_results]))
     # Assign a unique color to each population
-    colors = plt.cm.rainbow(np.linspace(0, 1, len(populations)))
-    population_color_map = dict(zip(populations, colors))
+  #  colors = plt.cm.rainbow(np.linspace(0, 1, len(populations)))
+   # population_color_map = dict(zip(populations, colors))
     
-    plt.figure(figsize=(10, 8))
-    for result in pca_results:
-        x = result['pc1']
-        y = result['pc2']
-        population = result['population_name']
-        plt.scatter(x, y, alpha=0.5, label=population, color=population_color_map[population])
+    #plt.figure(figsize=(10, 8))
+    #for result in pca_results:
+     #   x = result['pc1']
+      #  y = result['pc2']
+       # population = result['population_name']
+        #plt.scatter(x, y, alpha=0.5, label=population, color=population_color_map[population])
     
     # Create a legend with population labels
-    handles, labels = plt.gca().get_legend_handles_labels()
-    by_label = dict(zip(labels, handles))  # Eliminate duplicate labels
-    plt.legend(by_label.values(), by_label.keys(), title="Populations")
+    #handles, labels = plt.gca().get_legend_handles_labels()
+    #by_label = dict(zip(labels, handles))  # Eliminate duplicate labels
+    #plt.legend(by_label.values(), by_label.keys(), title="Populations")
     
-    plt.title('PCA Plot for Individual Samples')
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
+    #plt.title('PCA Plot for Individual Samples')
+    #plt.xlabel('PC1')
+    #plt.ylabel('PC2')
     
-    img = BytesIO()
-    plt.savefig(img, format='png', bbox_inches='tight')
-    plt.close()
-    img.seek(0)
-    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-    return plot_url
+    #img = BytesIO()
+    #plt.savefig(img, format='png', bbox_inches='tight')
+    #plt.close()
+    #img.seek(0)
+    #plot_url = base64.b64encode(img.getvalue()).decode('utf8')
+    #return plot_url
+def plot_pca_individuals(pca_results):
+    fig = go.Figure()
+    for result in pca_results:
+        fig.add_trace(go.Scatter(x=[result['pc1']], y=[result['pc2']],
+                                 mode='markers', name=result['population_name']))
+    
+    fig.update_layout(
+        title='PCA Plot for Individual Samples',
+        xaxis_title='PC1',                              #ADDITION/REPLACEMENT
+        yaxis_title='PC2',
+        width=700  # Adjust width here
+    )
+    return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 
 
@@ -277,33 +348,33 @@ def analyze_admixture():
 
 
 # FST ANALYSIS 3 
-@app.route('/fst_calculator', methods=['GET', 'POST'])
-def calculate_fst():
-    if request.method == 'POST':
-        population1 = request.form.get('population1')
-        population2 = request.form.get('population2')
+#@app.route('/fst_calculator', methods=['GET', 'POST'])
+#def calculate_fst():
+ #   if request.method == 'POST':
+  #      population1 = request.form.get('population1')
+   #     population2 = request.form.get('population2')
         
-        db = get_db(DATABASE2)
-        cur = db.cursor()
-        cur.execute('SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ? UNION ALL SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ?', (population1, population2, population2, population1))
-        fst_value = cur.fetchone()
+    #    db = get_db(DATABASE2)
+     #   cur = db.cursor()
+      #  cur.execute('SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ? UNION ALL SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ?', (population1, population2, population2, population1))
+       # fst_value = cur.fetchone()
         
-        if fst_value:
-            fst_value = fst_value['fst_value']
-        else:
-            fst_value = 'Not Found'
+        #if fst_value:
+         #   fst_value = fst_value['fst_value']
+        #else:
+         #   fst_value = 'Not Found'
         
-        cur.execute('SELECT DISTINCT population1 FROM fst_data')
-        populations = [row['population1'] for row in cur.fetchall()]
+        #cur.execute('SELECT DISTINCT population1 FROM fst_data')
+        #populations = [row['population1'] for row in cur.fetchall()]
         
-        return render_template('fst_calculator.html', populations=populations, fst_value=fst_value, population1=population1, population2=population2)
-    else:
-        db = get_db(DATABASE2)
-        cur = db.cursor()
-        cur.execute('SELECT DISTINCT population1 FROM fst_data')
-        populations = [row['population1'] for row in cur.fetchall()]
+        #return render_template('fst_calculator.html', populations=populations, fst_value=fst_value, population1=population1, population2=population2)
+    #else:
+     #   db = get_db(DATABASE2)
+      #  cur = db.cursor()
+       # cur.execute('SELECT DISTINCT population1 FROM fst_data')
+        #populations = [row['population1'] for row in cur.fetchall()]
         
-        return render_template('fst_calculator.html', populations=populations, fst_value=None)
+        #return render_template('fst_calculator.html', populations=populations, fst_value=None)
     
 
 # SNP ANALYSIS 4
