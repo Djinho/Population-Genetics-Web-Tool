@@ -72,46 +72,6 @@ def index():
 @app.route('/analysis_tools')
 def analysis_tools():
     return render_template('analysis_selection.html')
-def fetch_superpopulations(db):
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
-    return cursor.fetchall() #ADDITION 
-
-def fetch_regular_populations(db):
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
-    return cursor.fetchall()
-# Define route for PCA form
-#@app.route('/analysis_tools/pca')
-#def pca_form():
- #   db = get_db(DATABASE)
-  #  if db is None:
-   #     return "Error: Unable to connect to the database."
-    
-    # Fetch superpopulations
-    #cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
-    #superpopulations = cursor.fetchall()
-    
-    # Fetch regular populations
-    #cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
-    #regular_populations = cursor.fetchall()
-
-    # Pass both sets to the template
-    #return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
-@app.route('/analysis_tools/pca') #ADDITION 2
-def pca_form():
-    db = get_db(DATABASE)  # Pass DATABASE as an argument to get_db
-    if db is None:
-        return "Error: Unable to connect to the database."
-    
-    # Fetch superpopulations
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
-    superpopulations = cursor.fetchall()
-    
-    # Fetch regular populations
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
-    regular_populations = cursor.fetchall()
-
-    # Pass both sets to the template
-    return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
 
 
 # Define route for Admixture form
@@ -125,182 +85,177 @@ def admixture_form():
     superpopulations = [p for p in all_populations if p['is_Superpopulation'] == 1]
     regular_populations = [p for p in all_populations if p['is_Superpopulation'] == 0]
     return render_template('admixture_form.html', superpopulations=superpopulations, regular_populations=regular_populations)
-@app.route('/pca_form_with_results')  #ADDITION 3
-def pca_form_with_results():
-    db = get_db(DATABASE)
-    superpopulations = fetch_superpopulations(db)
-    regular_populations = fetch_regular_populations(db)
-    selected_populations = session.get('selected_populations', [])
-    per_sample = session.get('per_sample', False)
-    plot_json = session.get('plot_json', None)
-    
-    return render_template('pca_form.html', 
-                           superpopulations=superpopulations,
-                           regular_populations=regular_populations,
-                           selected_populations=selected_populations,
-                           per_sample=per_sample,
-                           plot_json=plot_json)
 
-#@app.route('/analyze', methods=['POST'])
-#def analyze():
- #   selected_populations = request.form.getlist('populations[]')
-  #  per_sample = request.form.get('perSample')  # Check if Per Sample is selected
-    
-    # Decide which analysis to perform based on the Per Sample checkbox
-   # if per_sample:
-    #    results = perform_pca_individuals(selected_populations)
-     #   session['results'] = results
-      #  return redirect(url_for('display_persample_results'))
-    #else:
-     #   results = perform_pca(selected_populations)
-      #  session['results'] = results
-       # return redirect(url_for('display_results'))
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    selected_populations = request.form.getlist('populations[]') #ADDITION/REPACEMENT
-    per_sample = 'perSample' in request.form
-    session['selected_populations'] = selected_populations
-    session['per_sample'] = per_sample
 
-    if per_sample:
-        results = perform_pca_individuals(selected_populations)
-    else:
-        results = perform_pca(selected_populations)
-    plot_json = plot_pca(results)
-
-    session['plot_json'] = plot_json
-    return redirect(url_for('pca_form_with_results'))
 
 
 #PCA ANALYSIS 1
 
-# Define route for displaying PCA results
-#@app.route('/results')
-#def display_results():
- #   results = session.get('results', None)
-  #  if results is None:
-   #     return "Error: No results data provided."
-    #plot_url = plot_pca(results)
-    #return render_template('results.html', results=results, plot_url=plot_url)
+def fetch_superpopulations(db):
+    cursor = db.cursor()
+    cursor.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
+    return cursor.fetchall()
 
-#Function to perform PCA analysis
-def perform_pca(selected_populations):
+def fetch_regular_populations(db):
+    cursor = db.cursor()
+    cursor.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
+    return cursor.fetchall()
+
+
+   
+def fetch_pca_data(selected_ids, per_sample, is_superpopulation=False):
     db = get_db(DATABASE)
-    if db is None:
-        return []
-    placeholders = ','.join('?' for _ in selected_populations)
-    query = f'''
-    SELECT p.PopulationName, c.CoordinateID, c.PC1, c.PC2
-    FROM pca_coordinates AS c
-    JOIN populations AS p ON c.PopulationID = p.PopulationID
-    WHERE c.PopulationID IN ({placeholders})
-    '''
-    cursor = db.execute(query, selected_populations)
-    pca_data = cursor.fetchall()
-    return [{'population_name': row['PopulationName'], 'coordinate_id': row['CoordinateID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+    cursor = db.cursor()
+    data = []
+
+    if per_sample:
+        table = 'individual_pca_coordinates'
+        id_column = 'SampleID'
+    else:
+        table = 'pca_coordinates'
+        id_column = 'CoordinateID'
+
+    population_condition = "p.is_Superpopulation = 1" if is_superpopulation else "p.is_Superpopulation = 0"
+    placeholders = ', '.join(['?'] * len(selected_ids))
+    query = f"""
+        SELECT i.{id_column} AS id, i.pc1, i.pc2, p.PopulationName
+        FROM {table} AS i
+        JOIN populations AS p ON i.PopulationID = p.PopulationID
+        WHERE {population_condition} AND i.PopulationID IN ({placeholders})
+    """
+
+    cursor.execute(query, tuple(selected_ids))
+    rows = cursor.fetchall()
+
+    for row in rows:
+        data_point = {
+            'id': row['id'],
+            'pc1': row['pc1'],
+            'pc2': row['pc2'],
+            'label': row['PopulationName']
+        }
+        data.append(data_point)
+
+    return pd.DataFrame(data)
 
 
 
 
-# Function to generate PCA plot
-#def plot_pca(pca_results):
- #   x_coords = [result['pc1'] for result in pca_results]
-  #  y_coords = [result['pc2'] for result in pca_results]
-   # labels = [result['population_name'] for result in pca_results]
+# Assuming these are the variances for the first 10 principal components
+pc_variances = [157.311, 49.1541, 11.4908, 8.50634, 7.14746, 5.53621, 5.33917, 5.11019, 4.98798, 4.70189]
+total_variance = sum(pc_variances)
+pc1_variance_percentage = (pc_variances[0] / total_variance) * 100
+pc2_variance_percentage = (pc_variances[1] / total_variance) * 100
+overall_variance_percentage = ((pc_variances[0] + pc_variances[1]) / total_variance) * 100
 
-    #plt.figure(figsize=(10, 8))
-    #plt.scatter(x_coords, y_coords, alpha=0.5)
-    #for label, x, y in zip(labels, x_coords, y_coords):
-     #   plt.annotate(label, (x, y), textcoords="offset points", xytext=(0,10), ha='center')
-    #plt.title('PCA Plot')
-    #plt.xlabel('PC1')
-    #plt.ylabel('PC2')
-    #img = BytesIO()
-    #plt.savefig(img, format='png', bbox_inches='tight')
-    #plt.close()
-    #img.seek(0)
-    #plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-    #return plot_url
-def plot_pca(pca_data):
-    # Assuming pca_data is already in the correct format
-    df = pd.DataFrame(pca_data)
-    fig = px.scatter(df, x='pc1', y='pc2', color='population_name',
-                     labels={"pc1": "PC1", "pc2": "PC2"}, #ADDITION
-                     title="PCA Plot")
-    fig.update_layout(width=700)  # Adjust width here
-    plot_json = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return plot_json
-#PER SAMPLE PCA
-def perform_pca_individuals(selected_populations):
-    db = get_db(DATABASE)
-    if db is None:
-        return []
-    placeholders = ','.join('?' for _ in selected_populations)
-    query = f'''
-    SELECT p.PopulationName, i.SampleID, i.PC1, i.PC2
-    FROM individual_pca_coordinates AS i
-    JOIN populations AS p ON i.PopulationID = p.PopulationID
-    WHERE i.PopulationID IN ({placeholders})
-    '''
-    cursor = db.execute(query, selected_populations)
-    pca_data = cursor.fetchall()
-    return [{'population_name': row['PopulationName'], 'sample_id': row['SampleID'], 'pc1': row['PC1'], 'pc2': row['PC2']} for row in pca_data]
+def plot_pca(pca_data, title):
+    if pca_data.empty:
+        return None
 
+    # Updated title to include overall variance percentage
+    updated_title = f"{title} (Overall Variance: {overall_variance_percentage:.2f}%)"
 
-#DISPLAY PER SAMPLE RESULTS 
-#@app.route('/results_persample')
-#def display_persample_results():
- #   results = session.get('results', None)
-  #  if results is None:
-   #     return "Error: No results data provided."
-    #plot_url = plot_pca_individuals(results)  # Ensure you modify the plotting function to handle individual results
-    #return render_template('Per_sample_pca.html', results=results, plot_url=plot_url)
-
-
-
-#PLOT PCA FOR SAMPLES 
-#def plot_pca_individuals(pca_results):
-    # Assuming pca_results includes a 'population_name' for each sample
- #   populations = list(set([result['population_name'] for result in pca_results]))
-    # Assign a unique color to each population
-  #  colors = plt.cm.rainbow(np.linspace(0, 1, len(populations)))
-   # population_color_map = dict(zip(populations, colors))
-    
-    #plt.figure(figsize=(10, 8))
-    #for result in pca_results:
-     #   x = result['pc1']
-      #  y = result['pc2']
-       # population = result['population_name']
-        #plt.scatter(x, y, alpha=0.5, label=population, color=population_color_map[population])
-    
-    # Create a legend with population labels
-    #handles, labels = plt.gca().get_legend_handles_labels()
-    #by_label = dict(zip(labels, handles))  # Eliminate duplicate labels
-    #plt.legend(by_label.values(), by_label.keys(), title="Populations")
-    
-    #plt.title('PCA Plot for Individual Samples')
-    #plt.xlabel('PC1')
-    #plt.ylabel('PC2')
-    
-    #img = BytesIO()
-    #plt.savefig(img, format='png', bbox_inches='tight')
-    #plt.close()
-    #img.seek(0)
-    #plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-    #return plot_url
-def plot_pca_individuals(pca_results):
-    fig = go.Figure()
-    for result in pca_results:
-        fig.add_trace(go.Scatter(x=[result['pc1']], y=[result['pc2']],
-                                 mode='markers', name=result['population_name']))
-    
-    fig.update_layout(
-        title='PCA Plot for Individual Samples',
-        xaxis_title='PC1',                              #ADDITION/REPLACEMENT
-        yaxis_title='PC2',
-        width=700  # Adjust width here
+    fig = px.scatter(
+        pca_data, x='pc1', y='pc2', color='label',
+        title=updated_title,  # Use the updated title here
+        labels={
+            'pc1': f'PC1 ({pc1_variance_percentage:.2f}%)',
+            'pc2': f'PC2 ({pc2_variance_percentage:.2f}%)'
+        }
     )
+    fig.update_layout(margin=dict(l=40, r=40, t=40, b=30))
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+#def plot_pca(pca_data, title):
+ #   if pca_data.empty:
+  #      return "No data available."
+
+   # pc1_variance, pc2_variance, overall_variance_percentage = calculate_variances()
+    
+    # Modify the DataFrame to include PC variances in the hover data
+    #pca_data['PC1 Variance'] = f"{pc1_variance:.2f}"
+   # pca_data['PC2 Variance'] = f"{pc2_variance:.2f}"
+    
+    # Update the title to include the overall variance
+    #updated_title = f"{title} (Overall Variance: {overall_variance_percentage:.2f}%)"
+    
+    #fig = px.scatter(
+     #   pca_data, x='Pc1', y='PC2', color='label',
+      #  hover_data=['PC1 Variance', 'PC2 Variance'],
+       # title=updated_title
+    #)
+    
+    #return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+@app.route('/pca_form_with_results')
+def pca_form_with_results():
+    db = get_db(DATABASE)
+    superpopulations = fetch_superpopulations(db)
+    regular_populations = fetch_regular_populations(db)
+    
+    # Retrieve session data to maintain user selections and plots
+    selected_superpopulations = session.get('selected_superpopulations', [])
+    selected_populations = session.get('selected_populations', [])
+    per_sample_super = session.get('per_sample_super', False)
+    per_sample_pop = session.get('per_sample_pop', False)
+    superpop_plot = session.get('superpop_plot', None)
+    pop_plot = session.get('pop_plot', None)
+
+    # Pass all necessary data to the template
+    return render_template('pca_form.html', 
+                           superpopulations=superpopulations,
+                           regular_populations=regular_populations,
+                           selected_superpopulations=selected_superpopulations,
+                           selected_populations=selected_populations,
+                           per_sample_super=per_sample_super,
+                           per_sample_pop=per_sample_pop,
+                           superpop_plot=superpop_plot,
+                           pop_plot=pop_plot)
+@app.route('/analysis_tools/pca', methods=['GET', 'POST'])
+def pca_form():
+    db = get_db(DATABASE)
+    superpopulations = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1').fetchall()
+    regular_populations = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0').fetchall()
+
+    selected_superpopulations = request.form.getlist('superpopulations[]') if request.method == 'POST' else []
+    selected_populations = request.form.getlist('populations[]') if request.method == 'POST' else []
+    per_sample_superpop = 'perSampleSuperpop' in request.form if request.method == 'POST' else False
+    per_sample_pop = 'perSamplePop' in request.form if request.method == 'POST' else False
+
+    superpop_pca_data = fetch_pca_data(selected_superpopulations, per_sample_superpop, True) if request.method == 'POST' else None
+    pop_pca_data = fetch_pca_data(selected_populations, per_sample_pop, False) if request.method == 'POST' else None
+
+    superpop_plot = plot_pca(superpop_pca_data, 'Superpopulations') if superpop_pca_data is not None else None
+    pop_plot = plot_pca(pop_pca_data, 'Populations') if pop_pca_data is not None else None
+
+
+    return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations, selected_superpopulations=selected_superpopulations, selected_populations=selected_populations, per_sample_superpop=per_sample_superpop, per_sample_pop=per_sample_pop, superpop_plot=superpop_plot, pop_plot=pop_plot)
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    selected_superpopulations = request.form.getlist('superpopulations[]')
+    selected_populations = request.form.getlist('populations[]')
+    per_sample_super = 'perSampleSuperpop' in request.form
+    per_sample_pop = 'perSamplePop' in request.form
+
+    # Fetch PCA data
+    superpop_pca_data = fetch_pca_data(selected_superpopulations, per_sample_super, True) if selected_superpopulations else pd.DataFrame()
+    pop_pca_data = fetch_pca_data(selected_populations, per_sample_pop, False) if selected_populations else pd.DataFrame()
+
+    # Generate plots or set to None if no data
+    superpop_plot_json = plot_pca(superpop_pca_data, "Superpopulation PCA")
+    pop_plot_json = plot_pca(pop_pca_data, "Population PCA")
+
+    # Update session
+    session['selected_superpopulations'] = selected_superpopulations
+    session['selected_populations'] = selected_populations
+    session['per_sample_super'] = per_sample_super
+    session['per_sample_pop'] = per_sample_pop
+    session['superpop_plot'] = superpop_plot_json if superpop_plot_json else ""
+    session['pop_plot'] = pop_plot_json if pop_plot_json else ""
+
+    return redirect(url_for('pca_form_with_results'))
+
 
 
 
