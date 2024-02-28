@@ -167,27 +167,6 @@ def plot_pca(pca_data, title):
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 
-#def plot_pca(pca_data, title):
- #   if pca_data.empty:
-  #      return "No data available."
-
-   # pc1_variance, pc2_variance, overall_variance_percentage = calculate_variances()
-    
-    # Modify the DataFrame to include PC variances in the hover data
-    #pca_data['PC1 Variance'] = f"{pc1_variance:.2f}"
-   # pca_data['PC2 Variance'] = f"{pc2_variance:.2f}"
-    
-    # Update the title to include the overall variance
-    #updated_title = f"{title} (Overall Variance: {overall_variance_percentage:.2f}%)"
-    
-    #fig = px.scatter(
-     #   pca_data, x='Pc1', y='PC2', color='label',
-      #  hover_data=['PC1 Variance', 'PC2 Variance'],
-       # title=updated_title
-    #)
-    
-    #return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
 @app.route('/pca_form_with_results')
 def pca_form_with_results():
     db = get_db(DATABASE)
@@ -301,36 +280,6 @@ def analyze_admixture():
 
 
 
-
-# FST ANALYSIS 3 
-#@app.route('/fst_calculator', methods=['GET', 'POST'])
-#def calculate_fst():
- #   if request.method == 'POST':
-  #      population1 = request.form.get('population1')
-   #     population2 = request.form.get('population2')
-        
-    #    db = get_db(DATABASE2)
-     #   cur = db.cursor()
-      #  cur.execute('SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ? UNION ALL SELECT fst_value FROM fst_data WHERE population1 = ? AND population2 = ?', (population1, population2, population2, population1))
-       # fst_value = cur.fetchone()
-        
-        #if fst_value:
-         #   fst_value = fst_value['fst_value']
-        #else:
-         #   fst_value = 'Not Found'
-        
-        #cur.execute('SELECT DISTINCT population1 FROM fst_data')
-        #populations = [row['population1'] for row in cur.fetchall()]
-        
-        #return render_template('fst_calculator.html', populations=populations, fst_value=fst_value, population1=population1, population2=population2)
-    #else:
-     #   db = get_db(DATABASE2)
-      #  cur = db.cursor()
-       # cur.execute('SELECT DISTINCT population1 FROM fst_data')
-        #populations = [row['population1'] for row in cur.fetchall()]
-        
-        #return render_template('fst_calculator.html', populations=populations, fst_value=None)
-    
 
 # SNP ANALYSIS 4
 # Function to create a Plotly heatmap from the matrix and encode it into JSON
