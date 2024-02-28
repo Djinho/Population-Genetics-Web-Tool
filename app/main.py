@@ -167,40 +167,60 @@ pc1_variance_percentage = (pc_variances[0] / total_variance) * 100
 pc2_variance_percentage = (pc_variances[1] / total_variance) * 100
 overall_variance_percentage = ((pc_variances[0] + pc_variances[1]) / total_variance) * 100
 
+
+# Define function 'plot_pca' that takes data and a title for the plot plot as arguments.
 def plot_pca(pca_data, title):
+    
+    # Check if the input PCA data is empty. If so, exit the function returning None.
     if pca_data.empty:
         return None
 
-    # Updated title to include overall variance percentage
+    # Updated the plot title to include the overall variance percentage, formatted to 2 decimal places.
     updated_title = f"{title} (Overall Variance: {overall_variance_percentage:.2f}%)"
 
+    # Create a scatter plot using Plotly Express, plotting pc1 against pc2, coloured by 'label'.
     fig = px.scatter(
         pca_data, x='pc1', y='pc2', color='label',
         title=updated_title,  # Use the updated title here
         labels={
+            # Label the axes with their respective name and variance percentages.
             'pc1': f'PC1 ({pc1_variance_percentage:.2f}%)',
             'pc2': f'PC2 ({pc2_variance_percentage:.2f}%)'
         }
     )
+    # Update the layout of the plot to have specific margins 
     fig.update_layout(margin=dict(l=40, r=40, t=40, b=30))
+    # Return the plot as a JSON string using Plotly's JSON encoder.
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 
+# Define a route for the PCA form page with results visualised.
 @app.route('/pca_form_with_results')
 def pca_form_with_results():
+    # Connect to the database.
     db = get_db(DATABASE)
+
+    # Fetch list of superpopulations and regular populations from the database.
     superpopulations = fetch_superpopulations(db)
     regular_populations = fetch_regular_populations(db)
     
-    # Retrieve session data to maintain user selections and plots
+    # Retrieve user-selected superpopulations and populations from the session,
+    # defaulting to empty lists if not found.
     selected_superpopulations = session.get('selected_superpopulations', [])
     selected_populations = session.get('selected_populations', [])
+    
+    # Retrieve boolean flags indicating whether to perform per-sample analysis 
+    # for super populations and populations, defaulting to False if not found.
     per_sample_super = session.get('per_sample_super', False)
     per_sample_pop = session.get('per_sample_pop', False)
+    
+    # Retrieve session-stored plots for superpopulations and populations,
+    # defaulting to None if not found.
     superpop_plot = session.get('superpop_plot', None)
     pop_plot = session.get('pop_plot', None)
 
-    # Pass all necessary data to the template
+    # Render tand return the PCA form template, passing in all necesary data 
+    # for the form fields and visualisations.
     return render_template('pca_form.html', 
                            superpopulations=superpopulations,
                            regular_populations=regular_populations,
@@ -210,6 +230,8 @@ def pca_form_with_results():
                            per_sample_pop=per_sample_pop,
                            superpop_plot=superpop_plot,
                            pop_plot=pop_plot)
+
+
 @app.route('/analysis_tools/pca', methods=['GET', 'POST'])
 def pca_form():
     db = get_db(DATABASE)
@@ -229,6 +251,7 @@ def pca_form():
 
 
     return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations, selected_superpopulations=selected_superpopulations, selected_populations=selected_populations, per_sample_superpop=per_sample_superpop, per_sample_pop=per_sample_pop, superpop_plot=superpop_plot, pop_plot=pop_plot)
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     selected_superpopulations = request.form.getlist('superpopulations[]')
