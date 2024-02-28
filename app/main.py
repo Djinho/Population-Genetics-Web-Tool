@@ -270,18 +270,22 @@ def pca_form():
 
 
 
+
 @app.route('/analyze', methods=['POST'])
+# Define function
 def analyze():
+    # Retrieve selected population and superpopulation options from the form submission
     selected_superpopulations = request.form.getlist('superpopulations[]')
     selected_populations = request.form.getlist('populations[]')
+    # Check for 'perSampleSuperpop' and 'perSamplePop' in form submission to determine pltting granularity
     per_sample_super = 'perSampleSuperpop' in request.form
     per_sample_pop = 'perSamplePop' in request.form
 
-    # Fetch PCA data
+    # Fetch PCA data for the selected superpopulations and populations 
     superpop_pca_data = fetch_pca_data(selected_superpopulations, per_sample_super, True) if selected_superpopulations else pd.DataFrame()
     pop_pca_data = fetch_pca_data(selected_populations, per_sample_pop, False) if selected_populations else pd.DataFrame()
 
-    # Generate plots or set to None if no data
+    # Generate plots or set to None if no data 
     superpop_plot_json = plot_pca(superpop_pca_data, "Superpopulation PCA")
     pop_plot_json = plot_pca(pop_pca_data, "Population PCA")
 
