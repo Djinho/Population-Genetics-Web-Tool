@@ -345,39 +345,48 @@ def analyze_admixture():
 
 
 
-# SNP ANALYSIS 4
+# SNP ANALYSIS 
 # Function to create a Plotly heatmap from the matrix and encode it into JSON
 def generate_heatmap(fst_matrix):
+    # Generates heat map using Plotly's imshow function
     fig = px.imshow(
         fst_matrix,
-        text_auto=True,
-        labels=dict(x="Population", y="Population", color="FST Value"),
-        x=fst_matrix.columns,
-        y=fst_matrix.index
+        text_auto=True, # Adds text with heat map dynamically 
+        labels=dict(x="Population", y="Population", color="FST Value"), # Labelling the axis and colour scale 
+        x=fst_matrix.columns, # Assign column names to x-axis.
+        y=fst_matrix.index # Assign row names to the y-axis 
     )
-    fig.update_xaxes(side="top", tickangle=-45)  # Rotate x-axis labels
-    fig.update_yaxes(tickangle=45)  # Rotate y-axis labels
+    fig.update_xaxes(side="top", tickangle=-45)  # Rotate x-axis labels for clarity 
+    fig.update_yaxes(tickangle=45)  # Rotate y-axis labels to avoid overlap 
     fig.update_layout(
         font=dict(size=9),  # Adjust font size if necessary
         autosize=False,
-        width=1000,  # Increase width to spread out x-axis labels
-        height=600,  # Adjust height if necessary
-        margin=dict(t=50, l=50, b=100, r=50)  # Increase bottom margin
+        width=1000,  # Width set to value to avoid overlap.
+        height=600,  # Height specified to ensure all axis labels are visible.
+        margin=dict(t=50, l=50, b=100, r=50)  # Adjust matgins to avoid clipping of labels
     )
     fig.update_traces(showscale=True)  # Ensure the color scale is shown
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+
 def calculate_fst_improved(frequencies, sample_sizes):
+    #Calculate weights for each population based on sample sizes
     weights = [sample_sizes[pop] for pop in frequencies.keys()]
+    # Compute weighted average allele frequencies across populations
     weighted_allele_freq = np.average([freq for freq in frequencies.values()], weights=weights)
 
+    # Calculate expected heterozygosity within each population
     h_within_each_pop = [2 * freq * (1 - freq) for freq in frequencies.values()]
+    # Compute weighted average of within-population heterozygosity 
     weighted_h_within = np.average(h_within_each_pop, weights=weights)
 
+    # Calculate total expected heterozygosity 
     h_total = 2 * weighted_allele_freq * (1 - weighted_allele_freq)
 
+    # Compute Fst, adjusting for division by zero by returning NaN if h_total is zero 
     fst = (h_total - weighted_h_within) / h_total if h_total > 0 else np.nan
     return fst
+
 
 def extract_frequency(freq_str):
     if not freq_str or freq_str in ['NaN', '', 'None']:
