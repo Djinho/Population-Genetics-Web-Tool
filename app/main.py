@@ -232,25 +232,43 @@ def pca_form_with_results():
                            pop_plot=pop_plot)
 
 
+
+
+# Define a route for the PCA analysis tool, supporting both GET and POST methods.
 @app.route('/analysis_tools/pca', methods=['GET', 'POST'])
 def pca_form():
+    
+    # Connect to the database using a helper function.
     db = get_db(DATABASE)
+    
+    # Fetch all superpopulations from the 'populations' table .
     superpopulations = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1').fetchall()
+    # Fetch all regular populations from the 'populations' table.
     regular_populations = db.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0').fetchall()
 
+    # If the method is POST, get selected superpopulation IDs from the form; otherwise, set to empty list.
     selected_superpopulations = request.form.getlist('superpopulations[]') if request.method == 'POST' else []
+    # If the method is POST, get selected population IDs from the form; otherwise, set empty list.
     selected_populations = request.form.getlist('populations[]') if request.method == 'POST' else []
+    
+    # Check if the 'perSampleSuperpop' checkbox is checked in the form (for POST requests).
     per_sample_superpop = 'perSampleSuperpop' in request.form if request.method == 'POST' else False
+    # Check if the 'perSamplePop' checkbox is checked in the form is checked in the form the form (for POST requests).
     per_sample_pop = 'perSamplePop' in request.form if request.method == 'POST' else False
 
+    # Fetch the PCA data for selected superpopulations if the method is POST; else set to None.
     superpop_pca_data = fetch_pca_data(selected_superpopulations, per_sample_superpop, True) if request.method == 'POST' else None
+    # Fetch PCA data for selected populations if the method is POST; else set to None.
     pop_pca_data = fetch_pca_data(selected_populations, per_sample_pop, False) if request.method == 'POST' else None
 
+    # Generates plots for superpopulations and populations if the data is available else set to None.
     superpop_plot = plot_pca(superpop_pca_data, 'Superpopulations') if superpop_pca_data is not None else None
     pop_plot = plot_pca(pop_pca_data, 'Populations') if pop_pca_data is not None else None
 
-
+    # Render the PCA form template, passing all neccesary data for display 
     return render_template('pca_form.html', superpopulations=superpopulations, regular_populations=regular_populations, selected_superpopulations=selected_superpopulations, selected_populations=selected_populations, per_sample_superpop=per_sample_superpop, per_sample_pop=per_sample_pop, superpop_plot=superpop_plot, pop_plot=pop_plot)
+
+
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
