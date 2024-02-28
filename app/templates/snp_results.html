@@ -53,12 +53,12 @@
                 <td>{{ result['SNPID'] }}</td>
                 <td>{{ result['ID'] }}</td>
                 <td>{{ result['REF'] }}</td>
-                <td>{{ result['ALT'] }}</td>
-                <td>{{ result['GeneType'] }}</td>
+                <td>{{ result['ALT'] | default('N/A', true) | replace('.', 'N/A') }}</td>
+                <td>{{ result['GeneType'] | replace('_', ' ') }}</td>
                 <td>{{ result['GeneName'] }}</td>
-                <td>{{ result['ExonicFunction'] }}</td>
-                <td>{{ result['DistanceToAdjacentGenes'] }}</td>
-                <td>{{ result['ClinicalSignificance'] }}</td>
+                <td>{{ result['ExonicFunction'] | default('N/A', true) | replace('.', 'N/A') | replace('_', ' ')}}</td>
+                <td>{{ result['DistanceToAdjacentGenes'] if result['DistanceToAdjacentGenes'] != '.' else 'N/A' }}</td>
+                <td>{{ result['ClinicalSignificance'] | default('N/A', true) | replace('.', 'N/A') | replace('_', ' ')}}</td>
                 {% for pop in selected_populations %}
                 <!-- Apply the custom filter to round and preserve data format -->
                 <td>{{ result[pop + '_Frequency'] | round_preserve }}</td>
