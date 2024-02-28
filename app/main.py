@@ -84,24 +84,36 @@ def admixture_form():
 
 
 #PCA ANALYSIS 1
-
+#Define function to fetch Superpopulation data from database.
 def fetch_superpopulations(db):
+    # Create a cursor object from the database connection.
+    # The cursor is used to execute SQL queries
     cursor = db.cursor()
+    # Execute SQL query using the cursor. Selects PopulationID 
+    # and PopulationName columns from the 'populations' where the 
+    #'is_Superpopulation' column is set to 1, indicating true
     cursor.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 1')
+    # Fetch and return the results of the executed query
     return cursor.fetchall()
 
+# Define function to fetch superpopulation data from the database 
 def fetch_regular_populations(db):
+    #create cursor object from the databse connection to execute SQL commands 
     cursor = db.cursor()
+    # Execute an SQL query to select population IDs and names from the 'populations' table
     cursor.execute('SELECT PopulationID, PopulationName FROM populations WHERE is_Superpopulation = 0')
+    # Fetch and return the results of the executed query
     return cursor.fetchall()
 
 
    
 def fetch_pca_data(selected_ids, per_sample, is_superpopulation=False):
+    # Connect to the database using a helper function and get a cursor object.
     db = get_db(DATABASE)
     cursor = db.cursor()
-    data = []
-
+    data = [] # Intialise an empty list to store the results 
+    
+    # Decide which table and column to use based on whether the data should be per sample.
     if per_sample:
         table = 'individual_pca_coordinates'
         id_column = 'SampleID'
@@ -109,8 +121,15 @@ def fetch_pca_data(selected_ids, per_sample, is_superpopulation=False):
         table = 'pca_coordinates'
         id_column = 'CoordinateID'
 
+    # Construct a condition for the query based on whether to filter by superpopulation.
     population_condition = "p.is_Superpopulation = 1" if is_superpopulation else "p.is_Superpopulation = 0"
+    
+    # Create a string of placeholders for the SQL query parameters.
     placeholders = ', '.join(['?'] * len(selected_ids))
+    
+    # Construct the SQL query string dynamically using table and column names 
+    # and filter conditions. This query selects PCA coordinates and population names 
+    # for the specified IDs and population type 
     query = f"""
         SELECT i.{id_column} AS id, i.pc1, i.pc2, p.PopulationName
         FROM {table} AS i
@@ -118,18 +137,24 @@ def fetch_pca_data(selected_ids, per_sample, is_superpopulation=False):
         WHERE {population_condition} AND i.PopulationID IN ({placeholders})
     """
 
+    # Execute the query with the list of selected IDs.
     cursor.execute(query, tuple(selected_ids))
     rows = cursor.fetchall()
 
+
+    #Loop through the fetched rows to construct a list og dictionaries 
+    # each representing a data point.
+
     for row in rows:
         data_point = {
-            'id': row['id'],
-            'pc1': row['pc1'],
-            'pc2': row['pc2'],
+            'id': row['id'], #ID of the sample or coordinate.
+            'pc1': row['pc1'], # The first principal component. 
+            'pc2': row['pc2'], # The secound principal component.
             'label': row['PopulationName']
         }
         data.append(data_point)
 
+    # Convert the list of dictionaries into a pandas DataFrame and return it 
     return pd.DataFrame(data)
 
 
