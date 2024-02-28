@@ -1,47 +1,82 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<style>
+    .population-group, .analysis-settings { margin-bottom: 20px; }
+    .population-item { display: inline-block; margin-right: 15px; }
+    .plot-container { display: flex; justify-content: space-between; margin-top: 20px; }
+    .plot { width: 48%; }
+</style>
 
 <h2>PCA Analysis Form</h2>
-<form action="{{ url_for('analyze') }}" method="post">
+<form action="{{ url_for('analyze') }}" method="POST">
     <fieldset>
-        <legend>Select Superpopulations for PCA Analysis:</legend>
+        <legend>Select Superpopulations:</legend>
         <div class="population-group">
-            {% for population in superpopulations %}
+            {% for superpop in superpopulations %}
             <div class="population-item">
-                <input type="checkbox" id="superpop{{ loop.index }}" name="populations[]" value="{{ population.PopulationID }}" {% if population.PopulationID|string in selected_populations %}checked{% endif %}>
-                <label for="superpop{{ loop.index }}">{{ population.PopulationName }}</label>
+                <input type="checkbox" id="superpop{{ superpop.PopulationID }}" name="superpopulations[]" value="{{ superpop.PopulationID }}" {{ 'checked' if superpop.PopulationID|string in selected_superpopulations }}>
+                <label for="superpop{{ superpop.PopulationID }}">{{ superpop.PopulationName }}</label>
             </div>
             {% endfor %}
         </div>
+        <div class="analysis-settings">
+            <input type="checkbox" id="perSampleSuperpop" name="perSampleSuperpop" {{ 'checked' if per_sample_superpop }}>
+            <label for="perSampleSuperpop">Per Sample (Superpopulations)</label>
+        </div>
     </fieldset>
+    
     <fieldset>
-        <legend>Select Regular Populations for PCA Analysis:</legend>
+        <legend>Select Populations:</legend>
         <div class="population-group">
-            {% for population in regular_populations %}
+            {% for pop in regular_populations %}
             <div class="population-item">
-                <input type="checkbox" id="regpop{{ loop.index }}" name="populations[]" value="{{ population.PopulationID }}" {% if population.PopulationID|string in selected_populations %}checked{% endif %}>
-                <label for="regpop{{ loop.index }}">{{ population.PopulationName }}</label>
+                <input type="checkbox" id="pop{{ pop.PopulationID }}" name="populations[]" value="{{ pop.PopulationID }}" {{ 'checked' if pop.PopulationID|string in selected_populations }}>
+                <label for="pop{{ pop.PopulationID }}">{{ pop.PopulationName }}</label>
             </div>
             {% endfor %}
         </div>
+        <div class="analysis-settings">
+            <input type="checkbox" id="perSamplePop" name="perSamplePop" {{ 'checked' if per_sample_pop }}>
+            <label for="perSamplePop">Per Sample (Populations)</label>
+        </div>
     </fieldset>
-    <div class="analysis-settings">
-        <input type="checkbox" id="perSample" name="perSample" {% if per_sample %}checked{% endif %}>
-        <label for="perSample">Per Sample</label>
-    </div>
+
     <button type="submit">Analyze</button>
 </form>
 
-{% if plot_json %}
-    <div id="pcaPlot"></div>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script>
-        var plotData = JSON.parse('{{ plot_json | safe }}');
-        Plotly.newPlot('pcaPlot', plotData.data, plotData.layout);
-    </script>
-{% else %}
-    <p>No PCA results to display.</p>
-{% endif %}
+<div class="plot-container">
+    <div id="superpopPlot" class="plot"></div>
+    <div id="popPlot" class="plot"></div>
+</div>
+
+<!-- Hidden fields to hold the plot data for JavaScript access -->
+<div style="display:none;">
+    <div id="superpopPlotData">{{ superpop_plot | safe }}</div>
+    <div id="popPlotData">{{ pop_plot | safe }}</div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+// Use getElementById().innerText to get the plot data
+var superpopPlotDataStr = document.getElementById('superpopPlotData').innerText;
+var popPlotDataStr = document.getElementById('popPlotData').innerText;
+
+if (superpopPlotDataStr) {
+    var superpopPlotData = JSON.parse(superpopPlotDataStr);
+    Plotly.newPlot('superpopPlot', superpopPlotData.data, superpopPlotData.layout);
+} else {
+    // Handle the case where there is no superpopulation plot data
+    document.getElementById('superpopPlot').style.display = 'none';
+}
+
+if (popPlotDataStr) {
+    var popPlotData = JSON.parse(popPlotDataStr);
+    Plotly.newPlot('popPlot', popPlotData.data, popPlotData.layout);
+} else {
+    // Handle the case where there is no population plot data
+    document.getElementById('popPlot').style.display = 'none';
+}
+</script>
 
 {% endblock %}
