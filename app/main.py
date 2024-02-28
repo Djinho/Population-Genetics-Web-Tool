@@ -31,9 +31,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, '..', 'sql', 'PopulationGeneticsDB.sqlite')
 #DATABASE2 = os.path.join(BASE_DIR, '..', 'sql', 'fst_matrix.db')
 
-# Print the database paths to console (for debugging)
-print("Database 1 path:", DATABASE)
-#print("Database 2 path:", DATABASE2)
+
 
 def get_db(database):
     db = getattr(g, '_database', None)
@@ -43,17 +41,13 @@ def get_db(database):
         db.execute('PRAGMA foreign_keys = ON')
         db.commit()
     return db
+
 @app.teardown_appcontext
 def close_db(error):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-@app.route('/get_populations')
-def get_populations():
-    db = get_db(DATABASE)
-    cursor = db.execute('SELECT PopulationID, PopulationName FROM populations')
-    populations = cursor.fetchall()
-    return jsonify([{'PopulationID': population['PopulationID'], 'PopulationName': population['PopulationName']} for population in populations])
+
 
 # Function to close the database connection
 @app.teardown_appcontext
