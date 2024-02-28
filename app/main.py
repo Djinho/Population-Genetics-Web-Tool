@@ -389,40 +389,56 @@ def calculate_fst_improved(frequencies, sample_sizes):
 
 
 def extract_frequency(freq_str):
+    # Check if freq_str is empty or represents a missing value
     if not freq_str or freq_str in ['NaN', '', 'None']:
-        return np.nan
+        return np.nan # Return NaN for missing or invalid input
     try:
-        freq_parts = freq_str.split(';')
+        freq_parts = freq_str.split(';') # Split the string by ';' to get parts
         freq_str = freq_parts[-1]  # Considering the last part as the relevant frequency
-        return float(freq_str)
+        return float(freq_str) # Convert the extracted string to a float and return 
     except ValueError:
+        # Handle cases where conversion to float fails
         return np.nan
 
+
+# Define function to calculate Fst from population frequency data
 def calculate_fst_from_averages(data_dicts, selected_populations, population_sample_sizes):
-    fst_results = {}
+    # Initalise a dictionary to store Fst results.
+    fst_results = {} 
+    # Loop over all pairs of selected populations
     for pair in combinations(selected_populations, 2):
+        # Prepare a dictionary to hold freq data for each population in the pair 
         freq_data = {pop: [] for pop in pair}
+        # Loop over all SNPs in the dataset 
         for snp in data_dicts:
+            # For each population in the pair, extract and store frequency data
             for pop in pair:
                 freq = extract_frequency(snp.get(f'{pop}_Frequency'))
+                # Store Frequency if it is not Nan 
                 if not np.isnan(freq):
                     freq_data[pop].append(freq)
 
+        # Calculate average frequencies for each population, handling missing data gracefully
         avg_frequencies = {pop: np.nanmean(freq_data[pop]) if len(freq_data[pop]) > 0 else np.nan for pop in pair}
 
+        # Skip calculation if either population has missing average freqquency
         if np.isnan(avg_frequencies[pair[0]]) or np.isnan(avg_frequencies[pair[1]]):
             fst_results[pair] = np.nan
+        ## Prepare sample sizes for current population pair
         else:
             sample_sizes = {pop: population_sample_sizes[pop] for pop in pair}
             fst_results[pair] = calculate_fst_improved(avg_frequencies, sample_sizes)
 
+    # Intialise a matrix to hold Fst values between all selected populations
     fst_matrix = pd.DataFrame(index=selected_populations, columns=selected_populations, dtype=float)
+    # Populate the matrix with Fst results, ensuring symmetry 
     for (pop1, pop2), avg_fst in fst_results.items():
         fst_matrix.at[pop1, pop2] = avg_fst
         fst_matrix.at[pop2, pop1] = avg_fst
+    # Set diagonal elements to 0, indicating no divergence within populations
     np.fill_diagonal(fst_matrix.values, 0)
     
-    # Prepare data specifically for HTML display
+    # Prepare data specifically for HTML display by converting to a list of dictionaaries
     html_fst_matrix_list = []
     for index, row in fst_matrix.reset_index().iterrows():
         row_dict = {"Population": row["index"]}
@@ -430,15 +446,20 @@ def calculate_fst_from_averages(data_dicts, selected_populations, population_sam
             row_dict[pop] = round(row[pop], 7) if pd.notnull(row[pop]) else "N/A"
         html_fst_matrix_list.append(row_dict)
 
+    # Generate heatmap representation of Fst matrix 
     heatmap_json = generate_heatmap(fst_matrix)
+    # Ensure a temporary directory exists for storing the Fst matrix as a CSV File 
     tmp_directory = os.path.join(os.path.dirname(__file__), 'tmp')
     if not os.path.exists(tmp_directory):
         os.makedirs(tmp_directory)
     import uuid
+    # Generate a unique filename for the Fst matrix CSV 
     fst_matrix_csv_filename = f'fst_matrix_{uuid.uuid4()}.csv'
     fst_matrix_csv_path = os.path.join(tmp_directory, fst_matrix_csv_filename)
+    # Save the Fst matrix CSV format
     fst_matrix.to_csv(fst_matrix_csv_path)
 
+    # Return the Fst matrix, heatmeap JSON, CSV filename, and HTML-friendly matrix list 
     return fst_matrix, heatmap_json, fst_matrix_csv_filename, html_fst_matrix_list
 
 population_sample_sizes = {'SIB': 726, 'GBR': 91, 'FIN': 99, 'CHS': 163, 'PUR': 139, 'CDX': 93, 'CLM': 132,
@@ -446,6 +467,9 @@ population_sample_sizes = {'SIB': 726, 'GBR': 91, 'FIN': 99, 'CHS': 163, 'PUR': 
                                        'BEB': 131, 'MSL': 99, 'STU': 114, 'ITU': 107, 'CEU': 179, 'YRI': 178, 'CHB': 103,
                                        'JPT': 104, 'LWK': 99, 'ASW': 74, 'MXL': 97, 'TSI': 107, 'GIH': 103
                                        }
+
+
+
 
 def round_and_preserve_format(value):
     # Return a default value if input is None
