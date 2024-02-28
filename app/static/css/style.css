@@ -156,7 +156,9 @@ body {
     align-items: center;
     text-align: center;
     flex:1;
-    min-height: 200px;
+    min-height: 200px; /* Stack children vertically */
+    justify-content: space-between; /* Space between items, pushing the button to the bottom */
+
 
     
 }
@@ -630,6 +632,20 @@ input[type="submit"]:hover {
     .search-box {
         width: 100%; /* Allows the search box to fill the width of its container on small screens */
     }
+}
+
+.tutorial-btn{
+    color: #007bff; /* Button/link color */
+    background-color: #f2f2f2; /* Background color for the link/button */
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px; /* Rounded corners for the link/button */
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    display: inline-block; /* This will allow you to set margins and keep the element in line */
+    margin-top: auto;
+    margin-bottom: 0;
 }
 
 /* Add any additional styles you need for your application below */

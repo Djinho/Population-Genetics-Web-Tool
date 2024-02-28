@@ -1,7 +1,81 @@
 {% extends "layout.html" %}
-
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Your head content here (e.g., title, meta tags) -->
+  <style>
+    body {
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      line-height: 1.6;
+      color: #252525;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+  
+    .content {
+      background-color: #fff;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    }
+  
+    h2 {
+      color: #252525;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    }
+  
+    p {
+      margin-bottom: 16px; /* adds space between paragraphs */
+      text-align: justify;
+      line-height:2; /* optional: justifies the text of paragraphs */
+    }
+  
+    /* You can add more styles as needed */
+  </style>
+  
+</head>
+<body>
 {% block content %}
-  <h2>Tutorials</h2>
-  <p>Here you can find various tutorials on how to use our analysis tools...</p>
-  <!-- Tutorial content goes here -->
-{% endblock %}
+    <h2 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 50px; text-align: center; text-decoration: underline;">TUTORIALS</h2>
+      <br>
+      <p style="text-align: center;">Here you can find various tutorials on how to use our analysis tools...</p>
+      <br>
+      <p style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 30px; text-align: center;">PCA</p>
+      <br>
+      <p style="text-align: center;">Select the required populations and press 'analyze' - this will show the PCA results for the selected data. The populations are split into 'superpopulations' and 'populations' allowing the user to distinguish between the two. The 'per sample' button needs to be selected in tandem with the populations to show an sample-centric PCA result.</p>
+      <br>
+      <p style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 30px; text-align: center;">ADMIXTURE ANALYSIS</p>
+      <br>
+      <p style="text-align: center;">Select the required populations and press 'analyze' - this will show the Admixture analysis results for the selected populations, in the format of an interactive barchart side by side. The populations are split into 'superpopulations' and 'populations' allowing the user to distinguish between the two.</p>
+      <br>
+      <p style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 30px; text-align: center;">SNP ANALYSIS</p>
+      <br>
+      <p>Select the required populations and the required SNPs in tandem from the list. Press 'analyze' and this will show the relevant statistics, including genotype and allele frequencies, reference and alternate allele, and their clinical relevance. Pressing the 'Calculate FST' will calculate the FST for the selected SNPs, and a pairwise matrix of these. It will also produce a visual representation (a heatmap) of the selected SNPs and a button which allows you to download the results, including the heatmap. There will be a warning if too many SNPs are selected.</p>
+
+</body>
+
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+<div class="site-footer">
+    <footer class="bottom-banner"> 
+        <div class="footer-content">
+            <div class="social-media">
+                <a href="https://github.com/Djinho/Population-Genetics-Web-Tool" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                </a>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+
+
+
+  {% endblock %}
