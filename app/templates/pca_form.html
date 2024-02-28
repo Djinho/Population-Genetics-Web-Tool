@@ -1,20 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<style>
-    /* Style to make checkboxes and labels appear inline */
-    .population-group {
-        margin-bottom: 20px; /* Space between superpopulations and populations */
-    }
-    .population-item {
-        display: inline-block; /* Display items horizontally */
-        margin-right: 15px; /* Space out the items */
-        margin-top: 5px; /* Space above each item */
-    }
-    .analysis-settings {
-        margin-top: 20px; /* Space above the analysis settings */
-    }
-</style>
+
 <h2>PCA Analysis Form</h2>
 <form action="{{ url_for('analyze') }}" method="post">
     <fieldset>

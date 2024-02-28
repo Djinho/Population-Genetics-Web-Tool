@@ -5,45 +5,13 @@
 <html>
 <head>
   <!-- Your head content here (e.g., title, meta tags) -->
-  <style>
-    body {
-      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-      line-height: 1.6;
-      color: #252525;
-      padding: 20px;
-      background-color: #f8f8f8;
-    }
-  
-    .content {
-      background-color: #fff;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 800px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    }
-  
-    h2 {
-      color: #252525;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-      font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    }
-  
-    p {
-      margin-bottom: 16px; /* adds space between paragraphs */
-      text-align: justify;
-      line-height:2; /* optional: justifies the text of paragraphs */
-    }
-  
-    /* You can add more styles as needed */
-  </style>
   
 </head>
 
+<body>
 {% block content %}
 <div class="content">
-    <h2 style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 50px; text-align: center;">PRINCIPLE COMPONENT ANALYSIS</h2>
+    <h2 class="tutorial-head">PRINCIPLE COMPONENT ANALYSIS</h2>
     <br>
     <p>
         Principle Component Analysis, also known as PCA, is used for large datasets as a dimensionality reduction method. This is done by transformation of potentially correlated variables into a set with a much smaller size that still retain the original information. It also helps to eliminate or minimise the chances of multicollinearity and overfitting [1]. The key feature of PCA is that it can be used to project sample data onto orthogonal axes comprised of linear combinations or genotypic or allelic values across SNPs. This is chosen so the first principle component can be used to explain the greatest variance amongst the whole data [2]. 
@@ -60,7 +28,7 @@
     <br>
     <p>For more details about results and how we obtained them, please refer to our documentation.</p>
     <br>
-    <p style="font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size:30px;">
+    <p class="adm-ref">
         REFERENCES
     </p>
     <br>
@@ -80,10 +48,8 @@
         [4] Privé F, Luu K, Blum MG, McGrath JJ, Vilhjálmsson BJ. Efficient toolkit implementing best practices for principal component analysis of population genetic data. Bioinformatics. 2020 May 16;36(16):4449–57. doi: <a href="https://doi.org/10.1093/bioinformatics/btaa520 " target="_blank">https://doi.org/10.1093/bioinformatics/btaa520 </a> 
     </p>
 
-
-
 </div>
-
+</body>
 
 
 
