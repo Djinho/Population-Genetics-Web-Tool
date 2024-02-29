@@ -21,9 +21,30 @@
         color: #333;
         font-family: Arial, sans-serif;
     }
+    .btn {
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: #fff;
+        background-color: #5cb85c; /* Green */
+        text-decoration: none;
+        margin-top: 20px;
+    }
+    .btn-back {
+        background-color: #337ab7; /* Blue */
+    }
 </style>
 
-<h1>SNP Analysis Results</h1> <!-- SNP Analysis Results heading outside the scrollable container -->
+<h1>SNP Analysis Results</h1>
 
 <div class="scrollable-table-container">
     <table>
@@ -60,7 +81,6 @@
                 <td>{{ result['DistanceToAdjacentGenes'] if result['DistanceToAdjacentGenes'] != '.' else 'N/A' }}</td>
                 <td>{{ result['ClinicalSignificance'] | default('N/A', true) | replace('.', 'N/A') | replace('_', ' ')}}</td>
                 {% for pop in selected_populations %}
-                <!-- Apply the custom filter to round and preserve data format -->
                 <td>{{ result[pop + '_Frequency'] | round_preserve }}</td>
                 {% endfor %}
             </tr>
@@ -72,4 +92,8 @@
         </tbody>
     </table>
 </div>
+
+<a href="{{ url_for('download_route', filename=snp_results_csv_filename) }}" class="btn">Download SNP Results CSV</a>
+<a href="{{ url_for('snp_analysis') }}" class="btn btn-back">Back to SNP Analysis</a>
+
 {% endblock %}
