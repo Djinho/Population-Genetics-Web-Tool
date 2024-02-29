@@ -20,6 +20,8 @@ import tempfile
 from flask import send_file
 import uuid
 import plotly.graph_objects as go
+
+
 # Configure the Flask app
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -160,38 +162,82 @@ def fetch_pca_data(selected_ids, per_sample, is_superpopulation=False):
 
 
 
-# Assuming these are the variances for the first 10 principal components
-pc_variances = [157.311, 49.1541, 11.4908, 8.50634, 7.14746, 5.53621, 5.33917, 5.11019, 4.98798, 4.70189]
-total_variance = sum(pc_variances)
-pc1_variance_percentage = (pc_variances[0] / total_variance) * 100
-pc2_variance_percentage = (pc_variances[1] / total_variance) * 100
-overall_variance_percentage = ((pc_variances[0] + pc_variances[1]) / total_variance) * 100
-
-
 # Define function 'plot_pca' that takes data and a title for the plot plot as arguments.
 def plot_pca(pca_data, title):
-    
-    # Check if the input PCA data is empty. If so, exit the function returning None.
     if pca_data.empty:
         return None
 
-    # Updated the plot title to include the overall variance percentage, formatted to 2 decimal places.
+    # Calculate variance percentages
+    pc_variances = [157.311, 49.1541, 11.4908, 8.50634, 7.14746, 5.53621, 5.33917, 5.11019, 4.98798, 4.70189]
+    total_variance = sum(pc_variances)
+    pc1_variance_percentage = (pc_variances[0] / total_variance) * 100
+    pc2_variance_percentage = (pc_variances[1] / total_variance) * 100
+    overall_variance_percentage = ((pc_variances[0] + pc_variances[1]) / total_variance) * 100
+
+    # Updated plot title to include the overall variance percentage, formatted to 2 decimal places.
     updated_title = f"{title} (Overall Variance: {overall_variance_percentage:.2f}%)"
 
-    # Create a scatter plot using Plotly Express, plotting pc1 against pc2, coloured by 'label'.
-    fig = px.scatter(
-        pca_data, x='pc1', y='pc2', color='label',
-        title=updated_title,  # Use the updated title here
-        labels={
-            # Label the axes with their respective name and variance percentages.
-            'pc1': f'PC1 ({pc1_variance_percentage:.2f}%)',
-            'pc2': f'PC2 ({pc2_variance_percentage:.2f}%)'
-        }
-    )
-    # Update the layout of the plot to have specific margins 
-    fig.update_layout(margin=dict(l=40, r=40, t=40, b=30))
+    # Symbol mapping (you need to expand this based on your actual labels)
+    symbol_map = {
+    'AFR': 'circle',
+    'AMR': 'square',
+    'EAS': 'diamond',
+    'EUR': 'triangle-up',
+    'SAS': 'triangle-down',
+    'ACB': 'star',
+    'ASW': 'cross',
+    'BEB': 'x',
+    'CDX': 'hexagon',
+    'CEU': 'hexagon-open',
+    'CHB': 'octagon',
+    'CHS': 'pentagon',
+    'CLM': 'pentagon-open',
+    'ESN': 'star-square',
+    'FIN': 'star-square-open',
+    'GBR': 'diamond-wide',
+    'GIH': 'diamond-tall',
+    'GWD': 'circle-open',
+    'IBS': 'square-open',
+    'ITU': 'diamond-open',
+    'JPT': 'triangle-ne',
+    'KHV': 'triangle-se',
+    'LWK': 'triangle-sw',
+    'MSL': 'triangle-nw',
+    'MXL': 'circle-dot',
+    'PEL': 'square-dot',
+    'PJL': 'diamond-dot',
+    'PUR': 'cross-open',
+    'SIB': 'x-open',
+    'STU': 'triangle-up-open',
+    'TSI': 'triangle-down-open',
+    'YRI': 'star-diamond'
+}
+
+    # Create a figure
+    fig = go.Figure()
+
+    for label, df_group in pca_data.groupby('label'):
+        symbol = symbol_map.get(label, 'circle')  # Default to 'circle' if label not in symbol_map
+        fig.add_trace(go.Scatter(
+            x=df_group['pc1'],
+            y=df_group['pc2'],
+            mode='markers',
+            marker=dict(symbol=symbol),
+            name=label
+        ))
+
+    # Update axes titles with variance percentages
+    fig.update_xaxes(title_text=f'PC1 ({pc1_variance_percentage:.2f}%)')
+    fig.update_yaxes(title_text=f'PC2 ({pc2_variance_percentage:.2f}%)')
+
+    # Update layout
+    fig.update_layout(title=updated_title, margin=dict(l=40, r=40, t=40, b=30))
+
     # Return the plot as a JSON string using Plotly's JSON encoder.
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+
 
 
 # Define a route for the PCA form page with results visualised.
