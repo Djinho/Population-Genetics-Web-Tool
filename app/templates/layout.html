@@ -2,16 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- The title of the webpage -->
     <title>GenomePop Analytics</title>
+    <!-- Link to external CSS for styling -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Meta tag for ensuring proper rendering and touch zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="top-banner">
-        <div class="site-header"> <!-- Add this div to contain the logo and the navigation -->
+        <div class="site-header"> <!-- This div wraps the website's logo and navigation menu -->
+            <!-- Link for the site logo, redirects to the homepage -->
             <a href="{{ url_for('index') }}" class="logo-link">GenomePop Analytics</a>
+            <!-- Navigation menu -->
             <nav class="site-nav">
                 <ul>
+                    <!-- Navigation links to different pages -->
                     <li><a href="{{ url_for('index') }}">HOME</a></li>
                     <li><a href="{{ url_for('analysis_tools') }}">ANALYSIS TOOLS</a></li>
                     <li><a href="{{ url_for('about') }}">ABOUT</a></li>
@@ -23,16 +29,16 @@
     
     <main>
         {% block content %}
-        <!-- The content of your child templates will be inserted here -->
+        <!-- Placeholder for where the content of child templates will be injected -->
         {% endblock %}
     </main>
     
     <footer>
-        <!-- Footer content here -->
+        <!-- Placeholder for footer content -->
     </footer>
     
     {% block additional_scripts %}
-    <!-- Child templates can add additional scripts here if necessary -->
+    <!-- Placeholder for child templates to add additional JavaScript files -->
     {% endblock %}
 </body>
 </html>

@@ -1,44 +1,67 @@
-<!-- analysis_selection.html -->
+<!-- This line extends a base layout, inheriting its structure and possibly overriding specific blocks -->
 {% extends "layout.html" %}
 
 {% block content %}
+<!-- The content block is defined to insert specific content into the base layout's corresponding block -->
+
 <div class="analysis-options">
+  <!-- This section offers different types of analysis options to the user -->
   <h2 class="center-text">Select Analysis Type</h2>
+  
   <div class="analysis-box">
-    <!-- Existing PCA Analysis Box -->
+    <!-- Box for PCA Analysis option -->
     <h3><a href="{{ url_for('pca_form') }}">PCA ANALYSIS</a></h3>
+    <!-- The link leads to the PCA analysis form page -->
     <p>Principal Component Analysis for population stratification.</p>
+    <!-- Description of PCA Analysis -->
     <a href="{{ url_for('tutorials') }}">
+      <!-- Link to tutorials related to this analysis -->
       <button class="tutorial-btn">TUTORIALS</button>
+      <!-- Button to access tutorials -->
     </a>
   </div>
+  
   <div class="analysis-box">
-    <!-- Existing Admixture Analysis Box -->
+    <!-- Box for Admixture Analysis option -->
     <h3><a href="{{ url_for('admixture_form') }}">ADMIXTURE ANALYSIS</a></h3>
+    <!-- The link leads to the Admixture analysis form page -->
     <p>Analyze genetic admixture in populations.</p>
+    <!-- Description of Admixture Analysis -->
     <a href="{{ url_for('tutorials') }}">
+      <!-- Link to tutorials related to this analysis -->
       <button class="tutorial-btn">TUTORIALS</button>
+      <!-- Button to access tutorials -->
     </a>
   </div>
+  
   <div class="analysis-box">
-    <!-- Updated SNP Analysis Box -->
+    <!-- Box for SNP Analysis option -->
     <h3><a href="{{ url_for('snp_analysis') }}">SNP ANALYSIS</a></h3>
+    <!-- The link leads to the SNP analysis form page -->
     <p>Single Nucleotide Polymorphism frequency analysis.</p>
+    <!-- Description of SNP Analysis -->
     <a href="{{ url_for('tutorials') }}">
+      <!-- Link to tutorials related to this analysis -->
       <button class="tutorial-btn">TUTORIALS</button>
+      <!-- Button to access tutorials -->
     </a>
   </div>
 </div>
 
 <div class="bottom-banner">
+  <!-- Section for the footer and additional information -->
   <footer class="site-footer"> 
       <div class="footer-content">
           <div class="social-media">
+              <!-- Links to social media or external sites -->
               <a href="https://github.com/Djinho/Population-Genetics-Web-Tool" target="_blank" rel="noopener noreferrer">
+                  <!-- Opens the link in a new tab without giving the opened page access to the original page -->
                   <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
+                  <!-- Displays an image, typically a logo -->
               </a>
           </div>
           <div class="copyright">
+              <!-- Copyright notice -->
               <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
           </div>
       </div>
@@ -46,3 +69,4 @@
 </div>
 
 {% endblock %}
+<!-- End of the content block -->
