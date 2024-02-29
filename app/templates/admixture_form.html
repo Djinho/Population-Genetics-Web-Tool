@@ -1,87 +1,117 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} <!-- Inherits from a base template named layout.html -->
 
-{% block content %}
+{% block content %} <!-- Starts the definition of the content block to be inserted into the base template -->
+<style>
+    /* Styles for groups representing population data and analysis settings */
+    .population-group, .analysis-settings { margin-bottom: 20px; }
 
-<h2>Admixture Analysis Form</h2>
-<!-- Container for the Plotly chart -->
-<div id="admixturePlot" style="width: 100%; max-width:900px; height:500px;"></div>
+    /* Style for individual items within a population group, displayed inline with some margin */
+    .population-item { display: inline-block; margin-right: 15px; }
+    
+    /* Container for plots with flex display to space them evenly */
+    .plot-container { display: flex; justify-content: space-between; margin-top: 20px; }
+    
+    /* Style for individual plots, setting their width to occupy nearly half of the container's width */
+    .plot { width: 48%; }
+</style>
 
-<form id="admixtureForm">
+<h2>Admixture Analysis Form</h2> <!-- Heading changed for the form -->
+<form action="{{ url_for('analyze_admixture') }}" method="POST"> <!-- Updated form action for Admixture analysis -->
     <fieldset>
-        <legend>Select Superpopulations for Admixture Analysis:</legend>
-        <div class="population-container">
-            <!-- Loop through the superpopulations passed from the Flask route and create a checkbox for each one -->
-            {% for population in superpopulations %}
-            <label class="population-label">
-                <input type="checkbox" name="superpopulations[]" value="{{ population.PopulationID }}">
-                {{ population.PopulationName }}
-            </label>
+        <legend>Select Superpopulations:</legend> <!-- Keep selection for superpopulations -->
+        <div class="population-group">
+            {% for superpop in superpopulations %}
+            <div class="population-item">
+                <input type="checkbox" id="superpop{{ superpop.PopulationID }}" name="superpopulations[]" value="{{ superpop.PopulationID }}" {{ 'checked' if superpop.PopulationID|string in selected_superpopulations }}>
+                <label for="superpop{{ superpop.PopulationID }}">{{ superpop.PopulationName }}</label>
+            </div>
             {% endfor %}
         </div>
     </fieldset>
+    
     <fieldset>
-        <legend>Select Regular Populations for Admixture Analysis:</legend>
-        <div class="population-container">
-            <!-- Loop through the regular populations passed from the Flask route and create a checkbox for each one -->
-            {% for population in regular_populations %}
-            <label class="population-label">
-                <input type="checkbox" name="populations[]" value="{{ population.PopulationID }}">
-                {{ population.PopulationName }}
-            </label>
+        <legend>Select Populations:</legend> <!-- Keep selection for populations -->
+        <div class="population-group">
+            {% for pop in regular_populations %}
+            <div class="population-item">
+                <input type="checkbox" id="pop{{ pop.PopulationID }}" name="populations[]" value="{{ pop.PopulationID }}" {{ 'checked' if pop.PopulationID|string in selected_populations }}>
+                <label for="pop{{ pop.PopulationID }}">{{ pop.PopulationName }}</label>
+            </div>
             {% endfor %}
         </div>
     </fieldset>
-    <button type="button" id="analyze-button" class="btn btn-primary">Analyze</button>
+
+    <button type="submit">Analyze</button> <!-- Submission button -->
 </form>
 
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<div class="plot-container">
+    <!-- Adapted containers for admixture analysis plots, renaming them to fit the context -->
+    <div id="admixtureSuperpopPlot" class="plot"></div> <!-- Container for the superpopulation admixture plot -->
+    <div id="admixturePopPlot" class="plot"></div> <!-- Container for the population admixture plot -->
+</div>
+
+<!-- Hidden fields to hold the plot data for JavaScript access, renaming the IDs -->
+<div style="display:none;">
+    <div id="admixtureSuperpopPlotData">{{ superpop_plot | safe }}</div> <!-- Stores superpopulation admixture plot data -->
+    <div id="admixturePopPlotData">{{ pop_plot | safe }}</div> <!-- Stores population admixture plot data -->
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Plotly library for plotting -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const analyzeButton = document.getElementById('analyze-button');
+    const form = document.querySelector('form');
 
-    analyzeButton.addEventListener('click', () => {
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent the default form submission.
+
         const selectedPopulations = Array.from(document.querySelectorAll('input[name="populations[]"]:checked')).map(checkbox => checkbox.value);
         const selectedSuperpopulations = Array.from(document.querySelectorAll('input[name="superpopulations[]"]:checked')).map(checkbox => checkbox.value);
 
-        fetch('/analyze_admixture', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ superpopulations: selectedSuperpopulations, populations: selectedPopulations }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            Plotly.newPlot('admixturePlot', data, {
-                barmode: 'stack',
-                title: 'Admixture Analysis',
-                xaxis: { title: 'Population' },
-                yaxis: { title: 'Ancestry Proportion' },
-                margin: { t: 40 } // Adjust top margin to ensure title visibility
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        // Toggle plot visibility by adding or removing a CSS class
+        const togglePlotVisibility = (plotElementId, shouldShow) => {
+            const plotElement = document.getElementById(plotElementId);
+            if (shouldShow) {
+                plotElement.classList.remove('plot-hidden');
+            } else {
+                plotElement.classList.add('plot-hidden');
+            }
+        };
+
+        // Function to fetch and plot admixture data
+        const fetchAndPlotAdmixtureData = (plotElementId, dataToSend, entityType) => {
+            // Only proceed if there are selections
+            if (dataToSend.populations.length > 0 || dataToSend.superpopulations.length > 0) {
+                fetch('/analyze_admixture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataToSend),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Plotly.newPlot(plotElementId, data, {
+                        barmode: 'stack',
+                        title: `Admixture Analysis - ${entityType}`,
+                        xaxis: { title: `${entityType}` },
+                        yaxis: { title: 'Ancestry Proportion' },
+                        margin: { t: 40 } // Adjust top margin to ensure title visibility
+                    });
+                    togglePlotVisibility(plotElementId, true); // Show plot after data fetched
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                togglePlotVisibility(plotElementId, false); // Hide plot if no selections
+            }
+        };
+
+        // Process plotting based on selections
+        fetchAndPlotAdmixtureData('admixtureSuperpopPlot', {superpopulations: selectedSuperpopulations, populations: []}, 'Superpopulations');
+        fetchAndPlotAdmixtureData('admixturePopPlot', {populations: selectedPopulations, superpopulations: []}, 'Populations');
     });
 });
 </script>
 
-<div class="bottom-banner">
-    <footer class="site-footer"> 
-        <div class="footer-content">
-
-            <div class="social-media">
-                <a href="https://github.com/Djinho/Population-Genetics-Web-Tool" target="_blank" rel="noopener noreferrer">
-                    <img src="{{ url_for('static', filename='images/github-mark-white.png') }}">
-                </a>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2024 GenomePop Analytics. All rights reserved.</p>
-            </div>
-
-        </div>
-    </footer>
-</div>
 {% endblock %}
-
