@@ -564,6 +564,8 @@ def snp_analysis():
         action = request.form.get('action')
         selected_snps = request.form.getlist('selected_snps[]')
         selected_populations = request.form.getlist('selected_populations[]')
+        # This will return the filename of the generated CSV for the download link
+        
 
         if not selected_populations:
             return "No population selected", 400
@@ -581,9 +583,37 @@ def snp_analysis():
 
         columns = [desc[0] for desc in cursor.description]
         snp_data_dicts = [dict(zip(columns, row)) for row in results]
+        
+        def generate_snp_results_csv(snp_data_dicts, selected_populations):
+            # Convert SNP data to a pandas DataFrame
+            df = pd.DataFrame(snp_data_dicts)
+    
+            # Ensure we only keep columns relevant for the selected populations and necessary SNP information
+            relevant_columns = ['Chromosome', 'Position', 'SNPID', 'ID', 'REF', 'ALT', 'GeneType', 'GeneName', 'ClinicalSignificance','ExonicFunction', 'DistanceToAdjacentGenes'] +  [f'{pop}_Frequency' for pop in selected_populations]
+                      
+            df = df[relevant_columns]
+    
+            # Reusing tmp_directory function
+            tmp_directory = 'tmp'  
+            if not os.path.exists(tmp_directory):
+                os.makedirs(tmp_directory)
+    
+            # Generate a unique filename for the SNP results CSV
+            snp_results_csv_filename = f'snp_results_{uuid.uuid4()}.csv'
+            snp_results_csv_path = os.path.join(tmp_directory, snp_results_csv_filename)
+    
+            # Save the DataFrame to CSV
+            df.to_csv(snp_results_csv_path, index=False)
+    
+            # Return the filename for downloading
+            return snp_results_csv_filename
+            
+        # Generate unique download per 'Analyze' query tab  
+        snp_results_csv_filename = generate_snp_results_csv(snp_data_dicts, selected_populations)
+        
 
         if action == 'Analyze':
-            return render_template('snp_results.html', snp_data=snp_data_dicts, selected_populations=selected_populations)
+            return render_template('snp_results.html', snp_data=snp_data_dicts, selected_populations=selected_populations, snp_results_csv_filename=snp_results_csv_filename)
         elif action == 'Calculate FST':
             fst_matrix, heatmap_json, fst_matrix_csv_filename, html_fst_matrix_list = calculate_fst_from_averages(snp_data_dicts, selected_populations, population_sample_sizes)
             return render_template('snp_fst.html', fst_heatmap_json=heatmap_json, selected_populations=selected_populations, fst_matrix_list=html_fst_matrix_list, fst_matrix_csv_filename=fst_matrix_csv_filename)
