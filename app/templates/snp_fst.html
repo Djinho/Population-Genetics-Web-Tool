@@ -22,6 +22,32 @@
             width: auto;
             margin: auto;
         }
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #fff;
+            background-color: #5cb85c; /* Green */
+            text-decoration: none;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+        .btn-blue {
+            background-color: #337ab7; /* Blue */
+        }
+        .btn-back {
+            background-color: #337ab7; /* Blue */
+            /* Removed display: block to keep inline-block from .btn class */
+        }
     </style>
 </head>
 <body>
@@ -53,10 +79,10 @@
     </div>
     
     <!-- Using a button element for 'Download FST Matrix CSV' -->
-    <button onclick="location.href='{{ url_for('download_route', filename=fst_matrix_csv_filename) }}'" style="margin-right: 10px;">Download FST Matrix CSV</button>
-    <button onclick="Plotly.downloadImage('fstHeatmap', {format: 'png', filename: 'fst_heatmap'})">Download Heatmap Image</button><br><br>
-    <!-- Adding some space before 'Back to SNP Analysis' -->
-    <a href="/snp-analysis" style="display:block; margin-top:20px;">Back to SNP Analysis</a>
+    <a href="{{ url_for('download_route', filename=fst_matrix_csv_filename) }}" class="btn">Download FST Matrix CSV</a>
+    <button onclick="Plotly.downloadImage('fstHeatmap', {format: 'png', filename: 'fst_heatmap'})" class="btn btn-blue">Download Heatmap Image</button><br><br>
+    <!-- 'Back to SNP Analysis' button fixed size -->
+    <a href="/snp-analysis" class="btn btn-back">Back to SNP Analysis</a>
 </body>
 </html>
 {% endblock %}
