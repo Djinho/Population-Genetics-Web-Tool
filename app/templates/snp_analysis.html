@@ -10,7 +10,56 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-    
+    <style>
+        .fixedHeader, .populations { 
+            position: sticky; 
+            top: 0; 
+            background-color: #fff; 
+            z-index: 1; 
+        }
+        .scrollTable { 
+            display: block; 
+            overflow-y: auto; 
+            height: 500px; /* Adjusted height to make the table longer */
+            margin: auto; 
+            width: 80%; 
+        }
+        .clickable-row { 
+            cursor: pointer; 
+        }
+        .selected-row { 
+            background-color: #add8e6;
+            color: #000; 
+        }
+        .search-boxes { 
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; /* Ensure it's not part of the scrollable area */
+            z-index: 2;
+        }
+        .populations { 
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; 
+            margin-bottom: 20px;
+        }
+        .populations label { 
+            display: inline-block; 
+            margin-right: 10px; 
+        }
+        th, td {
+            text-align: center;
+        }
+        .search-box { 
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <h1>SNP Analysis</h1>
@@ -30,10 +79,10 @@
             <input class="search-box" type="text" id="positionSearch" placeholder="Search Position">
             <input class="search-box" type="text" id="snpIdSearch" placeholder="Search SNP ID">
             <input class="search-box" type="text" id="geneNameSearch" placeholder="Search Gene Name">
+            <!-- Adding Select/Deselect All for table rows -->
             <button type="button" id="select-all-snps">Select All</button>
             <button type="button" id="deselect-all-snps">Deselect All</button>
         </div>
-        <p id="selection-counter">Selected SNPs: 0</p>
         <div class="scrollTable">
             <table border="1">
                 <thead class="fixedHeader">
