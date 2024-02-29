@@ -164,7 +164,7 @@ body {
 }
 .analysis-options a{
     text-decoration: none;
-    color: #252525;
+    color: #fff;
 }
 
 .analysis-box h3 {
@@ -812,4 +812,24 @@ th, td {
 }
 .search-box { 
     width: 100%;
+}
+
+.analysis-tools-btn {
+    color: #fff; /* Button/link color */
+    background-color: #005ea2; /* Background color for the link/button */
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px; /* Rounded corners for the link/button */
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    display: inline-block; /* This will allow you to set margins and keep the element in line */
+    margin-top: auto;
+    margin-bottom: 0;
+    font-family: 'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+}
+
+.analysis-tools-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 8px rgba(0,0,0,0.3);
 }
