@@ -21,7 +21,6 @@
         </div>
     </div>
     
-    
     <main>
         {% block content %}
         <!-- The content of your child templates will be inserted here -->
@@ -32,8 +31,6 @@
         <!-- Footer content here -->
     </footer>
     
-    <!-- JavaScript files are included at the end of the body to allow the content to load faster -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block additional_scripts %}
     <!-- Child templates can add additional scripts here if necessary -->
     {% endblock %}
