@@ -62,8 +62,12 @@ The prototype is intended for demonstration, with future enhancements focused on
 
 ## Contributors
 
-- [Your Name]
-- [Your Teammate's Names]
+- Djinho Itshary 
+- Nasibah Abdulkadir Abdi Warsame
+- Haik Ghazumyan
+- Dhwani Nilesh Trivedi
+
+
 
 ## License
 
